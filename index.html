@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terremoto — L'Aquila 2009</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black:      #080808;
+            --charcoal:   #101010;
+            --terracotta: #C4612A;
+            --ochre:      #D4893A;
+            --cream:      #F5EDE0;
+            --blood:      #8B1A1A;
+            --blue:       #3A7EC4;
+            --red-wave:   #C43A3A;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+            height: 100%;
+            cursor: none;
+            scrollbar-width: none;
+        }
+        html::-webkit-scrollbar { display: none; }
+
+        body {
+            background: var(--black);
+            color: var(--cream);
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            height: 100%;
+        }
+
+        /* ─── CUSTOM CURSOR ─── */
+        #cursor {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--terracotta);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.15s ease, background 0.3s;
+            mix-blend-mode: screen;
+        }
+        #cursor-ring {
+            position: fixed;
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(196,97,42,0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.08s linear, width 0.3s, height 0.3s;
+        }
+
+        /* ─── FIXED UI ─── */
+        #progress-bar {
+            position: fixed;
+            left: 0; top: 0;
+            width: 3px; height: 0%;
+            background: var(--terracotta);
+            z-index: 200;
+            transition: height 0.6s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        #nav-dots {
+            position: fixed;
+            right: 1.8rem; top: 50%;
+            transform: translateY(-50%);
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .dot {
+            width: 5px; height: 5px;
+            background: rgba(245,237,224,0.25);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.35s ease;
+        }
+        .dot.active {
+            background: var(--terracotta);
+            transform: scale(1.8);
+        }
+
+        #slide-counter {
+            position: fixed;
+            left: 1.8rem; bottom: 1.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            color: rgba(245,237,224,0.2);
+            z-index: 200;
+        }
+
+        #fullscreen-btn {
+            position: fixed;
+            top: 1.4rem; right: 1.4rem;
+            width: 34px; height: 34px;
+            border: 1px solid rgba(245,237,224,0.18);
+            background: transparent;
+            cursor: pointer;
+            z-index: 200;
+            display: flex; align-items: center; justify-content: center;
+            transition: border-color 0.3s;
+        }
+        #fullscreen-btn:hover { border-color: var(--terracotta); }
+        #fullscreen-btn svg { width: 13px; height: 13px; fill: none; stroke: rgba(245,237,224,0.5); stroke-width: 1.5; }
+
+        #scroll-hint {
+            position: fixed;
+            bottom: 1.8rem; left: 50%;
+            transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+            z-index: 200;
+            transition: opacity 0.6s;
+            pointer-events: none;
+        }
+        #scroll-hint.hidden { opacity: 0; }
+        .scroll-mouse {
+            width: 18px; height: 28px;
+            border: 1px solid rgba(245,237,224,0.2);
+            border-radius: 9px;
+            position: relative;
+        }
+        .scroll-mouse::after {
+            content: '';
+            position: absolute;
+            top: 5px; left: 50%;
+            transform: translateX(-50%);
+            width: 2px; height: 7px;
+            background: rgba(245,237,224,0.35);
+            border-radius: 1px;
+            animation: scrollBob 1.6s infinite;
+        }
+        @keyframes scrollBob {
+            0%,100% { top: 5px; opacity: 1; }
+            80%      { top: 13px; opacity: 0; }
+        }
+        .scroll-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.5rem;
+            letter-spacing: 0.25em;
+            color: rgba(245,237,224,0.25);
+            text-transform: uppercase;
+        }
+
+        /* ─── SLIDES ─── */
+        .slide {
+            height: 100vh;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ══════════════════ SLIDE 1 · HERO ══════════════════ */
+        #s-hero { background: #050505; }
+
+        #hero-canvas {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            opacity: 0.5;
+        }
+
+        .hero-inner {
+            position: relative; z-index: 2;
+            text-align: center;
+        }
+
+        .eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.35em;
+            color: var(--terracotta);
+            text-transform: uppercase;
+            margin-bottom: 1.2rem;
+            opacity: 0;
+            animation: riseUp 0.9s 0.4s forwards;
+        }
+
+        .hero-title {
+            font-size: clamp(5.5rem, 14vw, 15rem);
+            font-weight: 300;
+            line-height: 0.88;
+            letter-spacing: -0.01em;
+            color: var(--cream);
+            opacity: 0;
+            animation: riseUp 0.9s 0.7s forwards;
+        }
+        .hero-title em {
+            font-style: italic;
+            color: var(--terracotta);
+        }
+
+        .hero-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.18em;
+            color: rgba(245,237,224,0.4);
+            margin-top: 1.8rem;
+            opacity: 0;
+            animation: riseUp 0.9s 1.0s forwards;
+        }
+
+        .hero-cta {
+            margin-top: 3.5rem;
+            opacity: 0;
+            animation: riseUp 0.9s 1.4s forwards;
+        }
+        .btn-enter {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--cream);
+            background: transparent;
+            border: 1px solid rgba(245,237,224,0.25);
+            padding: 0.9rem 2.4rem;
+            cursor: pointer;
+            transition: border-color 0.3s, background 0.3s;
+            position: relative; overflow: hidden;
+        }
+        .btn-enter::before {
+            content: '';
+            position: absolute;
+            inset: 0; left: -100%;
+            background: var(--terracotta);
+            transition: left 0.35s ease;
+            z-index: -1;
+        }
+        .btn-enter:hover::before { left: 0; }
+        .btn-enter:hover { border-color: var(--terracotta); }
+
+        /* epicenter pulse */
+        .epicenter {
+            position: absolute;
+            bottom: 28%; right: 18%;
+            opacity: 0;
+            animation: fadeIn 1s 2.2s forwards;
+        }
+        .pulse {
+            width: 10px; height: 10px;
+            background: var(--blood);
+            border-radius: 50%;
+            position: relative;
+        }
+        .pulse::before, .pulse::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid var(--blood);
+            border-radius: 50%;
+            animation: pulseRing 2.5s ease-out infinite;
+        }
+        .pulse::after { animation-delay: 1.25s; }
+        @keyframes pulseRing {
+            0%   { inset: 0; opacity: 0.8; }
+            100% { inset: -25px; opacity: 0; }
+        }
+
+        @keyframes riseUp {
+            from { opacity: 0; transform: translateY(22px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* ══════════════════ SLIDE 2 · DATI ══════════════════ */
+        #s-data { background: var(--charcoal); }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.8fr;
+            width: 100%; height: 100%;
+        }
+
+        .data-left {
+            background: var(--terracotta);
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 4rem 3.5rem;
+            position: relative; overflow: hidden;
+        }
+        .data-left::after {
+            content: '';
+            position: absolute;
+            bottom: -25%; right: -25%;
+            width: 70%; aspect-ratio: 1;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 0.9rem;
+        }
+        .panel-title {
+            font-size: clamp(2rem, 3.5vw, 3.8rem);
+            font-weight: 300;
+            line-height: 1.1;
+            color: #fff;
+        }
+        .panel-title em { font-style: italic; }
+
+        .data-right {
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 4rem 5rem;
+        }
+        .stat-row {
+            display: flex; align-items: baseline; gap: 1.2rem;
+            padding: 1.6rem 0;
+            border-bottom: 1px solid rgba(245,237,224,0.07);
+        }
+        .stat-row:first-child { padding-top: 0; }
+        .stat-row:last-child  { border-bottom: none; padding-bottom: 0; }
+        .stat-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(2.5rem, 4.5vw, 4.5rem);
+            font-weight: 300;
+            color: var(--terracotta);
+            line-height: 1;
+            min-width: 7.5rem;
+            letter-spacing: -0.02em;
+        }
+        .stat-info {}
+        .stat-label {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--cream);
+            margin-bottom: 0.25rem;
+        }
+        .stat-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.1em;
+            color: rgba(245,237,224,0.35);
+        }
+
+        /* ══════════════════ SLIDE 3 · SCIENZA ══════════════════ */
+        #s-science { background: #060810; }
+
+        .science-wrap {
+            width: 100%; height: 100%;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            padding: 4rem;
+            gap: 2.5rem;
+        }
+        .science-head {
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+        .science-head-right {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.25em;
+            color: rgba(245,237,224,0.25);
+            text-transform: uppercase;
+            text-align: right;
+            line-height: 1.8;
+        }
+        .sci-title {
+            font-size: clamp(2rem, 3.5vw, 3.8rem);
+            font-weight: 300;
+            line-height: 1.15;
+        }
+        .sci-title span { color: var(--blue); }
+
+        .science-body {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        #wave-canvas {
+            width: 100%; height: 260px;
+            border: 1px solid rgba(58,126,196,0.15);
+            display: block;
+        }
+
+        .wave-legend { display: flex; flex-direction: column; gap: 2rem; }
+        .wave-item { display: flex; align-items: flex-start; gap: 1.2rem; }
+        .wave-bar {
+            width: 36px; height: 2px;
+            margin-top: 0.65rem; flex-shrink: 0;
+        }
+        .wave-bar.p  { background: var(--blue); }
+        .wave-bar.s  { background: var(--red-wave); }
+        .wave-bar.surf { background: rgba(196,97,42,0.5); }
+        .wave-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.2em;
+            color: rgba(245,237,224,0.4);
+            text-transform: uppercase;
+            margin-bottom: 0.35rem;
+        }
+        .wave-desc {
+            font-size: 0.97rem;
+            line-height: 1.65;
+            color: rgba(245,237,224,0.65);
+        }
+
+        /* ══════════════════ SLIDE 4 · SISMOGRAFO ══════════════════ */
+        #s-seismo { background: #060606; }
+
+        .seismo-wrap {
+            width: 100%; height: 100%;
+            padding: 4rem 5rem;
+            display: flex; flex-direction: column; justify-content: center;
+            gap: 2rem;
+        }
+        .seismo-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            color: var(--terracotta);
+            text-transform: uppercase;
+        }
+        .seismo-title {
+            font-size: clamp(2rem, 3.2vw, 3.5rem);
+            font-weight: 300;
+            line-height: 1.2;
+        }
+
+        #seismo-canvas { width: 100%; height: 180px; display: block; }
+
+        .seismo-scale {
+            display: flex; justify-content: space-between;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.55rem;
+            letter-spacing: 0.1em;
+            color: rgba(245,237,224,0.2);
+        }
+
+        .mag-display { text-align: center; padding-top: 1rem; }
+        .mag-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(5rem, 10vw, 10rem);
+            font-weight: 300;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--terracotta);
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+        .mag-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.3em;
+            color: rgba(245,237,224,0.3);
+            text-transform: uppercase;
+            margin-top: 0.4rem;
+        }
+
+        /* ══════════════════ SLIDE 5 · CITTÀ ══════════════════ */
+        #s-city { background: var(--black); }
+
+        .city-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            width: 100%; height: 100%;
+        }
+        .city-left {
+            background: linear-gradient(150deg, #120800 0%, #1e0d00 100%);
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 5rem;
+            position: relative; overflow: hidden;
+        }
+        .city-left::before {
+            content: '309';
+            position: absolute;
+            right: -0.05em; bottom: -0.1em;
+            font-size: 28vw; font-weight: 700;
+            color: rgba(196,97,42,0.035);
+            line-height: 1;
+            font-family: 'JetBrains Mono', monospace;
+            pointer-events: none;
+            user-select: none;
+        }
+        .city-tag { color: var(--terracotta); margin-bottom: 1.2rem; }
+        .city-title {
+            font-size: clamp(2rem, 3.5vw, 3.8rem);
+            font-weight: 300;
+            line-height: 1.15;
+            margin-bottom: 2rem;
+        }
+        .city-body {
+            font-size: 1rem;
+            line-height: 1.85;
+            color: rgba(245,237,224,0.6);
+        }
+
+        .city-right {
+            display: grid; grid-template-rows: 1fr 1fr;
+        }
+        .damage-block {
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 3.5rem 4rem;
+            border-bottom: 1px solid rgba(245,237,224,0.04);
+        }
+        .damage-block:last-child { border-bottom: none; }
+        .damage-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(2.5rem, 5vw, 5rem);
+            font-weight: 300;
+            color: var(--terracotta);
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+        .damage-label {
+            font-size: 1.1rem;
+            color: var(--cream);
+            margin-top: 0.5rem;
+        }
+        .damage-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: rgba(245,237,224,0.3);
+            letter-spacing: 0.12em;
+            margin-top: 0.3rem;
+        }
+
+        /* ══════════════════ SLIDE 6 · OPERE D'ARTE ══════════════════ */
+        #s-art { background: #f5ede0; }
+
+        .art-grid {
+            display: grid; grid-template-columns: 1.2fr 1fr;
+            width: 100%; height: 100%;
+        }
+
+        .art-panel-left {
+            background: #100a04;
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 3.5rem;
+        }
+        .art-lines {
+            position: absolute; inset: 0;
+            background: repeating-linear-gradient(
+                0deg, transparent, transparent 45px,
+                rgba(196,97,42,0.025) 45px, rgba(196,97,42,0.025) 46px
+            );
+        }
+        .art-panel-label {
+            position: absolute;
+            top: 3.5rem; left: 3.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.58rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: rgba(245,237,224,0.25);
+        }
+        #art-name {
+            font-size: clamp(1.3rem, 2.2vw, 2.2rem);
+            font-weight: 600;
+            color: var(--cream);
+            margin-bottom: 0.4rem;
+            position: relative; z-index: 2;
+            transition: opacity 0.3s;
+        }
+        #art-year {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.18em;
+            color: rgba(245,237,224,0.35);
+            position: relative; z-index: 2;
+        }
+        .damage-bar-wrap {
+            margin-top: 1.2rem;
+            height: 2px;
+            background: rgba(245,237,224,0.07);
+            position: relative; z-index: 2;
+        }
+        #art-damage-fill {
+            position: absolute; top: 0; left: 0;
+            height: 100%;
+            background: var(--terracotta);
+            transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
+        }
+        #art-damage-pct {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.58rem;
+            color: rgba(245,237,224,0.3);
+            letter-spacing: 0.12em;
+            margin-top: 0.4rem;
+            position: relative; z-index: 2;
+        }
+
+        .art-panel-right {
+            background: #f5ede0;
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 4rem;
+        }
+        .art-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--terracotta);
+            margin-bottom: 1.2rem;
+        }
+        .art-title {
+            font-size: clamp(1.8rem, 3vw, 3rem);
+            font-weight: 600;
+            line-height: 1.1;
+            color: #080808;
+            margin-bottom: 2rem;
+        }
+        .art-list { list-style: none; }
+        .art-item {
+            display: flex; align-items: center; gap: 0.9rem;
+            padding: 0.85rem 0;
+            border-bottom: 1px solid rgba(8,8,8,0.07);
+            font-size: 0.95rem;
+            color: rgba(8,8,8,0.65);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .art-item:last-child { border-bottom: none; }
+        .art-item:hover, .art-item.active { color: var(--terracotta); }
+        .art-item::before {
+            content: '';
+            width: 5px; height: 5px;
+            background: currentColor;
+            border-radius: 50%;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        /* ══════════════════ SLIDE 7 · RICOSTRUZIONE ══════════════════ */
+        #s-rebuild { background: var(--black); }
+
+        .rebuild-wrap {
+            width: 100%; height: 100%;
+            padding: 4rem 5rem;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .rebuild-head { margin-bottom: 3rem; }
+        .rebuild-title {
+            font-size: clamp(2rem, 3.5vw, 3.8rem);
+            font-weight: 300;
+            line-height: 1.15;
+        }
+
+        .cards-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .card {
+            border: 1px solid rgba(245,237,224,0.07);
+            padding: 2rem;
+            position: relative; overflow: hidden;
+            transition: border-color 0.3s;
+        }
+        .card:hover { border-color: rgba(196,97,42,0.5); }
+        .card::before {
+            content: '';
+            position: absolute; top: 0; left: 0;
+            width: 3px; height: 0%;
+            background: var(--terracotta);
+            transition: height 0.4s ease;
+        }
+        .card:hover::before { height: 100%; }
+        .card-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--terracotta);
+            letter-spacing: 0.25em;
+            margin-bottom: 1.3rem;
+        }
+        .card-title {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--cream);
+            margin-bottom: 0.9rem;
+        }
+        .card-text {
+            font-size: 0.88rem;
+            line-height: 1.75;
+            color: rgba(245,237,224,0.5);
+        }
+
+        /* ══════════════════ SLIDE 8 · FINE ══════════════════ */
+        #s-end { background: #050505; }
+
+        .end-wrap {
+            text-align: center;
+            max-width: 780px;
+            padding: 2rem;
+        }
+        .end-quote {
+            font-size: clamp(1.4rem, 2.8vw, 2.8rem);
+            font-weight: 300;
+            font-style: italic;
+            line-height: 1.55;
+            color: var(--cream);
+        }
+        .end-line {
+            width: 50px; height: 1px;
+            background: var(--terracotta);
+            margin: 2rem auto;
+        }
+        .end-source {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            color: var(--terracotta);
+            text-transform: uppercase;
+        }
+        .end-credits {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.58rem;
+            letter-spacing: 0.15em;
+            color: rgba(245,237,224,0.18);
+            text-transform: uppercase;
+            margin-top: 3rem;
+            line-height: 1.8;
+        }
+
+        /* ─── END CANVAS ─── */
+        #end-canvas {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            opacity: 0.88;
+        }
+        #s-end .end-wrap { position: relative; z-index: 2; }
+
+        /* ─── NOISE OVERLAY ─── */
+        body::after {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 500; opacity: 0.45;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CURSOR -->
+    <div id="cursor"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- FIXED UI -->
+    <div id="progress-bar"></div>
+    <nav id="nav-dots">
+        <div class="dot active" data-i="0"></div>
+        <div class="dot" data-i="1"></div>
+        <div class="dot" data-i="2"></div>
+        <div class="dot" data-i="3"></div>
+        <div class="dot" data-i="4"></div>
+        <div class="dot" data-i="5"></div>
+        <div class="dot" data-i="6"></div>
+        <div class="dot" data-i="7"></div>
+    </nav>
+    <div id="slide-counter">01 / 08</div>
+    <button id="fullscreen-btn" title="Schermo intero (F)">
+        <svg viewBox="0 0 24 24">
+            <path d="M3 3h6M3 3v6M21 3h-6M21 3v6M3 21h6M3 21v-6M21 21h-6M21 21v-6"/>
+        </svg>
+    </button>
+    <div id="scroll-hint">
+        <div class="scroll-mouse"></div>
+        <span class="scroll-label">Scorri</span>
+    </div>
+
+    <!-- ══ S1 · HERO ══ -->
+    <section class="slide" id="s-hero">
+        <canvas id="hero-canvas"></canvas>
+        <div class="hero-inner">
+            <p class="eyebrow">Sisma · Abruzzo · Italia</p>
+            <h1 class="hero-title">TERRE<em>MOTO</em></h1>
+            <p class="hero-sub">L'Aquila &mdash; 6 aprile 2009 &mdash; 03:32:39</p>
+            <div class="hero-cta">
+                <button class="btn-enter" id="btn-enter">↓ &nbsp;Scopri la storia</button>
+            </div>
+        </div>
+        <div class="epicenter">
+            <div class="pulse"></div>
+        </div>
+    </section>
+
+    <!-- ══ S2 · DATI ══ -->
+    <section class="slide" id="s-data">
+        <div class="data-grid">
+            <div class="data-left">
+                <span class="section-tag">Il sisma in cifre</span>
+                <h2 class="panel-title">I numeri<br>di una<br><em>tragedia</em></h2>
+            </div>
+            <div class="data-right">
+                <div class="stat-row">
+                    <div class="stat-num" data-val="6.3" data-dec="1">—</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Magnitudo Mw</div>
+                        <div class="stat-sub">Scala momento · misurazione strumentale</div>
+                    </div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-num" data-val="309" data-dec="0">—</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Vittime</div>
+                        <div class="stat-sub">Deceduti accertati</div>
+                    </div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-num" data-val="65000" data-dec="0">—</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Sfollati</div>
+                        <div class="stat-sub">Persone costrette ad abbandonare la propria abitazione</div>
+                    </div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-num" data-val="8.8" data-dec="1">—</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Profondità km</div>
+                        <div class="stat-sub">Ipocentro stimato sotto la superficie</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ S3 · SCIENZA ══ -->
+    <section class="slide" id="s-science">
+        <div class="science-wrap">
+            <div class="science-head">
+                <h2 class="sci-title">Come si <span>propaga</span><br>un terremoto</h2>
+                <div class="science-head-right">Geofisica<br>Sismica</div>
+            </div>
+            <div class="science-body">
+                <canvas id="wave-canvas"></canvas>
+                <div class="wave-legend">
+                    <div class="wave-item">
+                        <div class="wave-bar p"></div>
+                        <div>
+                            <div class="wave-tag">Onde P · Primarie</div>
+                            <p class="wave-desc">Onde di compressione longitudinali. Le prime ad arrivare. Viaggiano in solidi e liquidi a 5–8 km/s nella crosta terrestre.</p>
+                        </div>
+                    </div>
+                    <div class="wave-item">
+                        <div class="wave-bar s"></div>
+                        <div>
+                            <div class="wave-tag">Onde S · Secondarie</div>
+                            <p class="wave-desc">Onde di taglio trasversali. Più lente (3–4 km/s), viaggiano solo nei solidi. Causano danni maggiori rispetto alle P.</p>
+                        </div>
+                    </div>
+                    <div class="wave-item">
+                        <div class="wave-bar surf"></div>
+                        <div>
+                            <div class="wave-tag">Onde superficiali</div>
+                            <p class="wave-desc">Le più distruttive. Si propagano lungo la superficie terrestre e sono responsabili del cedimento strutturale degli edifici.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ S4 · SISMOGRAFO ══ -->
+    <section class="slide" id="s-seismo">
+        <div class="seismo-wrap">
+            <div>
+                <div class="seismo-date">06 · 04 · 2009 — 03:32:39 UTC+1</div>
+                <h2 class="seismo-title">La registrazione<br>del sisma</h2>
+            </div>
+            <canvas id="seismo-canvas"></canvas>
+            <div class="seismo-scale">
+                <span>−120 s</span><span>−90 s</span><span>−60 s</span>
+                <span>−30 s</span><span>EVENTO</span><span>+30 s</span><span>+60 s</span>
+            </div>
+            <div class="mag-display">
+                <div class="mag-num">6.3</div>
+                <div class="mag-sub">Magnitudo momento · Mw</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ S5 · CITTÀ ══ -->
+    <section class="slide" id="s-city">
+        <div class="city-grid">
+            <div class="city-left">
+                <span class="section-tag city-tag">Impatto urbano</span>
+                <h2 class="city-title">L'Aquila,<br>la città<br>spezzata</h2>
+                <p class="city-body">Alle 3:32 del mattino del 6 aprile 2009, una scossa di magnitudo 6.3 sveglia brutalmente L'Aquila. La città medievale, fondata nel 1254, subisce danni catastrofici. Il centro storico è devastato. Migliaia di edifici crollano o risultano gravemente inagibili. L'intera provincia è sconvolta.</p>
+            </div>
+            <div class="city-right">
+                <div class="damage-block" style="background:#0c0500;">
+                    <div class="damage-num" data-val="15000" data-dec="0">—</div>
+                    <div class="damage-label">Edifici danneggiati o distrutti</div>
+                    <div class="damage-sub">Centro storico e provincia dell'Aquila</div>
+                </div>
+                <div class="damage-block" style="background:#090303;">
+                    <div class="damage-num" data-val="1500" data-dec="0">—</div>
+                    <div class="damage-label">Feriti</div>
+                    <div class="damage-sub">Di cui circa 200 in gravi condizioni</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ S6 · OPERE D'ARTE ══ -->
+    <section class="slide" id="s-art">
+        <div class="art-grid">
+            <div class="art-panel-left">
+                <div class="art-lines"></div>
+                <div class="art-panel-label">Patrimonio culturale danneggiato</div>
+                <div>
+                    <h3 id="art-name">Basilica di S.M. di Collemaggio</h3>
+                    <div id="art-year">XIII sec. — Romanico abruzzese</div>
+                    <div class="damage-bar-wrap">
+                        <div id="art-damage-fill" style="width:80%"></div>
+                    </div>
+                    <div id="art-damage-pct">80% — Danni gravi</div>
+                </div>
+            </div>
+            <div class="art-panel-right">
+                <span class="art-tag">Arte e memoria</span>
+                <h2 class="art-title">Monumenti<br>e opere<br>colpiti</h2>
+                <ul class="art-list" id="art-list">
+                    <li class="art-item active"
+                        data-name="Basilica di S.M. di Collemaggio"
+                        data-year="XIII sec. — Romanico abruzzese"
+                        data-dmg="80" data-label="Danni gravi">
+                        Basilica di S.M. di Collemaggio
+                    </li>
+                    <li class="art-item"
+                        data-name="Castello Cinquecentesco"
+                        data-year="XVI sec. — Architettura militare"
+                        data-dmg="45" data-label="Danni moderati">
+                        Castello Cinquecentesco
+                    </li>
+                    <li class="art-item"
+                        data-name="Duomo di San Massimo"
+                        data-year="XV–XVII sec. — Stile barocco"
+                        data-dmg="70" data-label="Danni gravi">
+                        Duomo di San Massimo
+                    </li>
+                    <li class="art-item"
+                        data-name="Fontana delle 99 Cannelle"
+                        data-year="XIII sec. — Scultura medievale"
+                        data-dmg="30" data-label="Danni lievi">
+                        Fontana delle 99 Cannelle
+                    </li>
+                    <li class="art-item"
+                        data-name="Palazzo Ardinghelli"
+                        data-year="XVIII sec. — Barocco civile"
+                        data-dmg="60" data-label="Danni significativi">
+                        Palazzo Ardinghelli
+                    </li>
+                    <li class="art-item"
+                        data-name="Chiesa di Santa Giusta"
+                        data-year="XIII sec. — Romanico"
+                        data-dmg="55" data-label="Danni moderati">
+                        Chiesa di Santa Giusta
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ S7 · RICOSTRUZIONE ══ -->
+    <section class="slide" id="s-rebuild">
+        <div class="rebuild-wrap">
+            <div class="rebuild-head">
+                <span class="section-tag" style="color:var(--terracotta);">La rinascita</span>
+                <h2 class="rebuild-title">Ricostruire<br>la memoria</h2>
+            </div>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-num">01</div>
+                    <h3 class="card-title">Progetto C.A.S.E.</h3>
+                    <p class="card-text">Complessi Antisismici Sostenibili ed Ecocompatibili. 185 edifici costruiti in 18 mesi su isolatori sismici per ospitare 15.000 sfollati.</p>
+                </div>
+                <div class="card">
+                    <div class="card-num">02</div>
+                    <h3 class="card-title">Centro storico</h3>
+                    <p class="card-text">Oltre 10 miliardi di euro stanziati per il recupero del patrimonio storico e architettonico. Un processo lungo, ancora in corso dopo 15 anni.</p>
+                </div>
+                <div class="card">
+                    <div class="card-num">03</div>
+                    <h3 class="card-title">Restauro monumenti</h3>
+                    <p class="card-text">La Basilica di Collemaggio ha riaperto nel 2017 dopo 8 anni di restauri. Il Castello dal 2016. Un lavoro meticoloso di recupero dell'identità culturale.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ S8 · FINE ══ -->
+    <section class="slide" id="s-end">
+        <canvas id="end-canvas"></canvas>
+        <div class="end-wrap">
+            <p class="end-quote">"Le pietre di una città<br>custodiscono la memoria<br>di chi l'ha vissuta"</p>
+            <div class="end-line"></div>
+            <div class="end-source">L'Aquila — Una città, una memoria</div>
+            <div class="end-credits">
+                Presentazione web · Anno scolastico 2025–2026<br>
+                Terremoto dell'Aquila 2009 · Patrimonio culturale e ricostruzione
+            </div>
+        </div>
+    </section>
+
+<script>
+// ═══════════════════════════════════════════
+//  CURSOR
+// ═══════════════════════════════════════════
+const cursor     = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+(function animCursor() {
+    cursor.style.left = mx + 'px';
+    cursor.style.top  = my + 'px';
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    cursorRing.style.left = rx + 'px';
+    cursorRing.style.top  = ry + 'px';
+    requestAnimationFrame(animCursor);
+})();
+
+// ═══════════════════════════════════════════
+//  SLIDE TRACKING
+// ═══════════════════════════════════════════
+const slides     = document.querySelectorAll('.slide');
+const dots       = document.querySelectorAll('.dot');
+const progressBar = document.getElementById('progress-bar');
+const counter    = document.getElementById('slide-counter');
+const scrollHint = document.getElementById('scroll-hint');
+
+let currentIdx = 0;
+let scrolledOnce = false;
+const triggered = new Set();
+
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (e.isIntersecting && e.intersectionRatio >= 0.5) {
+            const i = [...slides].indexOf(e.target);
+            if (i !== currentIdx) {
+                currentIdx = i;
+                updateUI(i);
+                if (i > 0 && !scrolledOnce) {
+                    scrolledOnce = true;
+                    scrollHint.classList.add('hidden');
+                }
+                onSlideEnter(i, e.target);
+            }
+        }
+    });
+}, { threshold: 0.5 });
+
+slides.forEach(s => observer.observe(s));
+
+function updateUI(i) {
+    dots.forEach((d, j) => d.classList.toggle('active', j === i));
+    progressBar.style.height = (i / (slides.length - 1) * 100) + '%';
+    counter.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+}
+
+dots.forEach(d => d.addEventListener('click', () => {
+    slides[+d.dataset.i].scrollIntoView({ behavior: 'smooth' });
+}));
+
+// ═══════════════════════════════════════════
+//  FULLSCREEN
+// ═══════════════════════════════════════════
+document.getElementById('fullscreen-btn').addEventListener('click', toggleFS);
+document.getElementById('btn-enter').addEventListener('click', () =>
+    slides[1].scrollIntoView({ behavior: 'smooth' }));
+
+function toggleFS() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown' || e.key === 'PageDown')
+        slides[Math.min(currentIdx + 1, slides.length - 1)].scrollIntoView({ behavior: 'smooth' });
+    else if (e.key === 'ArrowUp' || e.key === 'PageUp')
+        slides[Math.max(currentIdx - 1, 0)].scrollIntoView({ behavior: 'smooth' });
+    else if (e.key === 'f' || e.key === 'F') toggleFS();
+    else if (e.key === 'Escape' && document.fullscreenElement) document.exitFullscreen();
+});
+
+// ═══════════════════════════════════════════
+//  HERO CANVAS — seismic waves + guitar-string pluck physics
+// ═══════════════════════════════════════════
+const hc   = document.getElementById('hero-canvas');
+const hctx = hc.getContext('2d');
+let ht = 0;
+
+// Wave equation grid: 22 rows × NUM_X sample points
+const NUM_X    = 280;
+const NUM_ROWS = 22;
+let prevDisp = Array.from({length: NUM_ROWS}, () => new Float32Array(NUM_X));
+let currDisp = Array.from({length: NUM_ROWS}, () => new Float32Array(NUM_X));
+let nextDisp = Array.from({length: NUM_ROWS}, () => new Float32Array(NUM_X));
+
+// Mouse state on hero canvas
+let heroMX = -1, heroMY = -1, heroMXPrev = -1, heroHover = false;
+
+hc.addEventListener('mouseenter', e => {
+    const r = hc.getBoundingClientRect();
+    heroMXPrev = heroMX = e.clientX - r.left;
+    heroMY     = e.clientY - r.top;
+    heroHover  = true;
+});
+hc.addEventListener('mouseleave', () => { heroHover = false; });
+hc.addEventListener('mousemove', e => {
+    const r   = hc.getBoundingClientRect();
+    heroMXPrev = heroMX;
+    heroMX     = e.clientX - r.left;
+    heroMY     = e.clientY - r.top;
+    heroHover  = true;
+
+    // Pluck strings proportional to horizontal mouse speed (guitar-string effect)
+    const speed = Math.abs(heroMX - heroMXPrev);
+    if (speed < 0.5 || hc.width === 0) return;
+    const xFrac  = heroMX / hc.width;
+    const rowH   = hc.height / NUM_ROWS;
+    for (let r2 = 0; r2 < NUM_ROWS; r2++) {
+        const y0   = rowH * r2 + rowH / 2;
+        const dist = Math.abs(heroMY - y0);
+        if (dist > rowH * 1.4) continue;
+        const proximity = 1 - dist / (rowH * 1.4);
+        const strength  = Math.min(speed * 2.2, 65) * proximity;
+        // Gaussian pluck centred at mouse x (sigma ≈ 5 sample points ≈ 34 px)
+        const cx = Math.round(xFrac * (NUM_X - 1));
+        for (let i = Math.max(1, cx - 18); i < Math.min(NUM_X - 1, cx + 18); i++) {
+            const d = i - cx;
+            currDisp[r2][i] += strength * Math.exp(-d * d / 30);
+        }
+    }
+});
+
+// Step the 1D wave equation (Courant c²=0.45, stable for c<1)
+function stepWavePhysics() {
+    const c2   = 0.45;
+    const damp = 0.9975;
+    for (let r = 0; r < NUM_ROWS; r++) {
+        for (let i = 1; i < NUM_X - 1; i++) {
+            nextDisp[r][i] = damp * (
+                2 * currDisp[r][i] - prevDisp[r][i] +
+                c2 * (currDisp[r][i + 1] - 2 * currDisp[r][i] + currDisp[r][i - 1])
+            );
+        }
+        nextDisp[r][0] = nextDisp[r][NUM_X - 1] = 0; // fixed ends
+    }
+    // rotate buffers
+    const tmp = prevDisp; prevDisp = currDisp; currDisp = nextDisp; nextDisp = tmp;
+}
+
+function resizeHero() { hc.width = hc.offsetWidth; hc.height = hc.offsetHeight; }
+resizeHero();
+new ResizeObserver(resizeHero).observe(hc.parentElement);
+
+function drawHero() {
+    hctx.clearRect(0, 0, hc.width, hc.height);
+    const W = hc.width, H = hc.height;
+    const rowH = H / NUM_ROWS;
+
+    // Step physics 3× per frame for natural propagation speed
+    stepWavePhysics(); stepWavePhysics(); stepWavePhysics();
+
+    for (let r = 0; r < NUM_ROWS; r++) {
+        const y0      = rowH * r + rowH / 2;
+        const baseAmp = 6 + Math.sin(r * 0.6 + ht * 0.25) * 5;
+        const freq    = 0.013 + r * 0.0008;
+        const phase   = ht * 0.9 + r * 0.9;
+
+        hctx.beginPath();
+        for (let x = 0; x <= W; x += 4) {
+            const xFrac = x / W;
+            const xi    = Math.round(xFrac * (NUM_X - 1));
+            const env   = Math.sin(xFrac * Math.PI);
+            const wave  = Math.sin(x * freq + phase) * baseAmp * env;
+            const pluck = currDisp[r][xi];
+            x === 0 ? hctx.moveTo(x, y0 + wave + pluck)
+                    : hctx.lineTo(x, y0 + wave + pluck);
+        }
+
+        // Boost alpha for strings near the cursor
+        let extraAlpha = 0;
+        if (heroHover) {
+            const dist = Math.abs(heroMY - y0);
+            if (dist < rowH * 1.4) extraAlpha = 0.18 * (1 - dist / (rowH * 1.4));
+        }
+        const alpha = 0.08 + Math.sin(r * 0.5 + ht * 0.15) * 0.04 + extraAlpha;
+        hctx.strokeStyle = `rgba(196,97,42,${Math.min(alpha, 0.92)})`;
+        hctx.lineWidth   = heroHover && Math.abs(heroMY - y0) < rowH ? 1.4 : 0.9;
+        hctx.stroke();
+    }
+    ht += 0.035;
+    requestAnimationFrame(drawHero);
+}
+drawHero();
+
+// ═══════════════════════════════════════════
+//  WAVE CANVAS — P & S wave animation
+// ═══════════════════════════════════════════
+const wc  = document.getElementById('wave-canvas');
+const wctx = wc.getContext('2d');
+let wt = 0, wAnimating = false;
+
+function resizeWave() { wc.width = wc.offsetWidth; wc.height = wc.offsetHeight || 260; }
+resizeWave();
+
+function drawWaves() {
+    wctx.clearRect(0, 0, wc.width, wc.height);
+    const W = wc.width, H = wc.height;
+
+    // Grid lines
+    wctx.strokeStyle = 'rgba(58,126,196,0.06)';
+    wctx.lineWidth = 1;
+    for (let y = 0; y < H; y += 32) { wctx.beginPath(); wctx.moveTo(0,y); wctx.lineTo(W,y); wctx.stroke(); }
+    for (let x = 0; x < W; x += 64) { wctx.beginPath(); wctx.moveTo(x,0); wctx.lineTo(x,H); wctx.stroke(); }
+
+    // P wave
+    wctx.beginPath();
+    for (let x = 0; x <= W; x += 2) {
+        const env  = Math.sin((x / W) * Math.PI);
+        const wave = Math.sin(x * 0.04 - wt * 3.2) * 28 * env;
+        x === 0 ? wctx.moveTo(x, H * 0.32 + wave) : wctx.lineTo(x, H * 0.32 + wave);
+    }
+    wctx.strokeStyle = 'rgba(58,126,196,0.9)';
+    wctx.lineWidth = 2;
+    wctx.stroke();
+
+    // S wave
+    wctx.beginPath();
+    for (let x = 0; x <= W; x += 2) {
+        const env  = Math.sin((x / W) * Math.PI);
+        const wave = Math.sin(x * 0.025 - wt * 1.9) * 38 * env;
+        x === 0 ? wctx.moveTo(x, H * 0.7 + wave) : wctx.lineTo(x, H * 0.7 + wave);
+    }
+    wctx.strokeStyle = 'rgba(196,58,58,0.9)';
+    wctx.lineWidth = 2;
+    wctx.stroke();
+
+    wt += 0.04;
+    if (wAnimating) requestAnimationFrame(drawWaves);
+}
+
+// ═══════════════════════════════════════════
+//  SEISMOGRAPH CANVAS
+// ═══════════════════════════════════════════
+const sc  = document.getElementById('seismo-canvas');
+const sctx = sc.getContext('2d');
+let sgData = [];
+
+function resizeSeismo() { sc.width = sc.offsetWidth; sc.height = sc.offsetHeight || 180; }
+resizeSeismo();
+
+function buildSeismoData(n) {
+    const d = [];
+    for (let i = 0; i < n; i++) {
+        const t = i / n;
+        const noise = () => (Math.random() - 0.5) * 2;
+        let amp;
+        if (t < 0.33)      amp = noise() * 3;
+        else if (t < 0.42) amp = noise() * 18 * ((t - 0.33) / 0.09);
+        else if (t < 0.58) amp = noise() * 110 * (1 - (t - 0.42) / 0.16 * 0.25);
+        else               amp = noise() * 85 * Math.exp(-(t - 0.58) * 6);
+        d.push(amp);
+    }
+    return d;
+}
+sgData = buildSeismoData(600);
+
+function drawSeismo(prog) {
+    sctx.clearRect(0, 0, sc.width, sc.height);
+    const W = sc.width, H = sc.height, mid = H / 2;
+
+    // Grid
+    sctx.strokeStyle = 'rgba(245,237,224,0.025)';
+    sctx.lineWidth = 1;
+    for (let y = 0; y < H; y += 20) { sctx.beginPath(); sctx.moveTo(0,y); sctx.lineTo(W,y); sctx.stroke(); }
+
+    // Event line
+    const ex = W * 0.42;
+    sctx.setLineDash([5, 5]);
+    sctx.strokeStyle = 'rgba(139,26,26,0.45)';
+    sctx.lineWidth = 1;
+    sctx.beginPath(); sctx.moveTo(ex, 0); sctx.lineTo(ex, H); sctx.stroke();
+    sctx.setLineDash([]);
+    sctx.fillStyle = 'rgba(139,26,26,0.55)';
+    sctx.font = '500 9px "JetBrains Mono"';
+    sctx.fillText('03:32:39', ex + 5, 13);
+
+    // Waveform
+    const count = Math.floor(sgData.length * prog);
+    sctx.beginPath();
+    for (let i = 0; i < count; i++) {
+        const x = (i / sgData.length) * W;
+        const y = mid + sgData[i];
+        i === 0 ? sctx.moveTo(x, y) : sctx.lineTo(x, y);
+    }
+    const grad = sctx.createLinearGradient(0, 0, W, 0);
+    grad.addColorStop(0,    'rgba(245,237,224,0.15)');
+    grad.addColorStop(0.38, 'rgba(245,237,224,0.35)');
+    grad.addColorStop(0.44, 'rgba(196,97,42,0.95)');
+    grad.addColorStop(0.58, 'rgba(139,26,26,0.85)');
+    grad.addColorStop(1,    'rgba(245,237,224,0.25)');
+    sctx.strokeStyle = grad;
+    sctx.lineWidth = 1.5;
+    sctx.stroke();
+}
+drawSeismo(1);
+
+// ═══════════════════════════════════════════
+//  COUNT-UP
+// ═══════════════════════════════════════════
+function countUp(el) {
+    const target = parseFloat(el.dataset.val);
+    const dec    = parseInt(el.dataset.dec || '0');
+    const dur    = 1400;
+    const t0     = performance.now();
+    (function tick(now) {
+        const p = Math.min((now - t0) / dur, 1);
+        const e = 1 - Math.pow(1 - p, 3);
+        const v = target * e;
+        el.textContent = dec > 0
+            ? v.toFixed(dec)
+            : Math.floor(v).toLocaleString('it-IT');
+        if (p < 1) requestAnimationFrame(tick);
+    })(t0);
+}
+
+// ═══════════════════════════════════════════
+//  PER-SLIDE ENTRY ANIMATIONS
+// ═══════════════════════════════════════════
+function onSlideEnter(i, el) {
+    if (triggered.has(i)) return;
+    triggered.add(i);
+
+    if (i === 1) {
+        el.querySelectorAll('.stat-num[data-val]').forEach((n, j) =>
+            setTimeout(() => countUp(n), j * 180));
+    }
+    if (i === 2) {
+        wAnimating = true;
+        resizeWave();
+        drawWaves();
+    }
+    if (i === 3) {
+        resizeSeismo();
+        let p = 0;
+        (function tick() {
+            p = Math.min(p + 0.007, 1);
+            drawSeismo(p);
+            if (p < 1) requestAnimationFrame(tick);
+        })();
+    }
+    if (i === 4) {
+        el.querySelectorAll('.damage-num[data-val]').forEach((n, j) =>
+            setTimeout(() => countUp(n), 300 + j * 200));
+    }
+}
+
+// ═══════════════════════════════════════════
+//  ART PANEL INTERACTION
+// ═══════════════════════════════════════════
+const artName    = document.getElementById('art-name');
+const artYear    = document.getElementById('art-year');
+const artFill    = document.getElementById('art-damage-fill');
+const artPct     = document.getElementById('art-damage-pct');
+
+document.getElementById('art-list').querySelectorAll('.art-item').forEach(item => {
+    item.addEventListener('click', () => {
+        document.querySelectorAll('.art-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        artName.textContent = item.dataset.name;
+        artYear.textContent = item.dataset.year;
+        artFill.style.width = '0%';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            artFill.style.width = item.dataset.dmg + '%';
+        }));
+        artPct.textContent = item.dataset.dmg + '% — ' + item.dataset.label;
+    });
+});
+
+// ═══════════════════════════════════════════
+//  END CANVAS — WebGL2 smoke / marble shader
+// ═══════════════════════════════════════════
+(function initEndCanvas() {
+    const canvas = document.getElementById('end-canvas');
+    if (!canvas) return;
+    const gl = canvas.getContext('webgl2');
+    if (!gl) { canvas.style.display = 'none'; return; }
+
+    const VERT_SRC = `#version 300 es
+precision highp float;
+in vec4 position;
+void main(){ gl_Position = position; }`;
+
+    const FRAG_SRC = `#version 300 es
+precision highp float;
+out vec4 O;
+uniform float time;
+uniform vec2 resolution;
+uniform vec3 u_color;
+
+#define FC gl_FragCoord.xy
+#define R resolution
+#define T (time+660.)
+
+float rnd(vec2 p){p=fract(p*vec2(12.9898,78.233));p+=dot(p,p+34.56);return fract(p.x*p.y);}
+float noise(vec2 p){vec2 i=floor(p),f=fract(p),u=f*f*(3.-2.*f);return mix(mix(rnd(i),rnd(i+vec2(1,0)),u.x),mix(rnd(i+vec2(0,1)),rnd(i+1.),u.x),u.y);}
+float fbm(vec2 p){float t=.0,a=1.;for(int i=0;i<5;i++){t+=a*noise(p);p*=mat2(1,-1.2,.2,1.2)*2.;a*=.5;}return t;}
+
+void main(){
+  vec2 uv=(FC-.5*R)/R.y;
+  vec3 col=vec3(1);
+  uv.x+=.25;
+  uv*=vec2(2,1);
+  float n=fbm(uv*.28-vec2(T*.01,0));
+  n=noise(uv*3.+n*2.);
+  col.r-=fbm(uv+vec2(0,T*.015)+n);
+  col.g-=fbm(uv*1.003+vec2(0,T*.015)+n+.003);
+  col.b-=fbm(uv*1.006+vec2(0,T*.015)+n+.006);
+  col=mix(col, u_color, dot(col,vec3(.21,.71,.07)));
+  col=mix(vec3(.08),col,min(time*.1,1.));
+  col=clamp(col,.08,1.);
+  O=vec4(col,1);
+}`;
+
+    function mkShader(type, src) {
+        const s = gl.createShader(type);
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        return s;
+    }
+    const prog = gl.createProgram();
+    gl.attachShader(prog, mkShader(gl.VERTEX_SHADER,   VERT_SRC));
+    gl.attachShader(prog, mkShader(gl.FRAGMENT_SHADER, FRAG_SRC));
+    gl.linkProgram(prog);
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,1,-1,-1,1,1,1,-1]), gl.STATIC_DRAW);
+    const posLoc = gl.getAttribLocation(prog, 'position');
+    gl.enableVertexAttribArray(posLoc);
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+    const uRes   = gl.getUniformLocation(prog, 'resolution');
+    const uTime  = gl.getUniformLocation(prog, 'time');
+    const uColor = gl.getUniformLocation(prog, 'u_color');
+    // Terracotta tint: #C4612A → [0.769, 0.380, 0.165]
+    const SMOKE_COLOR = new Float32Array([0.769, 0.380, 0.165]);
+
+    function resizeEnd() {
+        const dpr = Math.max(1, window.devicePixelRatio || 1);
+        canvas.width  = canvas.offsetWidth  * dpr;
+        canvas.height = canvas.offsetHeight * dpr;
+        gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+
+    let endRafId = null, endActive = false;
+
+    function renderEnd(now) {
+        gl.clearColor(0, 0, 0, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.useProgram(prog);
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.uniform2f(uRes,   canvas.width, canvas.height);
+        gl.uniform1f(uTime,  now * 1e-3);
+        gl.uniform3fv(uColor, SMOKE_COLOR);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        if (endActive) endRafId = requestAnimationFrame(renderEnd);
+    }
+
+    const endObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                if (!endActive) { endActive = true; resizeEnd(); endRafId = requestAnimationFrame(renderEnd); }
+            } else {
+                endActive = false;
+                if (endRafId) { cancelAnimationFrame(endRafId); endRafId = null; }
+            }
+        });
+    }, { threshold: 0.05 });
+    endObserver.observe(document.getElementById('s-end'));
+
+    window.addEventListener('resize', () => { if (endActive) resizeEnd(); });
+})();
+
+window.addEventListener('resize', () => { resizeHero(); resizeWave(); resizeSeismo(); });
+</script>
+</body>
+</html>
