@@ -1199,9 +1199,9 @@ function drawHero() {
             const dist = Math.abs(heroMY - y0);
             if (dist < rowH * 1.4) extraAlpha = 0.18 * (1 - dist / (rowH * 1.4));
         }
-        const alpha = 0.08 + Math.sin(r * 0.5 + ht * 0.15) * 0.04 + extraAlpha;
+        const alpha = 0.14 + Math.sin(r * 0.5 + ht * 0.15) * 0.05 + extraAlpha;
         hctx.strokeStyle = `rgba(196,97,42,${Math.min(alpha, 0.92)})`;
-        hctx.lineWidth   = heroHover && Math.abs(heroMY - y0) < rowH ? 1.4 : 0.9;
+        hctx.lineWidth   = heroHover && Math.abs(heroMY - y0) < rowH ? 1.5 : 1.1;
         hctx.stroke();
     }
     ht += 0.035;
