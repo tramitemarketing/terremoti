@@ -1099,96 +1099,53 @@ resizeHero();
 new ResizeObserver(resizeHero).observe(hc.parentElement);
 
 // Mouse tracking
-let heroHover = false, heroMX = 0, heroMY = 0, heroPX = 0, heroPY = 0;
+let heroHover = false, heroMX = 0, heroMY = 0;
 hc.addEventListener('mousemove', e => {
     const rect = hc.getBoundingClientRect();
-    heroPX = heroMX; heroPY = heroMY;
     heroMX = e.clientX - rect.left;
     heroMY = e.clientY - rect.top;
     heroHover = true;
 });
 hc.addEventListener('mouseleave', () => { heroHover = false; });
 
-// Fixed-size physics grid (64 pts per string) — screen-width-independent, fast
+// One spring oscillator per row — 22 numbers, zero lag, always stable
 const heroRows = 22;
-const PHYS_N   = 64;
-let heroPos, heroVel;
-
-(function heroInitPhysics() {
-    heroPos = new Float32Array(heroRows * PHYS_N);
-    heroVel = new Float32Array(heroRows * PHYS_N);
-})();
-
-function stepWavePhysics() {
-    const damp    = 0.984;
-    const tension = 0.20;
-    const spring  = 0.014; // restoring force toward 0
-    for (let r = 0; r < heroRows; r++) {
-        const base = r * PHYS_N;
-        for (let i = 1; i < PHYS_N - 1; i++) {
-            const idx = base + i;
-            const acc = (heroPos[idx - 1] + heroPos[idx + 1] - 2 * heroPos[idx]) * tension
-                        - heroPos[idx] * spring;
-            heroVel[idx] = (heroVel[idx] + acc) * damp;
-            heroPos[idx] += heroVel[idx];
-        }
-    }
-}
+const heroDisp = new Float32Array(heroRows);
+const heroVel  = new Float32Array(heroRows);
 
 function drawHero() {
     hctx.clearRect(0, 0, hc.width, hc.height);
     const W = hc.width, H = hc.height;
     const rowH = H / heroRows;
 
-    // Apply pluck from mouse movement
-    if (heroHover) {
-        const dx    = heroMX - heroPX;
-        const dy    = heroMY - heroPY;
-        const speed = Math.sqrt(dx * dx + dy * dy);
-        if (speed > 1) {
-            const xi = Math.floor((heroMX / W) * PHYS_N);
-            for (let r = 0; r < heroRows; r++) {
-                const y0      = rowH * r + rowH / 2;
-                const distY   = Math.abs(heroMY - y0);
-                const prox    = Math.max(0, 1 - distY / (rowH * 2.5));
-                if (prox > 0) {
-                    const strength = Math.min(speed * 0.4, 10) * prox;
-                    const base = r * PHYS_N;
-                    const spread = 4;
-                    for (let j = Math.max(1, xi - spread); j <= Math.min(PHYS_N - 2, xi + spread); j++) {
-                        const d = j - xi;
-                        heroVel[base + j] += strength * Math.exp(-(d * d) / (spread * spread * 0.5));
-                    }
-                }
-            }
-        }
+    // Update per-row spring oscillators
+    for (let r = 0; r < heroRows; r++) {
+        const y0    = rowH * r + rowH / 2;
+        const distY = Math.abs(heroMY - y0);
+        const prox  = heroHover ? Math.max(0, 1 - distY / (rowH * 1.8)) : 0;
+        heroVel[r] += prox * 0.18;
+        heroVel[r]  = (heroVel[r] - heroDisp[r] * 0.018) * 0.91;
+        heroDisp[r] += heroVel[r];
     }
-
-    stepWavePhysics();
-    stepWavePhysics();
 
     // Draw strings
     for (let r = 0; r < heroRows; r++) {
         const y0     = rowH * r + rowH / 2;
-        const baseAmp = 6 + Math.sin(r * 0.6 + ht * 0.25) * 5;
+        const baseAmp = 1.8 + Math.sin(r * 0.6 + ht * 0.25) * 1.2;
         const freq   = 0.013 + r * 0.0008;
         const phase  = ht * 0.9 + r * 0.9;
-        const base   = r * PHYS_N;
+        const disp   = heroDisp[r];
 
         hctx.beginPath();
         for (let x = 0; x <= W; x += 4) {
-            const t  = x / W;
-            const fi = t * (PHYS_N - 1);
-            const f0 = Math.floor(fi), f1 = Math.min(f0 + 1, PHYS_N - 1);
-            const physDisp = heroPos[base + f0] * (1 - (fi - f0)) + heroPos[base + f1] * (fi - f0);
-            const env  = Math.sin(t * Math.PI);
+            const env  = Math.sin((x / W) * Math.PI);
             const wave = Math.sin(x * freq + phase) * baseAmp * env;
-            x === 0 ? hctx.moveTo(x, y0 + wave + physDisp) : hctx.lineTo(x, y0 + wave + physDisp);
+            x === 0 ? hctx.moveTo(x, y0 + wave + disp * env) : hctx.lineTo(x, y0 + wave + disp * env);
         }
 
-        const nearRow   = heroHover && Math.abs(heroMY - y0) < rowH;
-        const extraAlpha = nearRow ? 0.08 : 0;
-        const alpha = 0.28 + Math.sin(r * 0.5 + ht * 0.15) * 0.06 + extraAlpha;
+        const nearRow    = heroHover && Math.abs(heroMY - y0) < rowH;
+        const extraAlpha = nearRow ? 0.07 : 0;
+        const alpha      = 0.28 + Math.sin(r * 0.5 + ht * 0.15) * 0.06 + extraAlpha;
         hctx.strokeStyle = `rgba(196,97,42,${alpha})`;
         hctx.lineWidth   = nearRow ? 1.8 : 1.35;
         hctx.stroke();
