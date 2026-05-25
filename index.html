@@ -1123,14 +1123,15 @@ function heroInitPhysics(W) {
 }
 
 function stepWavePhysics() {
-    const damp = 0.992;
+    const damp = 0.988;
     for (let r = 0; r < heroRows; r++) {
         const { pos, vel } = heroPhysics[r];
         const N = pos.length;
         for (let i = 1; i < N - 1; i++) {
-            const tension = (pos[i - 1] + pos[i + 1] - 2 * pos[i]) * 0.35;
+            const tension = (pos[i - 1] + pos[i + 1] - 2 * pos[i]) * 0.18;
             vel[i] = (vel[i] + tension) * damp;
             pos[i] += vel[i];
+            if (!isFinite(pos[i])) { pos[i] = 0; vel[i] = 0; }
         }
     }
 }
