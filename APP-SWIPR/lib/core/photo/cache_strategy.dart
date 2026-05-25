@@ -26,7 +26,10 @@ class LruCacheStrategy {
 
   /// Called with the evicted asset ID whenever an entry is removed to make
   /// room for a new one. Use this hook to cancel in-flight decodes.
-  final void Function(String assetId)? onEvict;
+  ///
+  /// Mutable so [PreloadEngine] can register its handler after both objects
+  /// are constructed (avoids a circular constructor dependency).
+  void Function(String assetId)? onEvict;
 
   /// Insertion-order map — the first key is always the LRU entry.
   final _cache = LinkedHashMap<String, Uint8List>();
