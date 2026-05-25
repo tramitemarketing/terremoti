@@ -1098,26 +1098,110 @@ function resizeHero() { hc.width = hc.offsetWidth; hc.height = hc.offsetHeight; 
 resizeHero();
 new ResizeObserver(resizeHero).observe(hc.parentElement);
 
+// Mouse tracking
+let heroHover = false, heroMX = 0, heroMY = 0, heroPX = 0, heroPY = 0;
+hc.addEventListener('mousemove', e => {
+    const rect = hc.getBoundingClientRect();
+    heroPX = heroMX; heroPY = heroMY;
+    heroMX = e.clientX - rect.left;
+    heroMY = e.clientY - rect.top;
+    heroHover = true;
+});
+hc.addEventListener('mouseleave', () => { heroHover = false; });
+
+// Wave physics per string
+const heroRows = 22;
+let heroPhysics = [];
+let heroLastW = 0;
+
+function heroInitPhysics(W) {
+    heroPhysics = [];
+    const N = Math.ceil(W / 4) + 2;
+    for (let r = 0; r < heroRows; r++) {
+        heroPhysics.push({ pos: new Float32Array(N), vel: new Float32Array(N) });
+    }
+}
+
+function stepWavePhysics() {
+    const damp = 0.992;
+    for (let r = 0; r < heroRows; r++) {
+        const { pos, vel } = heroPhysics[r];
+        const N = pos.length;
+        for (let i = 1; i < N - 1; i++) {
+            const tension = (pos[i - 1] + pos[i + 1] - 2 * pos[i]) * 0.35;
+            vel[i] = (vel[i] + tension) * damp;
+            pos[i] += vel[i];
+        }
+    }
+}
+
+function heroPluck(r, xIdx, amount) {
+    const { vel } = heroPhysics[r];
+    const N = vel.length;
+    const spread = 6;
+    const s2 = spread * spread * 0.5;
+    for (let i = Math.max(0, xIdx - spread); i <= Math.min(N - 1, xIdx + spread); i++) {
+        const d = i - xIdx;
+        vel[i] += amount * Math.exp(-(d * d) / s2);
+    }
+}
+
 function drawHero() {
     hctx.clearRect(0, 0, hc.width, hc.height);
     const W = hc.width, H = hc.height;
-    const rows = 22;
-    for (let r = 0; r < rows; r++) {
-        const y0 = H / rows * r + H / rows / 2;
+    const rowH = H / heroRows;
+
+    if (W !== heroLastW) {
+        heroInitPhysics(W);
+        heroLastW = W;
+    }
+
+    // Apply pluck effect from mouse movement
+    if (heroHover) {
+        const dx = heroMX - heroPX;
+        const dy = heroMY - heroPY;
+        const speed = Math.sqrt(dx * dx + dy * dy);
+        if (speed > 0.8) {
+            const xIdx = Math.floor(heroMX / 4);
+            for (let r = 0; r < heroRows; r++) {
+                const y0 = rowH * r + rowH / 2;
+                const distY = Math.abs(heroMY - y0);
+                const proximity = Math.max(0, 1 - distY / (rowH * 2.5));
+                if (proximity > 0) {
+                    const strength = Math.min(speed * 0.55, 16) * proximity;
+                    heroPluck(r, xIdx, strength);
+                }
+            }
+        }
+    }
+
+    stepWavePhysics();
+    stepWavePhysics();
+
+    // Draw strings
+    for (let r = 0; r < heroRows; r++) {
+        const y0 = rowH * r + rowH / 2;
         const baseAmp = 6 + Math.sin(r * 0.6 + ht * 0.25) * 5;
         const freq    = 0.013 + r * 0.0008;
         const phase   = ht * 0.9 + r * 0.9;
+        const { pos } = heroPhysics[r];
+
         hctx.beginPath();
         for (let x = 0; x <= W; x += 4) {
-            const env  = Math.sin((x / W) * Math.PI);
-            const wave = Math.sin(x * freq + phase) * baseAmp * env;
-            x === 0 ? hctx.moveTo(x, y0 + wave) : hctx.lineTo(x, y0 + wave);
+            const xi       = Math.min(Math.floor(x / 4), pos.length - 1);
+            const env      = Math.sin((x / W) * Math.PI);
+            const wave     = Math.sin(x * freq + phase) * baseAmp * env;
+            const physDisp = pos[xi];
+            x === 0 ? hctx.moveTo(x, y0 + wave + physDisp) : hctx.lineTo(x, y0 + wave + physDisp);
         }
-        const alpha = 0.08 + Math.sin(r * 0.5 + ht * 0.15) * 0.04;
+
+        const extraAlpha = (heroHover && Math.abs(heroMY - y0) < rowH) ? 0.08 : 0;
+        const alpha = 0.28 + Math.sin(r * 0.5 + ht * 0.15) * 0.06 + extraAlpha;
         hctx.strokeStyle = `rgba(196,97,42,${alpha})`;
-        hctx.lineWidth = 0.9;
+        hctx.lineWidth = heroHover && Math.abs(heroMY - y0) < rowH ? 1.8 : 1.35;
         hctx.stroke();
     }
+
     ht += 0.035;
     requestAnimationFrame(drawHero);
 }
