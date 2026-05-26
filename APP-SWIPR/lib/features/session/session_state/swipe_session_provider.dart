@@ -9,7 +9,9 @@ import '../../../core/photo/paging_controller.dart';
 import '../../../core/photo/photo_repository.dart';
 import '../../../core/storage/isar_models.dart';
 import '../../../core/storage/isar_service.dart';
+import '../../../router.dart';
 import '../../../shared/theme/app_tokens.dart';
+import '../../achievements/achievement_provider.dart';
 import '../decide_later/decide_later_provider.dart';
 import '../trash_queue/trash_queue_provider.dart';
 
@@ -513,38 +515,29 @@ class SwipeSession extends _$SwipeSession {
     // ── Step a ────────────────────────────────────────────────────────────
     // Update cumulative stats BEFORE checking achievements so the
     // achievement check operates on the post-session totals.
-    //
-    // TODO(step-8): uncomment once CumulativeStatsProvider is built.
-    //
-    // await ref.read(cumulativeStatsProvider.notifier).updateAfterSession(stats);
-    // final updatedCumulative = ref.read(cumulativeStatsProvider);
+    await ref.read(cumulativeStatsStoreProvider.notifier).updateAfterSession(stats);
+    final updatedCumulative = ref.read(cumulativeStatsStoreProvider);
 
     // ── Step b ────────────────────────────────────────────────────────────
     // Check and unlock achievements using the updated cumulative data.
-    //
-    // TODO(step-9): uncomment once AchievementProvider is built.
-    //
-    // final unlockedIds = await ref
-    //     .read(achievementProvider.notifier)
-    //     .checkAndUnlock(stats, updatedCumulative);
-    //
-    // final statsWithAchievements = SessionStats(
-    //   keptCount: stats.keptCount,
-    //   trashedCount: stats.trashedCount,
-    //   decideLaterCount: stats.decideLaterCount,
-    //   mbFreed: stats.mbFreed,
-    //   sessionDuration: stats.sessionDuration,
-    //   skippedCloudCount: stats.skippedCloudCount,
-    //   smartFlaggedCount: stats.smartFlaggedCount,
-    //   unlockedAchievementIds: unlockedIds,
-    // );
+    final unlockedIds = await ref
+        .read(achievementNotifierProvider.notifier)
+        .checkAndUnlock(stats, updatedCumulative);
+
+    final statsWithAchievements = SessionStats(
+      keptCount: stats.keptCount,
+      trashedCount: stats.trashedCount,
+      decideLaterCount: stats.decideLaterCount,
+      mbFreed: stats.mbFreed,
+      sessionDuration: stats.sessionDuration,
+      skippedCloudCount: stats.skippedCloudCount,
+      smartFlaggedCount: stats.smartFlaggedCount,
+      unlockedAchievementIds: unlockedIds,
+    );
 
     // ── Step c ────────────────────────────────────────────────────────────
     // Navigate to RecapPage with the fully-populated SessionStats.
-    //
-    // TODO(step-6): uncomment once routerProvider is wired in SwipePage.
-    //
-    // ref.read(routerProvider).go(Routes.recap, extra: statsWithAchievements);
+    ref.read(routerProvider).go(Routes.recap, extra: statsWithAchievements);
 
     state = state.copyWith(phase: SwipeSessionPhase.result);
   }
