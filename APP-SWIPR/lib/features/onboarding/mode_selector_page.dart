@@ -44,6 +44,9 @@ class _ModeSelectorPageState extends ConsumerState<ModeSelectorPage> {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
   Future<int>? _rangeCountFuture;
+  /// Resolved count of photos in the selected range.
+  /// Null while the future is pending or dates are not yet set.
+  int? _timeRangeCount;
 
   // ── Derived ───────────────────────────────────────────────────────────────
 
@@ -51,7 +54,9 @@ class _ModeSelectorPageState extends ConsumerState<ModeSelectorPage> {
     return switch (_selectedMode) {
       CleanupMode.entireLibrary => true,
       CleanupMode.albums        => _selectedAlbumIds.isNotEmpty,
-      CleanupMode.timeRange     => _rangeStart != null && _rangeEnd != null,
+      CleanupMode.timeRange     => _rangeStart != null &&
+                                    _rangeEnd != null &&
+                                    (_timeRangeCount ?? 0) > 0,
     };
   }
 
@@ -134,9 +139,15 @@ class _ModeSelectorPageState extends ConsumerState<ModeSelectorPage> {
 
   void _fetchRangeCount() {
     if (_rangeStart == null || _rangeEnd == null) return;
-    _rangeCountFuture = _repo.getTotalCount(
+    // Reset count so Start is disabled while the new future is pending.
+    _timeRangeCount = null;
+    final future = _repo.getTotalCount(
       SwipeFilter.timeRange(start: _rangeStart!, end: _rangeEnd!),
     );
+    _rangeCountFuture = future;
+    future.then((count) {
+      if (mounted) setState(() => _timeRangeCount = count);
+    });
   }
 
   void _start() {
