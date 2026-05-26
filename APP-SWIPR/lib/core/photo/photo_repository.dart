@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar_community.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../storage/isar_models.dart';

@@ -1,4 +1,5 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar_community.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'isar_models.dart';
 
@@ -14,12 +15,16 @@ class IsarService {
   static Isar get instance => _instance;
 
   static Future<void> init() async {
-    _instance = await Isar.open([
-      SessionRecordSchema,
-      AssetCacheEntrySchema,
-      AssetDecisionRecordSchema,
-      AchievementRecordSchema,
-      CumulativeStatsSchema,
-    ]);
+    final dir = await getApplicationDocumentsDirectory();
+    _instance = await Isar.open(
+      [
+        SessionRecordSchema,
+        AssetCacheEntrySchema,
+        AssetDecisionRecordSchema,
+        AchievementRecordSchema,
+        CumulativeStatsSchema,
+      ],
+      directory: dir.path,
+    );
   }
 }
