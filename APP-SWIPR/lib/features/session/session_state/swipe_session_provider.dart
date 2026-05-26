@@ -2,7 +2,7 @@ import 'package:isar/isar.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../core/performance/cache_strategy.dart';
+import '../../../core/photo/cache_strategy.dart';
 import '../../../core/performance/memory_budget.dart';
 import '../../../core/performance/preload_engine.dart';
 import '../../../core/photo/paging_controller.dart';
