@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -94,14 +95,31 @@ class SwipeCard extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             // Image — BoxFit.contain is mandatory per §11.
-            Image(
-              image: AssetEntityImageProvider(
-                asset,
-                isOriginal: false,
-                thumbnailSize: const ThumbnailSize(1080, 1920),
+            FutureBuilder<Uint8List?>(
+              future: asset.thumbnailDataWithSize(
+                const ThumbnailSize(540, 960),
               ),
-              fit: BoxFit.contain,
-              gaplessPlayback: true,
+              builder: (context, snap) {
+                final bytes = snap.data;
+                if (bytes == null) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.backgroundCard,
+                      borderRadius:
+                          BorderRadius.circular(AppTokens.radiusCard),
+                    ),
+                  );
+                }
+                return ClipRRect(
+                  borderRadius:
+                      BorderRadius.circular(AppTokens.radiusCard),
+                  child: Image.memory(
+                    bytes,
+                    fit: BoxFit.contain,
+                    gaplessPlayback: true,
+                  ),
+                );
+              },
             ),
             // Gradient overlay — only rendered on top card with non-zero drag.
             if (isTop && _overlayOpacity > 0)
@@ -162,8 +180,8 @@ class _SwipeOverlay extends StatelessWidget {
           begin: begin,
           end: end,
           colors: [
-            color.withOpacity(0),
-            color.withOpacity(opacity),
+            color.withValues(alpha: 0),
+            color.withValues(alpha: opacity),
           ],
         ),
       ),

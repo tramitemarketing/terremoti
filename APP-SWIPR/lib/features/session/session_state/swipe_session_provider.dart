@@ -1,14 +1,14 @@
-import 'package:isar_community/isar_community.dart';
+import 'package:flutter/foundation.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/photo/cache_strategy.dart';
-import '../../../core/performance/memory_budget.dart';
 import '../../../core/performance/preload_engine.dart';
 import '../../../core/photo/paging_controller.dart';
 import '../../../core/photo/photo_repository.dart';
+import '../../../core/storage/hive_models.dart';
+import '../../../core/storage/hive_service.dart';
 import '../../../core/storage/isar_models.dart';
-import '../../../core/storage/isar_service.dart';
 import '../../../router.dart';
 import '../../../shared/theme/app_tokens.dart';
 import '../../achievements/achievement_provider.dart';
@@ -147,7 +147,6 @@ class SwipeSession extends _$SwipeSession {
   PagingController? _pager;
   LruCacheStrategy? _cache;
   PreloadEngine? _preloader;
-  MemoryBudget? _budget;
 
   /// Full ordered deck for the current session, loaded incrementally.
   final _deck = <AssetEntity>[];
@@ -156,7 +155,7 @@ class SwipeSession extends _$SwipeSession {
   /// Used to compute [SwipeSessionState.mbToBeFreed].
   final _assetSizesBytes = <String, int>{};
 
-  /// Isar ID of the active [SessionRecord]. Set once on [startSession].
+  /// Hive key of the active [SessionRecord]. Set once on [startSession].
   int? _sessionRecordId;
 
   /// Wall-clock time when the session started. Used for [SessionStats.sessionDuration].
@@ -177,44 +176,61 @@ class SwipeSession extends _$SwipeSession {
   /// Must be called once before any swipe interactions, typically from
   /// [SwipePage.initState]. Safe to call again to restart with a new filter.
   Future<void> startSession(SwipeFilter filter) async {
-    _disposeSession();
-    _startedAt = DateTime.now();
+    try {
+      debugPrint('[Session] startSession called, filter: ${filter.mode}');
+      // if (kDebugMode) await HiveService.clearAllDecisions();
+      _disposeSession();
+      _startedAt = DateTime.now();
 
-    // Rebuild infrastructure for this session.
-    _repo = PhotoRepository();
-    _cache = LruCacheStrategy();
-    _budget = MemoryBudget(cache: _cache!);
-    _preloader = PreloadEngine(cache: _cache!);
-    _pager = PagingController(repository: _repo!);
+      // Rebuild infrastructure for this session.
+      _repo = PhotoRepository();
+      _cache = LruCacheStrategy();
+      _preloader = PreloadEngine(cache: _cache!);
+      _pager = PagingController(repository: _repo!);
 
-    state = SwipeSessionState.initial().copyWith(filter: filter);
+      state = SwipeSessionState.initial().copyWith(filter: filter);
 
-    // Init paginator (builds master list for entireLibrary/albums modes).
-    await _pager!.init(filter);
+      debugPrint('[Session] initializing paging controller...');
+      // Init paginator (builds master list for entireLibrary/albums modes).
+      await _pager!.init(filter);
+      debugPrint('[Session] paging controller ready');
 
-    // Open a SessionRecord in Isar for crash-recovery and stats.
-    await IsarService.instance.writeTxn(() async {
+      debugPrint('[Session] saving session record...');
+      // Open a SessionRecord in Hive for crash-recovery and stats.
       final record = SessionRecord()..startedAt = _startedAt!;
-      _sessionRecordId =
-          await IsarService.instance.sessionRecords.put(record);
-    });
+      _sessionRecordId = await HiveService.saveSession(record);
+      debugPrint('[Session] session saved, id: $_sessionRecordId');
 
-    // Load first deck page.
-    final firstPage = await _pager!.getPage(0);
-    _deck.addAll(firstPage);
+      debugPrint('[Session] loading decided ids...');
+      final decidedIds = HiveService.getAllDecidedIds();
+      debugPrint('[Session] decided ids loaded: ${decidedIds.length}');
 
-    if (_deck.isEmpty) {
-      // Empty library edge case — skip straight to result.
-      await _transitionToResult();
-      return;
+      // Load first deck page.
+      debugPrint('[Session] loading first page...');
+      final firstPage = await _pager!.getPage(0);
+      debugPrint('[Session] first page loaded: ${firstPage.length} assets');
+      _deck.addAll(firstPage);
+
+      if (_deck.isEmpty) {
+        // Empty library edge case — skip straight to result.
+        debugPrint('[Session] deck empty, transitioning to result');
+        await _transitionToResult();
+        return;
+      }
+
+      debugPrint('[Session] transitioning to ready state');
+      state = state.copyWith(
+        phase: SwipeSessionPhase.ready,
+        filter: filter,
+      );
+
+      _preloader!.updateIndex(0, _deck);
+      debugPrint('[Session] startSession complete');
+    } catch (e, st) {
+      debugPrint('[Session] ERROR in startSession: $e');
+      debugPrint('[Session] stack: $st');
+      rethrow;
     }
-
-    state = state.copyWith(
-      phase: SwipeSessionPhase.ready,
-      filter: filter,
-    );
-
-    _preloader!.updateIndex(0, _deck);
   }
 
   // ── Public API: gesture flow ───────────────────────────────────────────────
@@ -237,12 +253,15 @@ class SwipeSession extends _$SwipeSession {
       phase: SwipeSessionPhase.animating,
       isAnimating: true,
     );
+    // Advance preload window NOW so the next card's bytes are ready before
+    // the fly-off animation completes — eliminates black flash on reveal.
+    _preloader?.updateIndex(state.currentIndex + 1, _deck);
   }
 
   /// Called when the card fly-off animation completes (animating → swiping).
   ///
-  /// Writes [AssetDecisionRecord] to Isar BEFORE updating in-memory state.
-  /// Isar is the source of truth — state only reflects a confirmed write.
+  /// Writes [AssetDecisionRecord] to Hive BEFORE updating in-memory state.
+  /// Hive is the source of truth — state only reflects a confirmed write.
   ///
   /// [decision]: 'keep' | 'trash' | 'later'
   /// [sizeInBytes]: file size of the asset, used for [mbToBeFreed] display.
@@ -257,18 +276,16 @@ class SwipeSession extends _$SwipeSession {
     // LOCK RULE: only valid in animating phase.
     if (!state.isAnimating) return;
 
-    // ── 1. Write to Isar first — source of truth ───────────────────────────
-    await IsarService.instance.writeTxn(() async {
-      await IsarService.instance.assetDecisionRecords.put(
-        AssetDecisionRecord()
-          ..assetId = assetId
-          ..decision = decision
-          ..decidedAt = DateTime.now()
-          ..sessionId = _sessionRecordId ?? 0
-          ..smartFlags = []
-          ..smartFlagReviewed = false,
-      );
-    });
+    // ── 1. Write to Hive first — source of truth ──────────────────────────
+    await HiveService.saveDecision(
+      AssetDecisionRecord()
+        ..assetId = assetId
+        ..decision = decision
+        ..decidedAt = DateTime.now()
+        ..sessionId = _sessionRecordId ?? 0
+        ..smartFlags = []
+        ..smartFlagReviewed = false,
+    );
 
     // ── 2. Update queue providers and local mirrors ────────────────────────
     final newTrash = List<String>.from(state.trashQueue);
@@ -313,7 +330,7 @@ class SwipeSession extends _$SwipeSession {
   /// Skips an iCloud-only asset without recording a decision.
   ///
   /// Called when [AssetEntity.isLocallyAvailable] is false. The asset is
-  /// not shown to the user and not written to Isar.
+  /// not shown to the user and not written to Hive.
   Future<void> skipCloudAsset(String assetId) async {
     if (state.isAnimating) return;
 
@@ -344,16 +361,8 @@ class SwipeSession extends _$SwipeSession {
     if (undoId == null || lastAction == null) return;
     if (state.currentIndex <= 0) return;
 
-    // Delete decision from Isar.
-    await IsarService.instance.writeTxn(() async {
-      final existing = await IsarService.instance.assetDecisionRecords
-          .filter()
-          .assetIdEqualTo(undoId)
-          .findFirst();
-      if (existing != null) {
-        await IsarService.instance.assetDecisionRecords.delete(existing.id);
-      }
-    });
+    // Delete decision from Hive.
+    await HiveService.deleteDecision(undoId);
 
     // Reverse queue mirrors.
     final newTrash = List<String>.from(state.trashQueue);
@@ -385,6 +394,21 @@ class SwipeSession extends _$SwipeSession {
   }
 
   // ── Public API: pause / resume ─────────────────────────────────────────────
+
+  /// Ends the session early at the user's request.
+  ///
+  /// Transitions: swiping → reviewTrash (if trash queue non-empty)
+  ///              swiping → result      (otherwise)
+  ///
+  /// No-op if an animation is in progress or the session is not in [swiping].
+  Future<void> endSession() async {
+    debugPrint('[Session] endSession called, phase: ${state.phase}');
+    debugPrint('[Session] trashQueue: ${state.trashQueue.length}');
+    if (state.isAnimating) return;
+    if (state.phase != SwipeSessionPhase.swiping &&
+        state.phase != SwipeSessionPhase.ready) return;
+    await _handleDeckExhausted();
+  }
 
   void pauseSession() {
     if (state.isAnimating) return;
@@ -427,7 +451,9 @@ class SwipeSession extends _$SwipeSession {
   /// The actual [PhotoManager.editor.deleteWithIds] call is made by the UI
   /// layer (SwipePage), which then calls [onDeleteComplete] with the result.
   void confirmBatchDelete() {
+    debugPrint('[Session] confirmBatchDelete called, phase: ${state.phase}');
     if (state.phase != SwipeSessionPhase.confirmDelete) return;
+    debugPrint('[Session] transitioning to processingDelete');
     state = state.copyWith(phase: SwipeSessionPhase.processingDelete);
   }
 
@@ -436,9 +462,11 @@ class SwipeSession extends _$SwipeSession {
   /// processingDelete → smartReview  (if [hasSmartFlags] == true)
   /// processingDelete → result       (otherwise)
   ///
-  /// Persists final session stats to the open [SessionRecord] in Isar before
+  /// Persists final session stats to the open [SessionRecord] in Hive before
   /// transitioning.
   Future<void> onDeleteComplete({bool hasSmartFlags = false}) async {
+    debugPrint('[Delete] onDeleteComplete called, phase: ${state.phase}');
+    debugPrint('[Delete] ids count: ${state.trashQueue.length}');
     if (state.phase != SwipeSessionPhase.processingDelete) return;
 
     await _finaliseSessionRecord();
@@ -516,12 +544,14 @@ class SwipeSession extends _$SwipeSession {
     // Update cumulative stats BEFORE checking achievements so the
     // achievement check operates on the post-session totals.
     await ref.read(cumulativeStatsStoreProvider.notifier).updateAfterSession(stats);
+    if (!ref.mounted) return;
     final updatedCumulative = ref.read(cumulativeStatsStoreProvider);
 
     // ── Step b ────────────────────────────────────────────────────────────
     // Check and unlock achievements using the updated cumulative data.
+    if (!ref.mounted) return;
     final unlockedIds = await ref
-        .read(achievementNotifierProvider.notifier)
+        .read(achievementProvider.notifier)
         .checkAndUnlock(stats, updatedCumulative);
 
     final statsWithAchievements = SessionStats(
@@ -537,34 +567,32 @@ class SwipeSession extends _$SwipeSession {
 
     // ── Step c ────────────────────────────────────────────────────────────
     // Navigate to RecapPage with the fully-populated SessionStats.
+    if (!ref.mounted) return;
     ref.read(routerProvider).go(Routes.recap, extra: statsWithAchievements);
 
     state = state.copyWith(phase: SwipeSessionPhase.result);
   }
 
-  // ── Private: Isar helpers ─────────────────────────────────────────────────
+  // ── Private: Hive helpers ─────────────────────────────────────────────────
 
   Future<void> _finaliseSessionRecord() async {
     final id = _sessionRecordId;
     if (id == null) return;
-    await IsarService.instance.writeTxn(() async {
-      final record =
-          await IsarService.instance.sessionRecords.get(id);
-      if (record == null) return;
-      record
-        ..endedAt = DateTime.now()
-        ..keptCount = (state.currentIndex
-                - state.trashQueue.length
-                - state.decideLaterQueue.length
-                - state.skippedCloudCount)
-            .clamp(0, state.currentIndex)
-        ..trashedCount = state.trashQueue.length
-        ..decideLaterCount = state.decideLaterQueue.length
-        ..mbFreed = state.mbToBeFreed
-        ..skippedCloudCount = state.skippedCloudCount
-        ..smartFlaggedCount = state.smartDetectionUsedThisSession;
-      await IsarService.instance.sessionRecords.put(record);
-    });
+    final record = HiveService.getSession(id);
+    if (record == null) return;
+    record
+      ..endedAt = DateTime.now()
+      ..keptCount = (state.currentIndex
+              - state.trashQueue.length
+              - state.decideLaterQueue.length
+              - state.skippedCloudCount)
+          .clamp(0, state.currentIndex)
+      ..trashedCount = state.trashQueue.length
+      ..decideLaterCount = state.decideLaterQueue.length
+      ..mbFreed = state.mbToBeFreed
+      ..skippedCloudCount = state.skippedCloudCount
+      ..smartFlaggedCount = state.smartDetectionUsedThisSession;
+    await record.save();
   }
 
   // ── Public: deck access (used by CardStackWidget) ────────────────────────
@@ -589,7 +617,6 @@ class SwipeSession extends _$SwipeSession {
     _pager = null;
     _cache = null;
     _preloader = null;
-    _budget = null;
   }
 }
 
@@ -600,7 +627,7 @@ class SwipeSession extends _$SwipeSession {
 /// Re-computes on every state change. Use for live HUD values during swiping
 /// and for passing to RecapPage (until step-6 wires the router).
 @riverpod
-SessionStats sessionStats(SessionStatsRef ref) {
+SessionStats sessionStats(Ref ref) {
   final s = ref.watch(swipeSessionProvider);
   final keptCount = (s.currentIndex
           - s.trashQueue.length

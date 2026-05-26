@@ -14,7 +14,7 @@ part 'smart_flags_provider.g.dart';
 /// Reads [HiveBoxes.kSmartDetectionUsedCount] on every access.
 /// Returns 0 when the free quota is exhausted (never goes negative).
 @riverpod
-int smartDetectionQuota(SmartDetectionQuotaRef ref) {
+int smartDetectionQuota(Ref ref) {
   final used =
       HiveBoxes.settings.get(HiveBoxes.kSmartDetectionUsedCount) as int? ?? 0;
   return (AppTokens.freeSmartDetectionQuota - used)

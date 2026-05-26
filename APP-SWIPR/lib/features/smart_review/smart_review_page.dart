@@ -1,9 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-import '../../core/storage/hive_boxes.dart';
 import '../../router.dart';
 import '../../shared/theme/app_colors.dart';
 import '../../shared/theme/app_tokens.dart';
@@ -57,18 +58,11 @@ class _SmartReviewPageState extends ConsumerState<SmartReviewPage> {
     }
   }
 
-  void _trashAsset(String assetId) =>
-      setState(() => _smartTrash.add(assetId));
-
-  void _keepAsset(String assetId) =>
-      setState(() => _smartTrash.remove(assetId));
-
   // ── Build ──────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     final flagsAsync = ref.watch(smartFlagsProvider);
-    final isPremium = false; // TODO(step-11): wire RevenueCat isPremium
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -93,14 +87,8 @@ class _SmartReviewPageState extends ConsumerState<SmartReviewPage> {
               children: [
                 _Header(flagCount: flags.length),
                 Expanded(
-                  child: isPremium
-                      ? _PremiumGrid(
-                          flags: flags,
-                          smartTrash: _smartTrash,
-                          onTrash: _trashAsset,
-                          onKeep: _keepAsset,
-                        )
-                      : _FreeTierView(flags: flags),
+                  // TODO(step-11): switch to _PremiumGrid when isPremium is wired
+                  child: _FreeTierView(flags: flags),
                 ),
                 _BottomBar(
                   trashCount: _smartTrash.length,
@@ -276,159 +264,6 @@ class _SummaryBullet extends StatelessWidget {
   }
 }
 
-// ── Premium grid ──────────────────────────────────────────────────────────────
-
-class _PremiumGrid extends StatelessWidget {
-  const _PremiumGrid({
-    required this.flags,
-    required this.smartTrash,
-    required this.onTrash,
-    required this.onKeep,
-  });
-
-  final List<SmartFlag> flags;
-  final Set<String> smartTrash;
-  final void Function(String) onTrash;
-  final void Function(String) onKeep;
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: AppTokens.spaceMD),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: AppTokens.spaceSM,
-        mainAxisSpacing: AppTokens.spaceSM,
-        childAspectRatio: 0.75,
-      ),
-      itemCount: flags.length,
-      itemBuilder: (context, i) {
-        final flag = flags[i];
-        final isTrashed = smartTrash.contains(flag.assetId);
-        return _FlagCard(
-          flag: flag,
-          isTrashed: isTrashed,
-          onTrash: () => isTrashed ? onKeep(flag.assetId) : onTrash(flag.assetId),
-          onKeep: () => onKeep(flag.assetId),
-        );
-      },
-    );
-  }
-}
-
-class _FlagCard extends StatelessWidget {
-  const _FlagCard({
-    required this.flag,
-    required this.isTrashed,
-    required this.onTrash,
-    required this.onKeep,
-  });
-
-  final SmartFlag flag;
-  final bool isTrashed;
-  final VoidCallback onTrash;
-  final VoidCallback onKeep;
-
-  static const _labels = {
-    'blur':          'Sfocata',
-    'low_quality':   'Bassa qualità',
-    'duplicate':     'Duplicata',
-    'near_duplicate': 'Quasi duplicata',
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(AppTokens.radiusMD),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                _FlaggedThumbnail(
-                  assetId: flag.assetId,
-                  flagType: flag.flagType,
-                ),
-                // Trash overlay
-                if (isTrashed)
-                  Container(
-                    color: AppColors.trashRed.withOpacity(0.5),
-                    child: const Icon(
-                      Icons.delete_rounded,
-                      color: Colors.white,
-                      size: 32,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: AppTokens.spaceXS),
-        Text(
-          _labels[flag.flagType] ?? flag.flagType,
-          style: AppTypography.caption,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        const SizedBox(height: AppTokens.spaceXS),
-        // Action row
-        Row(
-          children: [
-            Expanded(
-              child: _ActionButton(
-                label: isTrashed ? 'Annulla' : 'Cestina',
-                color: isTrashed ? AppColors.textSecondary : AppColors.trashRed,
-                onTap: onTrash,
-              ),
-            ),
-            const SizedBox(width: AppTokens.spaceXS),
-            Expanded(
-              child: _ActionButton(
-                label: 'Tieni',
-                color: AppColors.keepGreen,
-                onTap: onKeep,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _ActionButton extends StatelessWidget {
-  const _ActionButton({
-    required this.label,
-    required this.color,
-    required this.onTap,
-  });
-
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: AppTokens.spaceXS + 2),
-        decoration: BoxDecoration(
-          color: AppColors.backgroundSurface,
-          borderRadius: BorderRadius.circular(AppTokens.radiusCard),
-          border: Border.all(color: color.withOpacity(0.4)),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          label,
-          style: AppTypography.caption.copyWith(color: color),
-        ),
-      ),
-    );
-  }
-}
-
 // ── Flagged thumbnail ─────────────────────────────────────────────────────────
 
 /// Thumbnail with an amber flag badge in the top-left corner.
@@ -462,13 +297,15 @@ class _FlaggedThumbnailState extends State<_FlaggedThumbnail> {
           children: [
             // Image
             if (asset != null)
-              Image(
-                image: AssetEntityImageProvider(
-                  asset,
-                  isOriginal: false,
-                  thumbnailSize: const ThumbnailSize(400, 400),
+              FutureBuilder<Uint8List?>(
+                future: asset.thumbnailDataWithSize(
+                  const ThumbnailSize(400, 400),
                 ),
-                fit: BoxFit.cover,
+                builder: (context, snap) {
+                  final bytes = snap.data;
+                  if (bytes == null) return const SizedBox.shrink();
+                  return Image.memory(bytes, fit: BoxFit.cover);
+                },
               )
             else
               Container(color: AppColors.backgroundSurface),

@@ -98,20 +98,16 @@ class _PrimaryButton extends StatelessWidget {
   const _PrimaryButton({
     required this.label,
     required this.onTap,
-    this.enabled = true,
   });
 
   final String label;
   final VoidCallback onTap;
-  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
-    return Opacity(
-      opacity: enabled ? 1.0 : 0.4,
-      child: GestureDetector(
-        onTap: enabled ? onTap : null,
-        child: Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
           padding: const EdgeInsets.symmetric(vertical: AppTokens.spaceMD),
           decoration: BoxDecoration(
             color: AppColors.textPrimary,
@@ -123,7 +119,6 @@ class _PrimaryButton extends StatelessWidget {
             style: AppTypography.title.copyWith(color: AppColors.background),
           ),
         ),
-      ),
     );
   }
 }

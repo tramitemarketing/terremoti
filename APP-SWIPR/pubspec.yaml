@@ -11,23 +11,20 @@ dependencies:
     sdk: flutter
   flutter_riverpod: ^3.0.0
   riverpod_annotation: ^4.0.0
-  go_router: ^13.0.0
+  go_router: ^17.2.3
   photo_manager: ^3.0.0
-  isar_community: ^3.3.2
-  isar_community_flutter_libs: ^3.3.2
   hive_flutter: ^1.1.0
-  purchases_flutter: ^8.0.0
-  google_mobile_ads: ^4.0.0
-  share_plus: ^9.0.0
+  purchases_flutter: ^10.1.1
+  google_mobile_ads: ^8.0.0
+  share_plus: ^13.1.0
   path_provider: ^2.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
+  flutter_lints: ^6.0.0
   riverpod_generator: ^4.0.0
   build_runner: ^2.4.0
-  isar_community_generator: ^3.3.2
 
 flutter:
   uses-material-design: true

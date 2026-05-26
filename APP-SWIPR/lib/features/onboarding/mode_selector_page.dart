@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -447,7 +449,7 @@ class _AlbumCard extends StatelessWidget {
                     // Selected overlay
                     if (isSelected)
                       Container(
-                        color: AppColors.keepGreen.withOpacity(0.2),
+                        color: AppColors.keepGreen.withValues(alpha: 0.2),
                         alignment: Alignment.topRight,
                         padding: const EdgeInsets.all(6),
                         child: const Icon(
@@ -518,13 +520,17 @@ class _AlbumThumbnailState extends State<_AlbumThumbnail> {
         if (asset == null) {
           return Container(color: AppColors.backgroundSurface);
         }
-        return Image(
-          image: AssetEntityImageProvider(
-            asset,
-            isOriginal: false,
-            thumbnailSize: const ThumbnailSize(200, 200),
+        return FutureBuilder<Uint8List?>(
+          future: asset.thumbnailDataWithSize(
+            const ThumbnailSize(200, 200),
           ),
-          fit: BoxFit.cover,
+          builder: (context, snap) {
+            final bytes = snap.data;
+            if (bytes == null) {
+              return Container(color: AppColors.backgroundSurface);
+            }
+            return Image.memory(bytes, fit: BoxFit.cover);
+          },
         );
       },
     );

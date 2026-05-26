@@ -57,6 +57,7 @@ class _PaywallPageState extends State<PaywallPage> {
     if (_isPurchasing) return;
     setState(() => _isPurchasing = true);
     try {
+      // ignore: deprecated_member_use
       await Purchases.purchasePackage(package);
       // Purchase succeeded — pop back to the previous screen.
       if (mounted) Navigator.of(context).pop();
@@ -372,7 +373,7 @@ class _PackageButton extends StatelessWidget {
           side: isAnnual
               ? BorderSide.none
               : BorderSide(
-                  color: AppColors.textSecondary.withOpacity(0.3),
+                  color: AppColors.textSecondary.withValues(alpha: 0.3),
                 ),
         ),
       ),

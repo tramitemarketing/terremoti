@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 import '../../core/storage/isar_models.dart';
 import '../../shared/theme/app_colors.dart';
@@ -52,9 +54,12 @@ class _SwipePageState extends ConsumerState<SwipePage> {
         SwipeSessionPhase.animating ||
         SwipeSessionPhase.paused =>
           const _SwipingView(),
+        SwipeSessionPhase.reviewTrash ||
+        SwipeSessionPhase.confirmDelete ||
+        SwipeSessionPhase.processingDelete =>
+          const _TrashReviewStub(),
         SwipeSessionPhase.result => const _ResultPlaceholder(),
-        // reviewDecideLater, reviewTrash, confirmDelete,
-        // processingDelete, smartReview — wired in steps 7+
+        // reviewDecideLater, smartReview — wired in steps 7+
         _ => const _LoadingView(),
       },
     );
@@ -68,9 +73,13 @@ class _SwipingView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canUndo = ref.watch(
-      swipeSessionProvider
-          .select((s) => s.undoAssetId != null && !s.isAnimating),
+    final (canUndo, canEnd) = ref.watch(
+      swipeSessionProvider.select((s) => (
+        s.undoAssetId != null && !s.isAnimating,
+        !s.isAnimating &&
+            (s.phase == SwipeSessionPhase.swiping ||
+             s.phase == SwipeSessionPhase.ready),
+      )),
     );
 
     return Stack(
@@ -87,6 +96,16 @@ class _SwipingView extends ConsumerWidget {
           child: SessionHud(),
         ),
 
+        // "Fine" button — top-right, visible only while swiping.
+        if (canEnd)
+          Positioned(
+            top: 0,
+            right: 0,
+            child: SafeArea(
+              child: _EndSessionButton(),
+            ),
+          ),
+
         // Undo button — shown only when a reversible action exists.
         if (canUndo)
           Positioned(
@@ -96,6 +115,31 @@ class _SwipingView extends ConsumerWidget {
             child: Center(child: _UndoButton()),
           ),
       ],
+    );
+  }
+}
+
+class _EndSessionButton extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      onTap: () {
+        final phase = ref.read(swipeSessionProvider).phase;
+        debugPrint('[UI] Fine button tapped, phase: $phase');
+        ref.read(swipeSessionProvider.notifier).endSession();
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppTokens.spaceMD,
+          vertical: AppTokens.spaceSM,
+        ),
+        child: Text(
+          'Fine',
+          style: AppTypography.caption.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -116,6 +160,63 @@ class _UndoButton extends ConsumerWidget {
           border: Border.all(color: AppColors.border),
         ),
         child: Text('Annulla', style: AppTypography.caption),
+      ),
+    );
+  }
+}
+
+// ── Trash review stub ─────────────────────────────────────────────────────────
+
+class _TrashReviewStub extends ConsumerWidget {
+  const _TrashReviewStub();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final session = ref.watch(swipeSessionProvider);
+    final notifier = ref.read(swipeSessionProvider.notifier);
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '${session.trashQueue.length} foto nel cestino',
+                style: AppTypography.displayMedium,
+              ),
+              const SizedBox(height: AppTokens.spaceLG),
+              ElevatedButton(
+                onPressed: () async {
+                  debugPrint('[UI] Elimina tutto tapped');
+                  final ids = session.trashQueue;
+                  notifier.requestBatchDelete();
+                  notifier.confirmBatchDelete();
+                  debugPrint('[Delete] calling PhotoManager.deleteWithIds, count: ${ids.length}');
+                  try {
+                    await PhotoManager.editor.deleteWithIds(ids);
+                    debugPrint('[Delete] deletion complete');
+                  } catch (e) {
+                    debugPrint('[Delete] deletion error: $e');
+                  }
+                  await notifier.onDeleteComplete();
+                },
+                child: const Text('Elimina tutto'),
+              ),
+              const SizedBox(height: AppTokens.spaceSM),
+              TextButton(
+                onPressed: () => notifier.endSession(),
+                child: Text(
+                  'Salta eliminazione',
+                  style: AppTypography.body.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

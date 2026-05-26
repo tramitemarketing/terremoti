@@ -9,8 +9,7 @@ abstract class AppTheme {
       brightness: Brightness.dark,
       scaffoldBackgroundColor: AppColors.background,
       colorScheme: const ColorScheme.dark(
-        background: AppColors.background,
-        surface: AppColors.backgroundCard,
+        surface: AppColors.background,
         primary: AppColors.keepGreen,
         error: AppColors.trashRed,
       ),

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -267,11 +266,14 @@ class _BackgroundCard extends StatelessWidget {
       opacity: opacity,
       child: Transform.scale(
         scale: scale,
-        child: SwipeCard(
-          asset: asset,
-          dragOffset: Offset.zero,
-          screenSize: screenSize,
-          isTop: false,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AppTokens.radiusCard),
+          child: SwipeCard(
+            asset: asset,
+            dragOffset: Offset.zero,
+            screenSize: screenSize,
+            isTop: false,
+          ),
         ),
       ),
     );

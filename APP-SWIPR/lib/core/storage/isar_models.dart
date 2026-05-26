@@ -1,80 +1,8 @@
-import 'package:isar_community/isar_community.dart';
-
-part 'isar_models.g.dart';
-
-// ── Isar collections ──────────────────────────────────────────────────────────
-
-@Collection()
-class SessionRecord {
-  Id id = Isar.autoIncrement;
-  late DateTime startedAt;
-  DateTime? endedAt;
-  int keptCount = 0;
-  int trashedCount = 0;
-  int decideLaterCount = 0;
-  double mbFreed = 0;
-  int skippedCloudCount = 0;
-  int smartFlaggedCount = 0;
-}
-
-@Collection()
-class AssetCacheEntry {
-  Id id = Isar.autoIncrement;
-
-  @Index(unique: true, replace: true)
-  late String assetId;
-
-  int sizeBytes = 0;
-  int? durationMs;
-  late DateTime createdAt;
-  late DateTime cachedAt;
-}
-
-@Collection()
-class AssetDecisionRecord {
-  Id id = Isar.autoIncrement;
-
-  @Index(unique: true, replace: true)
-  late String assetId;
-
-  /// 'keep' | 'trash' | 'later'
-  late String decision;
-  late DateTime decidedAt;
-  int sessionId = 0;
-  List<String> smartFlags = [];
-  bool smartFlagReviewed = false;
-}
-
-@Collection()
-class AchievementRecord {
-  Id id = Isar.autoIncrement;
-
-  @Index(unique: true, replace: true)
-  late String achievementId;
-
-  late DateTime unlockedAt;
-  int sessionId = 0;
-}
-
-/// Singleton — id is always 1. Update via CumulativeStatsProvider only.
-@Collection()
-class CumulativeStats {
-  Id id = 1;
-  int totalPhotosProcessed = 0;
-  int totalPhotosTrashed = 0;
-  int totalPhotosKept = 0;
-  double totalMbFreed = 0;
-  int totalSessions = 0;
-  DateTime? lastSessionAt;
-
-  /// Reset every Monday.
-  int sessionsThisWeek = 0;
-
-  /// Reset every 1st of the month.
-  int sessionsThisMonth = 0;
-}
-
-// ── Pure Dart models (not persisted in Isar) ──────────────────────────────────
+// ── Pure Dart models (not persisted — no Hive or Isar annotations) ────────────
+//
+// Hive-persisted models live in hive_models.dart.
+// This file exists solely for the non-storage types that are shared across
+// routing, photo_repository, and session state.
 
 enum CleanupMode { entireLibrary, albums, timeRange }
 

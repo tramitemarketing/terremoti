@@ -104,9 +104,11 @@ class _RecapPageState extends State<RecapPage>
       final file = File('${tempDir.path}/swipr_recap.png');
       await file.writeAsBytes(byteData.buffer.asUint8List());
 
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: _shareText(),
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          text: _shareText(),
+        ),
       );
     } catch (_) {
       if (mounted) {
@@ -444,7 +446,7 @@ class _Divider extends StatelessWidget {
     return Divider(
       height: 1,
       thickness: 1,
-      color: AppColors.textSecondary.withOpacity(0.12),
+      color: AppColors.textSecondary.withValues(alpha: 0.12),
     );
   }
 }
@@ -471,7 +473,7 @@ class _ActionRow extends StatelessWidget {
             onPressed: isSharing ? null : onShare,
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.textPrimary,
-              side: BorderSide(color: AppColors.textSecondary.withOpacity(0.4)),
+              side: BorderSide(color: AppColors.textSecondary.withValues(alpha: 0.4)),
               padding: const EdgeInsets.symmetric(vertical: AppTokens.spaceMD),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppTokens.radiusSM),

@@ -121,8 +121,8 @@ class PreloadEngine {
       // photo_manager performs the actual decoding on the native side;
       // the Dart side only awaits the channel response.
       final bytes = await asset.thumbnailDataWithSize(
-        const ThumbnailSize(1080, 1920),
-        quality: 90,
+        const ThumbnailSize(540, 960),
+        quality: 80,
       );
 
       // Check for cancellation before touching the cache.

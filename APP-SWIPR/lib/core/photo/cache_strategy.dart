@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:typed_data';
 
 import '../../shared/theme/app_tokens.dart';
@@ -32,7 +31,7 @@ class LruCacheStrategy {
   void Function(String assetId)? onEvict;
 
   /// Insertion-order map — the first key is always the LRU entry.
-  final _cache = LinkedHashMap<String, Uint8List>();
+  final _cache = <String, Uint8List>{};
 
   // ── Public API ────────────────────────────────────────────────────────────
 
