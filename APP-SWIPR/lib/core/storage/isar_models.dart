@@ -4,7 +4,7 @@ part 'isar_models.g.dart';
 
 // ── Isar collections ──────────────────────────────────────────────────────────
 
-@collection
+@Collection()
 class SessionRecord {
   Id id = Isar.autoIncrement;
   late DateTime startedAt;
@@ -17,7 +17,7 @@ class SessionRecord {
   int smartFlaggedCount = 0;
 }
 
-@collection
+@Collection()
 class AssetCacheEntry {
   Id id = Isar.autoIncrement;
 
@@ -30,7 +30,7 @@ class AssetCacheEntry {
   late DateTime cachedAt;
 }
 
-@collection
+@Collection()
 class AssetDecisionRecord {
   Id id = Isar.autoIncrement;
 
@@ -45,7 +45,7 @@ class AssetDecisionRecord {
   bool smartFlagReviewed = false;
 }
 
-@collection
+@Collection()
 class AchievementRecord {
   Id id = Isar.autoIncrement;
 
@@ -57,7 +57,7 @@ class AchievementRecord {
 }
 
 /// Singleton — id is always 1. Update via CumulativeStatsProvider only.
-@collection
+@Collection()
 class CumulativeStats {
   Id id = 1;
   int totalPhotosProcessed = 0;
