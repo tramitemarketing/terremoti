@@ -18,6 +18,8 @@ dependencies:
   hive_flutter: ^1.1.0
   revenuecat_flutter_sdk: ^6.0.0
   google_mobile_ads: ^4.0.0
+  share_plus: ^9.0.0
+  path_provider: ^2.1.0
 
 dev_dependencies:
   flutter_test:
