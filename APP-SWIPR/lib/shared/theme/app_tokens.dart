@@ -21,6 +21,8 @@ abstract class AppTokens {
   // ── Swipe thresholds ──────────────────────────────────────────────────────
   static const double swipeCommitThreshold = 0.35;
   static const double swipeUpThreshold = 0.25;
+  /// Minimum velocity (pixels/second) to commit a swipe regardless of distance.
+  static const double swipeVelocityThreshold = 600;
 
   // ── Photo preload window ──────────────────────────────────────────────────
   static const int preloadAhead = 10;

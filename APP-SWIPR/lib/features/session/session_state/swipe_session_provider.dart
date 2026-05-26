@@ -574,6 +574,16 @@ class SwipeSession extends _$SwipeSession {
     });
   }
 
+  // ── Public: deck access (used by CardStackWidget) ────────────────────────
+
+  /// Returns the [AssetEntity] at absolute deck [index], or null if out of
+  /// range. Used by [CardStackWidget] to resolve which assets to display
+  /// without exposing the full deck list.
+  AssetEntity? assetAt(int index) {
+    if (index < 0 || index >= _deck.length) return null;
+    return _deck[index];
+  }
+
   // ── Private: cleanup ──────────────────────────────────────────────────────
 
   void _disposeSession() {
