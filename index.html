@@ -881,17 +881,17 @@
     background: var(--black);
 }
 
-/* Slide 5 — scroll interno */
-#s1-s5 {
-    align-items: flex-start;
+/* Slide 6 — scroll interno (canvas + tech) */
+#s1-s6 {
     overflow-y: auto;
     overflow-x: hidden;
+    align-items: center;
     scrollbar-width: thin;
     scrollbar-color: rgba(196,97,42,0.3) transparent;
 }
-#s1-s5::-webkit-scrollbar { width: 3px; }
-#s1-s5::-webkit-scrollbar-track { background: transparent; }
-#s1-s5::-webkit-scrollbar-thumb { background: rgba(196,97,42,0.3); border-radius: 2px; }
+#s1-s6::-webkit-scrollbar { width: 3px; }
+#s1-s6::-webkit-scrollbar-track { background: transparent; }
+#s1-s6::-webkit-scrollbar-thumb { background: rgba(196,97,42,0.3); border-radius: 2px; }
 
 /* ── Frecce navigazione ── */
 .s1-arrow {
@@ -1417,7 +1417,25 @@
 
 /* ═══ SLIDE 5 ═══ */
 #s1-s5 { background: var(--black); }
-#s1-s5 .s1-slide-inner { padding: 4rem 5rem 5rem; max-width: 900px; margin: 0 auto; width: 100%; }
+#s1-s5 .s1-slide-inner { padding: 3rem 5rem 4rem; max-width: 860px; margin: 0 auto; width: 100%; }
+
+/* ═══ SLIDE 6 — 2 colonne ═══ */
+#s1-s6 { background: var(--black); }
+.s1-s6-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    width: 100%;
+    max-width: 1080px;
+    padding: 3.5rem 4rem;
+    box-sizing: border-box;
+    align-items: start;
+}
+.s1-s6-canvas-col, .s1-s6-tech-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
 .s1-narrative-block { margin: 1.6rem 0; }
 .s1-narrative-title {
     font-family: 'JetBrains Mono', monospace;
@@ -1574,7 +1592,7 @@
               <svg class="s1-branch-svg" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
                 <style>
                   .branch-straight { animation: branchStraight 8s infinite; }
-                  @keyframes branchStraight { 0% { opacity: 1; } 24.9% { opacity: 1; } 25% { opacity: 0; } 100% { opacity: 0; } }
+                  @keyframes branchStraight { 0% { opacity: 1; } 24.9% { opacity: 1; } 25% { opacity: 0; } 74.9% { opacity: 0; } 75% { opacity: 1; } 100% { opacity: 1; } }
                   .branch-bent { animation: branchBent 8s infinite; }
                   @keyframes branchBent { 0% { opacity: 0; } 25% { opacity: 0; } 25.1% { opacity: 1; } 49.9% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 0; } }
                   .branch-break { animation: branchBreak 8s infinite; }
@@ -1582,7 +1600,7 @@
                   .branch-rebound { animation: branchRebound 8s infinite; }
                   @keyframes branchRebound { 0% { opacity: 0; } 62% { opacity: 0; } 62.1% { opacity: 0.5; } 75% { opacity: 0.5; } 75.1% { opacity: 0; } 100% { opacity: 0; } }
                   .label-integro { animation: labelIntegro 8s infinite; }
-                  @keyframes labelIntegro { 0% { visibility: visible; } 24.9% { visibility: visible; } 25% { visibility: hidden; } 100% { visibility: hidden; } }
+                  @keyframes labelIntegro { 0% { visibility: visible; } 24.9% { visibility: visible; } 25% { visibility: hidden; } 74.9% { visibility: hidden; } 75% { visibility: visible; } 100% { visibility: visible; } }
                   .label-deformazione { animation: labelDeformazione 8s infinite; }
                   @keyframes labelDeformazione { 0% { visibility: hidden; } 25% { visibility: hidden; } 25.1% { visibility: visible; } 49.9% { visibility: visible; } 50% { visibility: hidden; } 100% { visibility: hidden; } }
                   .label-rottura { animation: labelRottura 8s infinite; }
@@ -1680,66 +1698,64 @@
             </div>
           </div>
 
-          <!-- ─── Slide 5 ─── -->
-          <div class="s1-slide" id="s1-s5" style="overflow-y:auto;align-items:flex-start;justify-content:flex-start;background:var(--black);padding:4rem 5rem;">
+          <!-- ─── Slide 5 — Paganica: narrativa ─── -->
+          <div class="s1-slide" id="s1-s5">
             <div class="s1-slide-inner">
-              <span class="s1-eyebrow">6 APRILE 2009 · 03:32:39 UTC</span>
+              <span class="s1-eyebrow">6 APRILE 2009 · 03:32:39</span>
               <h2 class="s1-slide-title">La Faglia di Paganica<br>si è mossa.</h2>
               <p class="s1-slide-sub" style="font-style:italic;">Per pochi secondi. Dopo secoli di silenzio.</p>
               <div class="s1-narrative-block">
                 <h4 class="s1-narrative-title">La faglia</h4>
-                <p class="s1-body-text">La Faglia di Paganica è una frattura nella crosta terrestre lunga circa 12 chilometri, orientata da nord-ovest a sud-est sotto la conca aquilana. È una faglia normale: i blocchi rocciosi su entrambi i lati si muovono in direzione opposta sotto l'effetto di forze estensionali — la crosta si allunga, si assottiglia, e si frattura.</p>
+                <p class="s1-body-text">La Faglia di Paganica è una frattura nella crosta lunga ~12 km sotto la conca aquilana. È una faglia normale: i due blocchi si muovono in opposizione sotto forze estensionali che allungano e assottigliano la crosta.</p>
               </div>
               <hr class="s1-divider">
               <div class="s1-narrative-block">
                 <h4 class="s1-narrative-title">L'accumulo</h4>
-                <p class="s1-body-text">Per centinaia di anni la faglia era rimasta immobile. Le forze tettoniche dell'Appennino centrale — dove la placca adriatica si scontra con quella europea — avevano lentamente deformato le rocce circostanti, accumulando tensione elastica senza che nessuno potesse vederlo o misurarlo direttamente.</p>
+                <p class="s1-body-text">Per secoli la faglia era rimasta immobile mentre le forze tettoniche dell'Appennino centrale accumulavano tensione elastica invisibile nelle rocce circostanti.</p>
               </div>
               <hr class="s1-divider">
               <div class="s1-narrative-block">
                 <h4 class="s1-narrative-title">Il movimento</h4>
-                <p class="s1-body-text">Alle 3:32 del mattino del 6 aprile 2009, la roccia ha ceduto. Il blocco del lato orientale della faglia è sceso di circa 20–30 centimetri rispetto a quello occidentale. Lo spostamento si è propagato lungo tutta la lunghezza della faglia in meno di 7 secondi. L'energia rilasciata — equivalente a circa 2.000 miliardi di joule — si è propagata verso la superficie in forma di onde sismiche.</p>
+                <p class="s1-body-text">Alle 3:32 del 6 aprile 2009 la roccia cedette. Il blocco orientale scese di 20–30 cm in meno di 7 secondi, liberando ~2.000 miliardi di joule di energia sotto forma di onde sismiche.</p>
               </div>
               <hr class="s1-divider">
               <div class="s1-narrative-block">
                 <h4 class="s1-narrative-title">Il contesto</h4>
-                <p class="s1-body-text">Non era il primo sisma in quella zona. L'Aquila era stata colpita da terremoti nel 1461 e nel 1703. Ma quasi 700 anni di silenzio avevano cancellato dalla memoria collettiva la pericolosità di quel suolo.</p>
+                <p class="s1-body-text">L'Aquila era stata colpita nel 1461 e nel 1703. Ma 700 anni di silenzio avevano cancellato dalla memoria collettiva la pericolosità di quel suolo.</p>
               </div>
-              <div class="s1-photos-row">
-                <div class="s1-photo-placeholder s1-photo-landscape">
-                  <img src="" class="user-photo" alt="Faglia di Paganica">
-                  <span class="s1-photo-label">[Foto: Faglia di Paganica — da caricare]</span>
-                </div>
-                <div class="s1-photo-placeholder s1-photo-square">
-                  <img src="" class="user-photo" alt="Mappa geologica">
-                  <span class="s1-photo-label">[Foto: Mappa geologica — da caricare]</span>
-                </div>
-              </div>
-              <div class="s1-canvas-section">
-                <p class="s1-canvas-section-title">Animazione: la roccia che cede</p>
+            </div>
+          </div>
+
+          <!-- ─── Slide 6 — Animazione + Scheda tecnica ─── -->
+          <div class="s1-slide" id="s1-s6">
+            <div class="s1-s6-inner">
+              <div class="s1-s6-canvas-col">
+                <span class="s1-eyebrow">SIMULAZIONE</span>
+                <p class="s1-canvas-section-title">La roccia che cede</p>
                 <div class="s1-canvas-controls">
                   <button id="s1-paganica-btn" class="s1-btn">&#9654; Avvia</button>
                   <span id="s1-paganica-label" class="s1-canvas-label"></span>
                 </div>
-                <canvas id="s1-paganica-canvas" style="width:100%;height:320px;display:block;"></canvas>
+                <canvas id="s1-paganica-canvas" style="width:100%;height:300px;display:block;margin-top:0.8rem;border:1px solid rgba(245,237,224,0.07);"></canvas>
               </div>
-              <div class="s1-tech-card-section">
-                <p class="s1-canvas-section-title">Scheda tecnica — Faglia di Paganica</p>
+              <div class="s1-s6-tech-col">
+                <span class="s1-eyebrow">SCHEDA TECNICA</span>
+                <p class="s1-canvas-section-title">Faglia di Paganica</p>
                 <div class="s1-tech-grid">
                   <div class="s1-tech-card"><span class="s1-tech-label">Tipo</span><span class="s1-tech-value">Faglia normale (estensionale)</span></div>
                   <div class="s1-tech-card"><span class="s1-tech-label">Orientazione</span><span class="s1-tech-value">N120°–140° — NW–SE</span></div>
                   <div class="s1-tech-card"><span class="s1-tech-label">Lunghezza rottura</span><span class="s1-tech-value">~12 km</span></div>
                   <div class="s1-tech-card"><span class="s1-tech-label">Profondità ipocentro</span><span class="s1-tech-value">8,8 km</span></div>
                   <div class="s1-tech-card"><span class="s1-tech-label">Spostamento co-sismico</span><span class="s1-tech-value">20–30 cm</span></div>
-                  <div class="s1-tech-card"><span class="s1-tech-label">Distanza epicentro–centro storico</span><span class="s1-tech-value">~3 km</span></div>
+                  <div class="s1-tech-card"><span class="s1-tech-label">Epicentro → centro storico</span><span class="s1-tech-value">~3 km</span></div>
                 </div>
-                <p class="s1-source-caption">Fonte: Chiarabba et al., 2009 · Geophysical Research Letters · INGV</p>
+                <p class="s1-source-caption">Fonte: Chiarabba et al., 2009 · GRL · INGV</p>
               </div>
             </div>
           </div>
 
-          <!-- ─── Slide 6 ─── -->
-          <div class="s1-slide" id="s1-s6" style="background:var(--black);display:flex;align-items:center;justify-content:center;text-align:center;">
+          <!-- ─── Slide 7 — Transizione ─── -->
+          <div class="s1-slide" id="s1-s7" style="background:var(--black);display:flex;align-items:center;justify-content:center;text-align:center;">
             <div class="s1-transition-wrap">
               <span class="s1-eyebrow">SEZIONE 2 → LE ONDE SISMICHE</span>
               <h2 class="s1-slide-title">Ma come si propaga questa energia?</h2>
@@ -1767,8 +1783,9 @@
             <span class="s1-dot" data-slide="3"></span>
             <span class="s1-dot" data-slide="4"></span>
             <span class="s1-dot" data-slide="5"></span>
+            <span class="s1-dot" data-slide="6"></span>
           </div>
-          <span id="s1-counter">01 · 06</span>
+          <span id="s1-counter">01 · 07</span>
         </div>
 
         <span class="s1-swipe-hint">&#8592; Scorri &#8594;</span>
@@ -1952,10 +1969,11 @@ document.addEventListener('keydown', e => {
   'use strict';
 
   /* ── Costanti ── */
-  const TOTAL_SLIDES = 6;
+  const TOTAL_SLIDES = 7;
   const triggered = new Set();
   let currentIdx = 0;
   let isAnimating = false;
+  let fetchDone   = false;
 
   /* ── Elementi DOM ── */
   const section  = document.getElementById('s-section1');
@@ -1992,7 +2010,7 @@ document.addEventListener('keydown', e => {
     if (idx === 0) { fetchINGV(); initMap(); }
     if (idx === 2) { startFaultAnim(); }
     if (idx === 3) { initSliders(); }
-    if (idx === 4) { initPaganicanCanvas(); }
+    if (idx === 5) { initPaganicanCanvas(); }
   }
 
   /* ── Wheel ── */
@@ -2101,7 +2119,8 @@ document.addEventListener('keydown', e => {
         const events = parseINGV(text);
         if (!events.length) { showFallback(); return; }
         const countEl = document.getElementById('s1-quake-count');
-        countUpElement(countEl, events.length, 1400);
+        if (!fetchDone) { fetchDone = true; countUpElement(countEl, events.length, 1400); }
+        else if (countEl) { countEl.textContent = events.length; }
         const lastEl = document.getElementById('s1-last-event');
         const locEl  = document.getElementById('s1-last-loc');
         const timeEl = document.getElementById('s1-last-time');
