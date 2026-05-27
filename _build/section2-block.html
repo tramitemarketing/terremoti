@@ -848,9 +848,151 @@
   s2GoTo(0, false);
 
   /* ════════════════════════════════════════════
+     DATI INGV
+     ════════════════════════════════════════════ */
+
+  /* Fallback: sciame del 6 aprile 2009, ordinato dal più recente */
+  const S2_FALLBACK = [
+    { id:'1',  time:'2009-04-06T23:58:12', lat:42.4000, lon:13.4820, depth:11.4, magType:'Ml', mag:2.5,  location:'Montereale (AQ)' },
+    { id:'2',  time:'2009-04-06T22:55:30', lat:42.3690, lon:13.3710, depth:7.8,  magType:'Ml', mag:4.0,  location:'Aquila' },
+    { id:'3',  time:'2009-04-06T21:47:18', lat:42.3870, lon:13.4600, depth:9.9,  magType:'Ml', mag:2.0,  location:'Aquila' },
+    { id:'4',  time:'2009-04-06T20:18:45', lat:42.3940, lon:13.4710, depth:10.8, magType:'Ml', mag:2.7,  location:'Pizzoli (AQ)' },
+    { id:'5',  time:'2009-04-06T18:44:30', lat:42.3750, lon:13.4470, depth:9.7,  magType:'Ml', mag:2.3,  location:'Aquila' },
+    { id:'6',  time:'2009-04-06T17:20:55', lat:42.4140, lon:13.4900, depth:12.1, magType:'Ml', mag:3.2,  location:'Montereale (AQ)' },
+    { id:'7',  time:'2009-04-06T15:54:07', lat:42.3820, lon:13.4580, depth:9.5,  magType:'Ml', mag:2.1,  location:'Barete (AQ)' },
+    { id:'8',  time:'2009-04-06T14:33:18', lat:42.3910, lon:13.4650, depth:10.0, magType:'Ml', mag:2.4,  location:'Aquila' },
+    { id:'9',  time:'2009-04-06T13:02:44', lat:42.3680, lon:13.3920, depth:8.6,  magType:'Ml', mag:2.6,  location:'Aquila' },
+    { id:'10', time:'2009-04-06T12:15:30', lat:42.4030, lon:13.4870, depth:11.8, magType:'Ml', mag:3.0,  location:'Montereale (AQ)' },
+    { id:'11', time:'2009-04-06T11:45:02', lat:42.3760, lon:13.4430, depth:10.3, magType:'Ml', mag:2.2,  location:'Aquila' },
+    { id:'12', time:'2009-04-06T11:23:50', lat:42.3920, lon:13.4810, depth:9.8,  magType:'Ml', mag:2.8,  location:'Pizzoli (AQ)' },
+    { id:'13', time:'2009-04-06T10:48:37', lat:42.3850, lon:13.4730, depth:10.5, magType:'Ml', mag:3.5,  location:'Aquila' },
+    { id:'14', time:'2009-04-06T09:26:28', lat:42.3590, lon:13.3680, depth:7.3,  magType:'Ml', mag:5.0,  location:'Aquila' },
+    { id:'15', time:'2009-04-06T07:17:11', lat:42.4010, lon:13.4800, depth:11.2, magType:'Ml', mag:3.1,  location:'Aquila' },
+    { id:'16', time:'2009-04-06T06:37:00', lat:42.3760, lon:13.4540, depth:10.1, magType:'Ml', mag:3.3,  location:'Aquila' },
+    { id:'17', time:'2009-04-06T06:22:40', lat:42.3840, lon:13.4620, depth:8.9,  magType:'Ml', mag:4.2,  location:'Aquila' },
+    { id:'18', time:'2009-04-06T05:09:59', lat:42.3700, lon:13.4490, depth:9.7,  magType:'Ml', mag:3.8,  location:'Aquila' },
+    { id:'19', time:'2009-04-06T04:47:33', lat:42.3860, lon:13.4630, depth:10.2, magType:'Ml', mag:4.9,  location:'Aquila' },
+    { id:'20', time:'2009-04-06T03:32:39', lat:42.3476, lon:13.3800, depth:8.8,  magType:'Mw', mag:6.3,  location:'Aquila' },
+  ];
+
+  let s2Events = []; /* array globale degli eventi correnti */
+
+  /* Colore punto per magnitudo */
+  function s2MagColor(mag) {
+    if (mag < 2.0) return 'rgba(100,180,100,0.7)';
+    if (mag < 3.5) return 'rgba(212,137,58,0.8)';
+    if (mag < 5.0) return 'rgba(196,97,42,0.9)';
+    return 'rgba(139,26,26,1.0)';
+  }
+
+  /* Raggio marker per profondità (profondo = piccolo) */
+  function s2DepthRadius(depth) {
+    if (depth < 10)  return 18;
+    if (depth < 30)  return 13;
+    if (depth < 70)  return 8;
+    return 5;
+  }
+
+  /* Formatta ISO in "HH:MM" UTC */
+  function s2FormatTime(isoStr) {
+    try {
+      const d = new Date(isoStr.replace(' ', 'T'));
+      return d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
+    } catch (_) { return '--:--'; }
+  }
+
+  /* Formatta ISO in "GG/MM/AAAA HH:MM:SS UTC" */
+  function s2FormatDateTime(isoStr) {
+    try {
+      const d = new Date(isoStr.replace(' ', 'T'));
+      return d.toLocaleString('it-IT', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'UTC'
+      }) + ' UTC';
+    } catch (_) { return isoStr; }
+  }
+
+  /* Haversine: distanza in km tra due coordinate */
+  function s2Haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  /* Parse testo INGV pipe-separated */
+  function s2ParseINGV(text) {
+    return text.trim().split('\n').slice(1).map(line => {
+      const c = line.split('|');
+      if (c.length < 13) return null;
+      const ev = {
+        id: c[0].trim(), time: c[1].trim(),
+        lat: parseFloat(c[2]), lon: parseFloat(c[3]),
+        depth: parseFloat(c[4]),
+        magType: c[9].trim(), mag: parseFloat(c[10]),
+        location: c[12].trim(),
+      };
+      return (!isNaN(ev.lat) && !isNaN(ev.mag)) ? ev : null;
+    }).filter(Boolean);
+  }
+
+  /* Renderizza la lista eventi nel pannello sinistro */
+  function s2RenderList(events) {
+    const list = document.getElementById('s2-event-list');
+    list.innerHTML = '';
+    if (!events.length) {
+      list.innerHTML = '<div class="s2-list-fallback">Nessun dato disponibile.</div>';
+      return;
+    }
+    events.forEach((ev, i) => {
+      const row = document.createElement('div');
+      row.className = 's2-event-row';
+      row.dataset.idx = i;
+      row.innerHTML = `
+        <span class="s2-event-time">${s2FormatTime(ev.time)}</span>
+        <span class="s2-event-dot" style="background:${s2MagColor(ev.mag)}"></span>
+        <div class="s2-event-body">
+          <div class="s2-event-loc">${ev.location.substring(0, 20)}</div>
+          <div class="s2-event-depth">↓ ${ev.depth} km</div>
+        </div>
+        <span class="s2-event-mag">M ${ev.mag.toFixed(1)}</span>`;
+      row.addEventListener('mouseenter', () => s2SelectEvent(i));
+      row.addEventListener('mouseleave', s2DeselectEvent);
+      list.appendChild(row);
+    });
+  }
+
+  /* Stub sicuri per task 4 e 5 */
+  function s2AddMarkersToMap(events) { /* Task 4 */ }
+  function s2SelectEvent(idx)        { /* Task 5 */ }
+  function s2DeselectEvent()         { /* Task 5 */ }
+
+  /* ════════════════════════════════════════════
      Funzioni lazy — implementate nei task 3–7
      ════════════════════════════════════════════ */
-  function s2FetchINGV()           { /* Task 3 */ }
+  function s2FetchINGV() {
+    const now   = new Date();
+    const start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const fmt   = d => d.toISOString().replace(/\.\d{3}Z$/, '');
+    const url   = `https://webservices.ingv.it/fdsnws/event/1/query?format=text&minmag=1.5&starttime=${fmt(start)}&endtime=${fmt(now)}&orderby=time&limit=200`;
+
+    fetch(url)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(text => {
+        const events = s2ParseINGV(text);
+        s2Events = events.length ? events : S2_FALLBACK;
+        s2RenderList(s2Events);
+        s2AddMarkersToMap(s2Events); /* Task 4 — stub sicuro */
+      })
+      .catch(() => {
+        s2Events = S2_FALLBACK;
+        s2RenderList(s2Events);
+        s2AddMarkersToMap(s2Events); /* Task 4 — stub sicuro */
+      });
+  }
   function s2InitMap()             { /* Task 4 */ }
   function s2AnimateDepthBar()     { /* Task 5 */ }
   function s2InitHypocenterCanvas(){ /* Task 6 */ }
