@@ -1387,6 +1387,8 @@
 
     const SURF_Y = 40; /* y della superficie nel canvas */
 
+    let presetRafId = null;
+
     /* Interpolazione colore blood→blue in base alla profondità */
     function s2LerpColor(depth) {
       const t = Math.min(depth / 300, 1);
@@ -1480,6 +1482,7 @@
     /* Preset con animazione easing */
     presets.forEach(btn => {
       btn.addEventListener('click', () => {
+        if (presetRafId !== null) cancelAnimationFrame(presetRafId);
         const target = parseFloat(btn.dataset.depth);
         const start  = parseFloat(slider.value);
         const t0 = performance.now();
@@ -1490,20 +1493,22 @@
           const curr = start + (target - start) * ease;
           slider.value = curr;
           updateAll(curr);
-          if (p < 1) requestAnimationFrame(animPreset);
+          if (p < 1) { presetRafId = requestAnimationFrame(animPreset); }
           else {
             slider.value = target;
             updateAll(target);
+            presetRafId = null;
           }
         }
-        requestAnimationFrame(animPreset);
+        presetRafId = requestAnimationFrame(animPreset);
         presets.forEach(p => p.classList.remove('s2-preset-btn--active'));
         btn.classList.add('s2-preset-btn--active');
       });
     });
 
-    /* Disegno iniziale con L'Aquila (8.8 km) */
-    updateAll(8.8);
+    /* Disegno iniziale — legge il valore reale del slider (browser lo quantizza al step) */
+    slider.value = 8.8;
+    updateAll(parseFloat(slider.value));
   }
 
 })();
