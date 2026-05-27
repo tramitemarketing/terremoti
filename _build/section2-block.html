@@ -761,6 +761,100 @@
 <script>
 (function () {
   'use strict';
-  /* placeholder — verrà completato nei task successivi */
+
+  /* ── Costanti ── */
+  const TOTAL_SLIDES = 4;
+  const s2Triggered  = new Set();
+  let s2CurrentIdx   = 0;
+  let s2IsAnimating  = false;
+
+  /* ── Elementi DOM ── */
+  const s2Section = document.getElementById('s-section2');
+  const s2Track   = document.getElementById('s2-track');
+  const s2Dots    = document.querySelectorAll('.s2-dot');
+  const s2Prev    = document.getElementById('s2-prev');
+  const s2Next    = document.getElementById('s2-next');
+  const s2Counter = document.getElementById('s2-counter');
+
+  /* ── Navigazione principale ── */
+  function s2GoTo(idx, animate) {
+    if (idx < 0 || idx >= TOTAL_SLIDES) return;
+    s2IsAnimating = true;
+    if (animate === false) {
+      s2Track.style.transition = 'none';
+      s2Track.style.transform  = `translateX(calc(${idx} * -100vw))`;
+      requestAnimationFrame(() => {
+        s2Track.style.transition = '';
+        s2IsAnimating = false;
+      });
+    } else {
+      s2Track.style.transform = `translateX(calc(${idx} * -100vw))`;
+      s2Track.addEventListener('transitionend', () => { s2IsAnimating = false; }, { once: true });
+      setTimeout(() => { s2IsAnimating = false; }, 700); /* safety */
+    }
+    s2CurrentIdx = idx;
+    s2Dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    if (s2Counter) s2Counter.textContent = String(idx + 1).padStart(2, '0') + ' · ' + String(TOTAL_SLIDES).padStart(2, '0');
+    if (s2Prev) s2Prev.disabled = idx === 0;
+    if (s2Next) s2Next.disabled = idx === TOTAL_SLIDES - 1;
+    s2OnSlideEnter(idx);
+  }
+
+  /* ── Entry animations (guarded by Set) ── */
+  function s2OnSlideEnter(idx) {
+    if (s2Triggered.has(idx)) return;
+    s2Triggered.add(idx);
+    if (idx === 0) { s2InitMap(); s2FetchINGV(); s2AnimateDepthBar(); }
+    if (idx === 1) { s2InitHypocenterCanvas(); }
+    if (idx === 2) { s2InitDepthSlider(); }
+  }
+
+  /* ── Wheel intercept ── */
+  s2Section.addEventListener('wheel', function onWheel(e) {
+    const goDown = e.deltaY > 0;
+    const goUp   = e.deltaY < 0;
+    if (goDown && s2CurrentIdx === TOTAL_SLIDES - 1) return; /* rilascia scroll verticale */
+    if (goUp   && s2CurrentIdx === 0)                return; /* rilascia scroll verticale */
+    e.preventDefault();
+    e.stopPropagation();
+    if (s2IsAnimating) return;
+    s2GoTo(goDown ? s2CurrentIdx + 1 : s2CurrentIdx - 1);
+  }, { passive: false });
+
+  /* ── Touch ── */
+  let s2TouchX = 0;
+  s2Section.addEventListener('touchstart', e => { s2TouchX = e.touches[0].clientX; }, { passive: true });
+  s2Section.addEventListener('touchend', e => {
+    if (s2IsAnimating) return;
+    const dx = e.changedTouches[0].clientX - s2TouchX;
+    if (dx < -50) s2GoTo(s2CurrentIdx + 1);
+    else if (dx > 50) s2GoTo(s2CurrentIdx - 1);
+  });
+
+  /* ── Frecce e dots ── */
+  if (s2Prev) s2Prev.addEventListener('click', () => s2GoTo(s2CurrentIdx - 1));
+  if (s2Next) s2Next.addEventListener('click', () => s2GoTo(s2CurrentIdx + 1));
+  s2Dots.forEach((d, i) => d.addEventListener('click', () => s2GoTo(i)));
+
+  /* ── Keyboard (solo se la sezione è in viewport) ── */
+  document.addEventListener('keydown', e => {
+    const rect = s2Section.getBoundingClientRect();
+    if (Math.abs(rect.top) > 50) return;
+    if (e.key === 'ArrowRight' && s2CurrentIdx < TOTAL_SLIDES - 1) { e.preventDefault(); s2GoTo(s2CurrentIdx + 1); }
+    else if (e.key === 'ArrowLeft' && s2CurrentIdx > 0) { e.preventDefault(); s2GoTo(s2CurrentIdx - 1); }
+  });
+
+  /* ── Inizializza ── */
+  s2GoTo(0, false);
+
+  /* ════════════════════════════════════════════
+     Funzioni lazy — implementate nei task 3–7
+     ════════════════════════════════════════════ */
+  function s2FetchINGV()           { /* Task 3 */ }
+  function s2InitMap()             { /* Task 4 */ }
+  function s2AnimateDepthBar()     { /* Task 5 */ }
+  function s2InitHypocenterCanvas(){ /* Task 6 */ }
+  function s2InitDepthSlider()     { /* Task 7 */ }
+
 })();
 </script>
