@@ -1141,6 +1141,7 @@
     let animId  = null;
     let phase   = 0;
     let started = false;
+    let resetTimeout = null;
 
     /* Strati geologici */
     const layers = [
@@ -1171,6 +1172,7 @@
       ctx.font = '10px "JetBrains Mono", monospace';
       ctx.letterSpacing = '2px';
       ctx.fillText('SUPERFICIE', 8, SURF_Y - 6);
+      ctx.letterSpacing = '0px';
     }
 
     /* Disegna punto ipocentro pulsante */
@@ -1338,6 +1340,7 @@
       if (animId) cancelAnimationFrame(animId);
       if (btn._epicId) cancelAnimationFrame(btn._epicId);
       hypoPhase = 0;
+      phase = 0;
       drawLayers(); drawHypo(true);
       phases.forEach(p => p.classList.remove('active'));
       label.textContent = 'Clicca "Avvia" per iniziare';
@@ -1347,8 +1350,9 @@
     btn.addEventListener('click', () => {
       if (animId) cancelAnimationFrame(animId);
       if (btn._epicId) cancelAnimationFrame(btn._epicId);
+      if (resetTimeout) clearTimeout(resetTimeout);
       s2Reset();
-      setTimeout(runPhase1, 50);
+      resetTimeout = setTimeout(runPhase1, 50);
     });
 
     /* Disegno iniziale */
