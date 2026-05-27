@@ -1326,6 +1326,7 @@
         ctx.globalAlpha = 1;
         epicPhase += 0.05;
         epicId = requestAnimationFrame(pulseEpic);
+        btn._epicId = epicId;
       }
       epicId = requestAnimationFrame(pulseEpic);
       btn.textContent = '↺ Rivedi';
