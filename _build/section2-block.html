@@ -1118,7 +1118,7 @@
     const bar = document.getElementById('s2-depth-bar');
     if (!bar) return;
     requestAnimationFrame(() => {
-      bar.style.height = ((8.8 / 30) * 100).toFixed(1) + '%';
+      bar.style.height = ((8.8 / 30) * 100).toFixed(1) + '%'; /* 8.8 km ipocentro L'Aquila / 30 km scala massima */
     });
   }
   function s2InitHypocenterCanvas(){ /* Task 6 */ }
