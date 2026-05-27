@@ -3313,6 +3313,1514 @@
     <!-- Leaflet JS (condiviso tra s1 e s2) -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+    <!-- ══ S3 · ONDE SISMICHE ══ -->
+    <section class="slide" id="s-section3">
+    <style>
+    /* ── Carosello base ── */
+    #s-section3 { background: #05050d; padding: 0; }
+    #s3-carousel { width:100%; height:100%; position:relative; overflow:hidden; }
+    #s3-track {
+      display:flex; width:100%; height:100%;
+      transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+      will-change: transform;
+    }
+    .s3-slide { min-width:100%; height:100%; flex-shrink:0; position:relative; overflow:hidden; background:#05050d; }
+
+    /* ── Frecce ── */
+    .s3-arrow {
+      position:absolute; top:50%; transform:translateY(-50%); z-index:50;
+      width:52px; height:52px;
+      background:rgba(5,5,13,0.85); border:1px solid rgba(245,237,224,0.12);
+      color:rgba(245,237,224,0.7); cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:border-color 0.3s,background 0.3s,color 0.3s,opacity 0.3s;
+      backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+      font-size:1.1rem;
+    }
+    .s3-arrow:hover { border-color:var(--terracotta); background:rgba(196,97,42,0.14); color:var(--terracotta); }
+    .s3-arrow[disabled] { opacity:0.1; pointer-events:none; }
+    .s3-prev { left:1.2rem; }
+    .s3-next { right:1.2rem; }
+
+    /* ── Nav bottom ── */
+    .s3-nav {
+      position:absolute; bottom:1.6rem; left:50%; transform:translateX(-50%);
+      z-index:50; display:flex; align-items:center; gap:1.4rem;
+    }
+    .s3-dots-row { display:flex; gap:0.55rem; align-items:center; }
+    .s3-dot {
+      width:5px; height:5px; background:rgba(196,97,42,0.2); border-radius:50%;
+      cursor:pointer; transition:all 0.35s ease;
+    }
+    .s3-dot.active { background:var(--terracotta); transform:scale(1.9); }
+    .s3-counter {
+      font-family:'JetBrains Mono',monospace; font-size:0.56rem;
+      letter-spacing:0.28em; color:rgba(245,237,224,0.2);
+      text-transform:uppercase; white-space:nowrap;
+    }
+
+    /* ── Typography comune ── */
+    .s3-eyebrow {
+      font-family:'JetBrains Mono',monospace; font-size:0.65rem;
+      letter-spacing:0.35em; color:var(--terracotta); text-transform:uppercase;
+      display:block; margin-bottom:0.8rem;
+    }
+    .s3-title {
+      font-size:clamp(1.8rem,3vw,3.2rem); font-weight:300; line-height:1.15;
+      color:var(--cream); margin-bottom:1.2rem;
+    }
+    .s3-title-lg {
+      font-size:clamp(2rem,3.5vw,3.8rem); font-weight:300; line-height:1.1;
+      color:var(--cream); margin-bottom:1.5rem; text-align:center;
+    }
+    .s3-body {
+      font-size:0.95rem; line-height:1.8; color:rgba(245,237,224,0.55);
+    }
+    .s3-storia-box {
+      border-left:2px solid var(--terracotta); padding:1rem 1.2rem;
+      margin-top:1.5rem; background:rgba(196,97,42,0.05);
+    }
+    .s3-storia-head {
+      font-family:'JetBrains Mono',monospace; font-size:0.6rem;
+      letter-spacing:0.28em; color:var(--terracotta); text-transform:uppercase;
+      margin-bottom:0.5rem; display:block;
+    }
+    .s3-storia-text { font-size:0.85rem; line-height:1.7; color:rgba(245,237,224,0.5); }
+
+    /* ── SLIDE 1 ── */
+    .s3-s1-wrap { display:grid; grid-template-rows:auto 1fr; height:100%; }
+    .s3-s1-header {
+      padding:2rem 3rem 1rem; text-align:center;
+      border-bottom:1px solid rgba(245,237,224,0.07);
+    }
+    .s3-s1-split { display:grid; grid-template-columns:1fr 1fr; height:100%; }
+    .s3-s1-half {
+      position:relative; overflow:hidden; display:flex;
+      flex-direction:column;
+    }
+    .s3-s1-half:first-child { border-right:1px solid rgba(245,237,224,0.07); }
+    .s3-canvas-label {
+      font-family:'JetBrains Mono',monospace; font-size:0.55rem;
+      letter-spacing:0.25em; color:rgba(245,237,224,0.25);
+      text-transform:uppercase; padding:0.8rem 1.2rem 0.4rem;
+    }
+    .s3-s1-half canvas { flex:1; width:100%; display:block; }
+    .s3-pause-btn {
+      position:absolute; bottom:3rem; left:50%; transform:translateX(-50%);
+      background:rgba(5,5,13,0.8); border:1px solid rgba(245,237,224,0.15);
+      color:rgba(245,237,224,0.6); font-size:0.9rem;
+      padding:0.4rem 1rem; cursor:pointer; font-family:'JetBrains Mono',monospace;
+      font-size:0.6rem; letter-spacing:0.2em;
+      transition:border-color 0.3s,color 0.3s; z-index:10;
+    }
+    .s3-pause-btn:hover { border-color:var(--terracotta); color:var(--terracotta); }
+
+    /* ── SLIDE 2 ── */
+    .s3-s2-wrap {
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; padding:3rem 5rem; gap:2rem; height:100%;
+    }
+    .s3-cards-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.5rem; width:100%; }
+    .s3-card {
+      padding:1.5rem; border:1px solid rgba(245,237,224,0.1);
+      background:rgba(255,255,255,0.02);
+    }
+    .s3-card-head {
+      font-family:'JetBrains Mono',monospace; font-size:0.58rem;
+      letter-spacing:0.3em; text-transform:uppercase; margin-bottom:0.8rem;
+    }
+    .s3-card--volume .s3-card-head { color:var(--terracotta); }
+    .s3-card--surf .s3-card-head { color:var(--ochre); }
+    .s3-card--aquila .s3-card-head { color:var(--blood); border-top:1px solid var(--blood); padding-top:0.8rem; }
+    .s3-card-text { font-size:0.88rem; line-height:1.75; color:rgba(245,237,224,0.5); }
+    .s3-schema-svg { width:100%; max-width:700px; }
+
+    /* ── SLIDE 3 ── */
+    .s3-s3-wrap {
+      display:grid;
+      grid-template-rows: auto 1fr auto 1fr 1fr;
+      height:100%; padding:2.5rem 2rem 4rem; gap:0.3rem;
+    }
+    .s3-s3-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; }
+    .s3-lane { display:flex; align-items:center; gap:1rem; min-height:0; }
+    .s3-lane-label {
+      width:210px; flex-shrink:0; padding:0.3rem 0;
+    }
+    .s3-lane-name {
+      font-family:'JetBrains Mono',monospace; font-size:0.65rem;
+      letter-spacing:0.2em; text-transform:uppercase; display:block;
+    }
+    .s3-lane-speed {
+      font-family:'JetBrains Mono',monospace; font-size:0.52rem;
+      letter-spacing:0.12em; color:rgba(245,237,224,0.3); display:block; margin-top:0.15rem;
+    }
+    .s3-lane-canvas { flex:1; height:100%; display:block; min-height:0; }
+    .s3-sep {
+      font-family:'JetBrains Mono',monospace; font-size:0.48rem;
+      letter-spacing:0.2em; color:rgba(245,237,224,0.15);
+      text-align:center; padding:0.3rem 0; border-top:1px dashed rgba(245,237,224,0.08);
+      align-self:center;
+    }
+    .s3-play-all-btn {
+      background:transparent; border:1px solid rgba(245,237,224,0.15);
+      color:rgba(245,237,224,0.5); font-family:'JetBrains Mono',monospace;
+      font-size:0.6rem; letter-spacing:0.2em; padding:0.4rem 1rem; cursor:pointer;
+      transition:border-color 0.3s,color 0.3s;
+    }
+    .s3-play-all-btn:hover { border-color:var(--terracotta); color:var(--terracotta); }
+
+    /* ── SLIDES 4-7 (layout split comune) ── */
+    .s3-split-wrap { display:grid; grid-template-columns:1fr 1fr; height:100%; }
+    .s3-split-left {
+      display:flex; flex-direction:column; justify-content:center;
+      padding:3.5rem 3rem 5rem 4rem; overflow-y:auto;
+      border-right:1px solid rgba(245,237,224,0.07);
+      gap:1rem;
+    }
+    .s3-split-right { display:flex; flex-direction:column; position:relative; }
+    .s3-split-right-half {
+      flex:1; position:relative; overflow:hidden;
+    }
+    .s3-split-right-half:first-child {
+      border-bottom:1px dashed rgba(245,237,224,0.12);
+    }
+    .s3-split-right-half canvas { width:100%; height:100%; display:block; }
+    .s3-split-right-label {
+      position:absolute; top:0.6rem; left:0.8rem;
+      font-family:'JetBrains Mono',monospace; font-size:0.5rem;
+      letter-spacing:0.2em; color:rgba(245,237,224,0.2); text-transform:uppercase;
+    }
+
+    /* ── SLIDE 8 (calcolatore) ── */
+    .s3-calc-wrap { display:grid; grid-template-columns:280px 1fr; height:100%; }
+    .s3-calc-panel {
+      padding:2.5rem 1.8rem; display:flex; flex-direction:column;
+      gap:1.8rem; border-right:1px solid rgba(245,237,224,0.07); overflow-y:auto;
+    }
+    .s3-calc-section-label {
+      font-family:'JetBrains Mono',monospace; font-size:0.55rem;
+      letter-spacing:0.3em; text-transform:uppercase; color:var(--terracotta);
+      margin-bottom:0.6rem; display:block;
+    }
+    .s3-preset-btns { display:flex; flex-direction:column; gap:0.4rem; }
+    .s3-preset-btn {
+      background:transparent; border:1px solid rgba(245,237,224,0.12);
+      color:rgba(245,237,224,0.55); font-family:'JetBrains Mono',monospace;
+      font-size:0.58rem; letter-spacing:0.12em; padding:0.5rem 0.8rem;
+      cursor:pointer; text-align:left; transition:all 0.25s;
+    }
+    .s3-preset-btn.active, .s3-preset-btn:hover {
+      border-color:var(--terracotta); color:var(--terracotta); background:rgba(196,97,42,0.08);
+    }
+    .s3-vel-display {
+      font-family:'JetBrains Mono',monospace; font-size:0.58rem;
+      letter-spacing:0.1em; color:rgba(245,237,224,0.35);
+      line-height:1.7; padding:0.6rem 0.8rem;
+      border:1px solid rgba(245,237,224,0.07); background:rgba(0,0,0,0.2);
+    }
+    .s3-launch-btns { display:flex; flex-direction:column; gap:0.4rem; }
+    .s3-launch-btn {
+      background:transparent; border:1px solid rgba(245,237,224,0.12);
+      color:rgba(245,237,224,0.55); font-family:'JetBrains Mono',monospace;
+      font-size:0.58rem; letter-spacing:0.1em; padding:0.5rem 0.8rem;
+      cursor:pointer; transition:all 0.25s; text-align:left;
+    }
+    .s3-launch-btn:hover { border-color:var(--terracotta); color:var(--terracotta); }
+    .s3-launch-btn:disabled { opacity:0.3; pointer-events:none; }
+    .s3-reset-btn {
+      background:transparent; border:1px solid rgba(245,237,224,0.08);
+      color:rgba(245,237,224,0.3); font-family:'JetBrains Mono',monospace;
+      font-size:0.55rem; letter-spacing:0.15em; padding:0.4rem 0.8rem;
+      cursor:pointer; transition:all 0.25s; margin-top:0.3rem;
+    }
+    .s3-reset-btn:hover { border-color:var(--blood); color:var(--blood); }
+    .s3-toggle-row { display:flex; align-items:center; gap:0.8rem; }
+    .s3-toggle {
+      width:36px; height:18px; background:rgba(245,237,224,0.1);
+      border-radius:9px; position:relative; cursor:pointer;
+      transition:background 0.3s; border:none; flex-shrink:0;
+    }
+    .s3-toggle.on { background:var(--blue); }
+    .s3-toggle::after {
+      content:''; position:absolute; top:2px; left:2px;
+      width:14px; height:14px; background:#fff; border-radius:50%;
+      transition:left 0.3s;
+    }
+    .s3-toggle.on::after { left:20px; }
+    .s3-toggle-label {
+      font-family:'JetBrains Mono',monospace; font-size:0.55rem;
+      letter-spacing:0.1em; color:rgba(245,237,224,0.4);
+    }
+    .s3-calc-canvas-wrap { position:relative; overflow:hidden; }
+    #s3-calc-canvas { width:100%; height:100%; display:block; cursor:crosshair; }
+
+    /* ── SLIDE 9 (nucleo) ── */
+    .s3-core-wrap { display:grid; grid-template-columns:1fr 1fr; height:100%; }
+    .s3-core-left {
+      display:flex; flex-direction:column; justify-content:center;
+      padding:3.5rem 3rem 5rem 4rem; gap:1rem; overflow-y:auto;
+      border-right:1px solid rgba(245,237,224,0.07);
+    }
+    .s3-core-right {
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; gap:1.5rem; padding:2rem;
+    }
+    #s3-core-canvas { max-width:380px; max-height:380px; width:100%; aspect-ratio:1; display:block; }
+    .s3-core-btns { display:flex; gap:1rem; }
+    .s3-core-btn {
+      background:transparent; border:1px solid rgba(245,237,224,0.15);
+      color:rgba(245,237,224,0.5); font-family:'JetBrains Mono',monospace;
+      font-size:0.58rem; letter-spacing:0.12em; padding:0.5rem 1rem;
+      cursor:pointer; transition:all 0.25s;
+    }
+    .s3-core-btn:hover { border-color:var(--terracotta); color:var(--terracotta); }
+    .s3-core-status {
+      font-family:'JetBrains Mono',monospace; font-size:0.6rem;
+      letter-spacing:0.15em; min-height:1.2rem; text-align:center;
+      transition:color 0.3s;
+    }
+
+    /* ── SLIDE 10 ── */
+    .s3-end-wrap {
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; height:100%; gap:1.5rem; padding:4rem;
+      text-align:center;
+    }
+    .s3-end-title {
+      font-size:clamp(2rem,4vw,4.5rem); font-weight:300; line-height:1.15;
+      color:var(--cream); max-width:700px;
+    }
+    .s3-end-sub {
+      font-size:1.05rem; line-height:1.7;
+      color:rgba(245,237,224,0.4); max-width:520px;
+    }
+    .s3-end-arrow {
+      font-size:1.8rem; color:var(--terracotta);
+      animation:s3-bounce 1.6s ease-in-out infinite;
+    }
+    @keyframes s3-bounce {
+      0%,100% { transform:translateY(0); }
+      50%      { transform:translateY(14px); }
+    }
+    </style>
+
+      <div id="s3-carousel">
+        <div id="s3-track">
+
+          <!-- ─── Slide 1 ─── -->
+          <div class="s3-slide" id="s3-s1">
+            <div class="s3-s1-wrap">
+              <div class="s3-s1-header">
+                <span class="s3-eyebrow">6 APRILE 2009 · 03:32:39 UTC</span>
+                <h2 class="s3-title" style="margin-bottom:0">Le onde sismiche si diffondono in tutte le direzioni.</h2>
+              </div>
+              <div class="s3-s1-split">
+                <div class="s3-s1-half">
+                  <div class="s3-canvas-label">Vista dall'alto — propagazione planimetrica</div>
+                  <canvas id="s3-c1-top"></canvas>
+                </div>
+                <div class="s3-s1-half">
+                  <div class="s3-canvas-label">Vista in sezione — profondità</div>
+                  <canvas id="s3-c1-sec"></canvas>
+                </div>
+              </div>
+            </div>
+            <button class="s3-pause-btn" id="s3-s1-pause">⏸ PAUSA</button>
+          </div>
+
+          <!-- ─── Slide 2 ─── -->
+          <div class="s3-slide" id="s3-s2">
+            <div class="s3-s2-wrap">
+              <div>
+                <span class="s3-eyebrow">LE ONDE SISMICHE</span>
+                <h2 class="s3-title-lg">Non tutta l'energia si propaga<br>nello stesso modo.</h2>
+              </div>
+              <div class="s3-cards-row">
+                <div class="s3-card s3-card--volume">
+                  <div class="s3-card-head">Onde di volume</div>
+                  <p class="s3-card-text">Le onde P e S nascono dall'ipocentro e viaggiano attraverso il volume delle rocce in tutte le direzioni. P sta per &#8216;prime&#8217;: arrivano per prime. S sta per &#8216;seconde&#8217;: arrivano dopo.</p>
+                </div>
+                <div class="s3-card s3-card--surf">
+                  <div class="s3-card-head">Onde superficiali</div>
+                  <p class="s3-card-text">Le onde Love e Rayleigh nascono dall'epicentro e si propagano solo lungo la superficie terrestre. Sono le più lente ma trasportano la maggior parte dell'energia distruttiva.</p>
+                </div>
+                <div class="s3-card s3-card--aquila">
+                  <div class="s3-card-head">L'Aquila</div>
+                  <p class="s3-card-text">Il centro storico de L'Aquila è stato abbattuto dalle onde superficiali. Le onde P erano già passate quasi innocue. Le onde S avevano scosso. Le superficiali hanno abbattuto.</p>
+                </div>
+              </div>
+              <svg class="s3-schema-svg" viewBox="0 0 700 90" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="s3-arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="rgba(245,237,224,0.35)"/>
+                  </marker>
+                </defs>
+                <circle cx="60" cy="45" r="10" fill="#C4612A" opacity="0.8"/>
+                <text x="60" y="72" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(245,237,224,0.4)" letter-spacing="1">IPOCENTRO</text>
+                <line x1="75" y1="45" x2="175" y2="45" stroke="rgba(245,237,224,0.35)" stroke-width="1" marker-end="url(#s3-arr)" stroke-dasharray="4,3"/>
+                <text x="125" y="38" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="rgba(196,97,42,0.7)" letter-spacing="1">ONDE P+S</text>
+                <circle cx="210" cy="45" r="7" fill="rgba(196,97,42,0.4)" stroke="#C4612A" stroke-width="1"/>
+                <text x="210" y="72" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(245,237,224,0.4)" letter-spacing="1">EPICENTRO</text>
+                <line x1="220" y1="38" x2="310" y2="20" stroke="rgba(245,237,224,0.35)" stroke-width="1" marker-end="url(#s3-arr)" stroke-dasharray="4,3"/>
+                <line x1="220" y1="52" x2="310" y2="70" stroke="rgba(245,237,224,0.35)" stroke-width="1" marker-end="url(#s3-arr)" stroke-dasharray="4,3"/>
+                <text x="370" y="20" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="rgba(212,137,58,0.7)" letter-spacing="1">LOVE</text>
+                <path d="M320,18 Q370,12 420,18" fill="none" stroke="#D4893A" stroke-width="1.5" opacity="0.6"/>
+                <text x="370" y="80" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="rgba(245,237,224,0.5)" letter-spacing="1">RAYLEIGH</text>
+                <path d="M320,72 Q370,78 420,72" fill="none" stroke="rgba(245,237,224,0.5)" stroke-width="1.5"/>
+                <text x="490" y="30" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="rgba(245,237,224,0.3)" letter-spacing="1">ONDE</text>
+                <text x="490" y="42" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="rgba(245,237,224,0.3)" letter-spacing="1">SUPERFICIALI</text>
+                <text x="490" y="65" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="rgba(196,97,42,0.4)">(più lente,</text>
+                <text x="490" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="rgba(196,97,42,0.4)">più distruttive)</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- ─── Slide 3 ─── -->
+          <div class="s3-slide" id="s3-s3">
+            <div class="s3-s3-wrap">
+              <div class="s3-s3-header">
+                <h2 class="s3-title" style="margin:0">Quattro onde. Quattro movimenti.</h2>
+                <button class="s3-play-all-btn" id="s3-s3-playbtn">⏸ PAUSA</button>
+              </div>
+              <div class="s3-lane" id="s3-lane-p">
+                <div class="s3-lane-label">
+                  <span class="s3-lane-name" style="color:var(--terracotta)">ONDA P</span>
+                  <span class="s3-lane-speed">6 km/s · Solidi e liquidi</span>
+                </div>
+                <canvas class="s3-lane-canvas" id="s3-lc-p"></canvas>
+              </div>
+              <div class="s3-lane" id="s3-lane-s">
+                <div class="s3-lane-label">
+                  <span class="s3-lane-name" style="color:var(--blue)">ONDA S</span>
+                  <span class="s3-lane-speed">3,6 km/s · Solo solidi</span>
+                </div>
+                <canvas class="s3-lane-canvas" id="s3-lc-s"></canvas>
+              </div>
+              <div class="s3-sep">── ONDE DI VOLUME ───────────────────── ONDE SUPERFICIALI ──</div>
+              <div class="s3-lane" id="s3-lane-love">
+                <div class="s3-lane-label">
+                  <span class="s3-lane-name" style="color:var(--ochre)">ONDA LOVE</span>
+                  <span class="s3-lane-speed">~3,2 km/s · Solo superficie</span>
+                </div>
+                <canvas class="s3-lane-canvas" id="s3-lc-love"></canvas>
+              </div>
+              <div class="s3-lane" id="s3-lane-ray">
+                <div class="s3-lane-label">
+                  <span class="s3-lane-name" style="color:rgba(245,237,224,0.7)">ONDA RAYLEIGH</span>
+                  <span class="s3-lane-speed">~2,9 km/s · Solo superficie</span>
+                </div>
+                <canvas class="s3-lane-canvas" id="s3-lc-ray"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── Slide 4 — Onda P ─── -->
+          <div class="s3-slide" id="s3-s4">
+            <div class="s3-split-wrap">
+              <div class="s3-split-left">
+                <span class="s3-eyebrow">ONDA P · LONGITUDINALE · PRIMARIA</span>
+                <h2 class="s3-title">La prima ad arrivare.</h2>
+                <p class="s3-body">Le onde P sono onde longitudinali: le particelle di roccia oscillano nella stessa direzione in cui l'onda si propaga. Il risultato è una successione di compressioni e dilatazioni che avanzano nella roccia come il suono nell'aria.</p>
+                <p class="s3-body">Viaggiano a circa 6 km/s nella crosta terrestre e si propagano sia nei solidi che nei liquidi — questa proprietà le rende uniche tra le onde sismiche.</p>
+                <p class="s3-body">Arrivano per prime alla stazione sismica: il prefisso &#8216;P&#8217; sta per &#8216;primae&#8217; in latino.</p>
+                <div class="s3-storia-box" style="border-left-color:var(--terracotta)">
+                  <span class="s3-storia-head">STORIA · 1889</span>
+                  <p class="s3-storia-text">Le onde P furono identificate per prime dal fisico tedesco Ernst von Rebeur-Paschwitz, che nel 1889 osservò per caso le oscillazioni prodotte da un terremoto giapponese su un pendolo a Potsdam. Fu la prima rilevazione strumentale di un terremoto a distanza.</p>
+                </div>
+              </div>
+              <div class="s3-split-right">
+                <div class="s3-split-right-half">
+                  <span class="s3-split-right-label">Vista pianimetrica — isotropia</span>
+                  <canvas id="s3-c4-top"></canvas>
+                </div>
+                <div class="s3-split-right-half">
+                  <span class="s3-split-right-label">Vista in sezione — compressione/dilatazione</span>
+                  <canvas id="s3-c4-bot"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── Slide 5 — Onda S ─── -->
+          <div class="s3-slide" id="s3-s5">
+            <div class="s3-split-wrap">
+              <div class="s3-split-left">
+                <span class="s3-eyebrow">ONDA S · TRASVERSALE · SECONDARIA</span>
+                <h2 class="s3-title">Il taglio che scuote.</h2>
+                <p class="s3-body">Le onde S sono onde trasversali: le particelle oscillano perpendicolarmente alla direzione di propagazione. Producono un movimento di taglio nella roccia — da qui il nome alternativo &#8216;onde di taglio&#8217; o <em>shear waves</em>.</p>
+                <p class="s3-body">Viaggiano a 3,6 km/s, più lente delle P, e arrivano per seconde.</p>
+                <p class="s3-body">La loro caratteristica più importante: non si propagano nei fluidi. Un liquido non ha resistenza al taglio, quindi non può trasmettere questo tipo di onda.</p>
+                <div class="s3-storia-box" style="border-left-color:var(--blue)">
+                  <span class="s3-storia-head" style="color:var(--blue)">STORIA · 1900</span>
+                  <p class="s3-storia-text">Richard Dixon Oldham, geologo britannico dell'Indian Geological Survey, nel 1900 pubblicò la prima analisi sistematica dei sismogrammi distinguendo formalmente le onde P dalle onde S. Fu lui a capire che i due tipi di onda viaggiano a velocità diverse e a usare questa differenza per stimare la distanza dall'epicentro.</p>
+                </div>
+              </div>
+              <div class="s3-split-right">
+                <div class="s3-split-right-half">
+                  <span class="s3-split-right-label">Vista pianimetrica</span>
+                  <canvas id="s3-c5-top"></canvas>
+                </div>
+                <div class="s3-split-right-half">
+                  <span class="s3-split-right-label">Vista in sezione — oscillazione verticale</span>
+                  <canvas id="s3-c5-bot"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── Slide 6 — Onda Love ─── -->
+          <div class="s3-slide" id="s3-s6">
+            <div class="s3-split-wrap">
+              <div class="s3-split-left">
+                <span class="s3-eyebrow">ONDA LOVE · SUPERFICIALE · ORIZZONTALE</span>
+                <h2 class="s3-title">Il movimento che abbatte i muri.</h2>
+                <p class="s3-body">Le onde Love si propagano solo in superficie e producono un movimento orizzontale laterale del terreno — perpendicolare alla direzione di propagazione, nel piano orizzontale.</p>
+                <p class="s3-body">Questo tipo di movimento è estremamente pericoloso per le strutture: le fondazioni vengono spostate lateralmente mentre la struttura sopra tende a restare ferma per inerzia.</p>
+                <p class="s3-body">Nascono solo quando esiste uno strato superficiale più lento sovrapposto a un substrato più veloce — una condizione quasi sempre verificata nella crosta terrestre reale.</p>
+                <div class="s3-storia-box" style="border-left-color:var(--ochre)">
+                  <span class="s3-storia-head" style="color:var(--ochre)">STORIA · 1911</span>
+                  <p class="s3-storia-text">Augustus Edward Hough Love, matematico britannico, predisse matematicamente l'esistenza di questo tipo di onda nel 1911 partendo dalle equazioni dell'elasticità. Non le scoprì osservando la terra tremare, ma calcolando che dovevano esistere. Furono poi identificate nei sismogrammi e portano il suo nome.</p>
+                </div>
+              </div>
+              <div class="s3-split-right">
+                <div class="s3-split-right-half">
+                  <span class="s3-split-right-label">Vista pianimetrica — frecce laterali</span>
+                  <canvas id="s3-c6-top"></canvas>
+                </div>
+                <div class="s3-split-right-half">
+                  <span class="s3-split-right-label">Vista in sezione — oscillazione orizzontale</span>
+                  <canvas id="s3-c6-bot"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── Slide 7 — Onda Rayleigh ─── -->
+          <div class="s3-slide" id="s3-s7">
+            <div class="s3-split-wrap">
+              <div class="s3-split-left">
+                <span class="s3-eyebrow">ONDA RAYLEIGH · SUPERFICIALE · ELLITTICA</span>
+                <h2 class="s3-title">Il mare sotto i piedi.</h2>
+                <p class="s3-body">Le onde Rayleigh producono un movimento ellittico retrogrado del terreno: i punti tracciano ellissi nel piano verticale, avanzando in senso contrario alla propagazione dell'onda.</p>
+                <p class="s3-body">Il risultato visibile in superficie è identico al movimento delle onde del mare: il terreno si alza e si abbassa mentre un'onda passa. Questo movimento è particolarmente devastante per gli edifici perché combina spostamento verticale e orizzontale simultaneamente.</p>
+                <p class="s3-body">Si propagano sempre — non richiedono particolari condizioni geologiche, bastano la superficie libera e un mezzo elastico.</p>
+                <div class="s3-storia-box" style="border-left-color:var(--cream)">
+                  <span class="s3-storia-head" style="color:var(--cream)">STORIA · 1885</span>
+                  <p class="s3-storia-text">Lord Rayleigh — al secolo John William Strutt, futuro Nobel per la Fisica — predisse matematicamente questo tipo di onda nel 1885, 26 anni prima che Love facesse lo stesso per le onde che portano il suo nome. Anche in questo caso: prima la matematica, poi la conferma osservativa nei sismogrammi.</p>
+                </div>
+              </div>
+              <div class="s3-split-right">
+                <div class="s3-split-right-half">
+                  <span class="s3-split-right-label">Vista pianimetrica — ondulazione superficie</span>
+                  <canvas id="s3-c7-top"></canvas>
+                </div>
+                <div class="s3-split-right-half">
+                  <span class="s3-split-right-label">Vista in sezione — ellissi retrograde</span>
+                  <canvas id="s3-c7-bot"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── Slide 8 — Calcolatore ─── -->
+          <div class="s3-slide" id="s3-s8">
+            <div class="s3-calc-wrap">
+              <div class="s3-calc-panel">
+                <div>
+                  <span class="s3-calc-section-label">STEP 1 · TIPO DI TERRENO</span>
+                  <div class="s3-preset-btns">
+                    <button class="s3-preset-btn" data-vp="6.0" data-vs="3.5" data-name="Roccia compatta">Roccia compatta</button>
+                    <button class="s3-preset-btn active" data-vp="5.0" data-vs="2.8" data-name="Calcari">Calcari</button>
+                    <button class="s3-preset-btn" data-vp="2.0" data-vs="0.8" data-name="Argilla">Argilla</button>
+                    <button class="s3-preset-btn" data-vp="1.5" data-vs="0.3" data-name="Alluvionale">Alluvionale</button>
+                  </div>
+                  <div class="s3-vel-display" id="s3-vel-disp">
+                    Vp: 5.0 km/s · Vs: 2.8 km/s<br>Love: ~2.8 km/s · Rayleigh: ~2.6 km/s
+                  </div>
+                </div>
+                <div>
+                  <span class="s3-calc-section-label">STEP 2 · LANCIA ONDE</span>
+                  <div class="s3-launch-btns">
+                    <button class="s3-launch-btn" id="s3-launch-p" disabled>▶ Lancia onda P</button>
+                    <button class="s3-launch-btn" id="s3-launch-s" disabled>▶ Lancia onda S</button>
+                    <button class="s3-launch-btn" id="s3-launch-both" disabled>▶ Lancia entrambe</button>
+                  </div>
+                  <button class="s3-reset-btn" id="s3-calc-reset">↺ Reset onde</button>
+                </div>
+                <div>
+                  <span class="s3-calc-section-label">STEP 3 · FALDA ACQUIFERA</span>
+                  <div class="s3-toggle-row">
+                    <button class="s3-toggle" id="s3-falda-toggle" role="switch" aria-checked="false"></button>
+                    <span class="s3-toggle-label" id="s3-falda-label">Terreno omogeneo</span>
+                  </div>
+                </div>
+              </div>
+              <div class="s3-calc-canvas-wrap">
+                <canvas id="s3-calc-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── Slide 9 — Nucleo liquido ─── -->
+          <div class="s3-slide" id="s3-s9">
+            <div class="s3-core-wrap">
+              <div class="s3-core-left">
+                <span class="s3-eyebrow">1906 · UNA SCOPERTA DENTRO LA TERRA</span>
+                <h2 class="s3-title">Le onde S ci hanno rivelato<br>che la Terra è parzialmente liquida.</h2>
+                <p class="s3-body">Nel 1906, Richard Oldham osservò che le onde S generate da un grande terremoto non arrivavano agli sismografi posti nella parte opposta del globo. C'era una zona d'ombra — un'area dove le onde S semplicemente non giungevano.</p>
+                <p class="s3-body">La spiegazione era una sola: da qualche parte all'interno della Terra c'è un materiale liquido che ferma le onde S, le quali non possono propagarsi in un fluido.</p>
+                <p class="s3-body">Nel 1913 Beno Gutenberg calcolò la profondità di questo confine: 2.900 km sotto la superficie. È il confine tra mantello e nucleo esterno. Il nucleo esterno della Terra — ferro e nichel allo stato fuso a oltre 4.000°C — è tuttora liquido. Lo sappiamo grazie alle onde sismiche.</p>
+                <div class="s3-storia-box" style="border-left-color:var(--terracotta)">
+                  <span class="s3-storia-head">INGE LEHMANN · 1936</span>
+                  <p class="s3-storia-text">Scoprì che dentro il nucleo liquido c'è un nucleo interno solido, analizzando riflessioni anomale delle onde P.</p>
+                </div>
+              </div>
+              <div class="s3-core-right">
+                <canvas id="s3-core-canvas"></canvas>
+                <div class="s3-core-btns">
+                  <button class="s3-core-btn" id="s3-core-p">▶ Lancia onda P</button>
+                  <button class="s3-core-btn" id="s3-core-s">▶ Lancia onda S</button>
+                </div>
+                <div class="s3-core-status" id="s3-core-status"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── Slide 10 — Transizione ─── -->
+          <div class="s3-slide" id="s3-s10">
+            <div class="s3-end-wrap">
+              <span class="s3-eyebrow">SEZIONE 4 → ENERGIA E MISURA</span>
+              <h2 class="s3-end-title">Ora che sappiamo come si muovono le onde,<br>come misuriamo la loro forza?</h2>
+              <p class="s3-end-sub">Magnitudo, intensità, sismogrammi.<br>Gli strumenti per quantificare un terremoto.</p>
+              <div class="s3-end-arrow">↓</div>
+            </div>
+          </div>
+
+        </div><!-- /s3-track -->
+
+        <button class="s3-arrow s3-prev" id="s3-prev" disabled>&#8592;</button>
+        <button class="s3-arrow s3-next" id="s3-next">&#8594;</button>
+
+        <div class="s3-nav">
+          <div class="s3-dots-row" id="s3-dots-row">
+            <div class="s3-dot active"></div>
+            <div class="s3-dot"></div><div class="s3-dot"></div><div class="s3-dot"></div>
+            <div class="s3-dot"></div><div class="s3-dot"></div><div class="s3-dot"></div>
+            <div class="s3-dot"></div><div class="s3-dot"></div><div class="s3-dot"></div>
+          </div>
+          <span class="s3-counter" id="s3-counter">01 · 10</span>
+        </div>
+
+      </div><!-- /s3-carousel -->
+
+      <script>
+      /* ══════════════════════════════════════════════════
+         SEZIONE 3 — LE ONDE SISMICHE
+         IIFE isolato, namespace S3
+      ══════════════════════════════════════════════════ */
+      const S3 = (function() {
+        'use strict';
+
+        const TOTAL = 10;
+        let currentIdx = 0;
+        let isAnimating = false;
+        const triggered = new Set();
+
+        const section  = document.getElementById('s-section3');
+        const track    = document.getElementById('s3-track');
+        const prevBtn  = document.getElementById('s3-prev');
+        const nextBtn  = document.getElementById('s3-next');
+        const counter  = document.getElementById('s3-counter');
+        const dots     = document.querySelectorAll('#s3-dots-row .s3-dot');
+
+        /* ── Navigazione ── */
+        function goTo(idx, animate) {
+          if (idx < 0 || idx >= TOTAL) return;
+          isAnimating = true;
+          if (animate === false) {
+            track.style.transition = 'none';
+            track.style.transform = `translateX(calc(${idx} * -100vw))`;
+            requestAnimationFrame(() => { track.style.transition = ''; isAnimating = false; });
+          } else {
+            track.style.transform = `translateX(calc(${idx} * -100vw))`;
+            track.addEventListener('transitionend', () => { isAnimating = false; }, { once: true });
+            setTimeout(() => { isAnimating = false; }, 700);
+          }
+          currentIdx = idx;
+          dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+          if (counter) counter.textContent = String(idx + 1).padStart(2,'0') + ' · ' + String(TOTAL).padStart(2,'0');
+          if (prevBtn) prevBtn.disabled = idx === 0;
+          if (nextBtn) nextBtn.disabled = idx === TOTAL - 1;
+          onEnter(idx);
+        }
+
+        function onEnter(idx) {
+          if (triggered.has(idx)) return;
+          triggered.add(idx);
+          if (idx === 0) initSlide1();
+          if (idx === 2) initSlide3();
+          if (idx === 3) initSlide4();
+          if (idx === 4) initSlide5();
+          if (idx === 5) initSlide6();
+          if (idx === 6) initSlide7();
+          if (idx === 7) initSlide8();
+          if (idx === 8) initSlide9();
+        }
+
+        /* ── Wheel ── */
+        section.addEventListener('wheel', function(e) {
+          const goingDown = e.deltaY > 0;
+          const goingUp   = e.deltaY < 0;
+          if (goingDown && currentIdx === TOTAL - 1) return;
+          if (goingUp   && currentIdx === 0)         return;
+          e.preventDefault(); e.stopPropagation();
+          if (isAnimating) return;
+          goingDown ? goTo(currentIdx + 1) : goTo(currentIdx - 1);
+        }, { passive: false });
+
+        /* ── Touch ── */
+        let touchX = 0;
+        section.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+        section.addEventListener('touchend', e => {
+          if (isAnimating) return;
+          const dx = e.changedTouches[0].clientX - touchX;
+          if (dx < -50) goTo(currentIdx + 1);
+          else if (dx > 50) goTo(currentIdx - 1);
+        });
+
+        /* ── Frecce + Dots ── */
+        if (prevBtn) prevBtn.addEventListener('click', () => goTo(currentIdx - 1));
+        if (nextBtn) nextBtn.addEventListener('click', () => goTo(currentIdx + 1));
+        dots.forEach((d, i) => d.addEventListener('click', () => goTo(i)));
+
+        /* ── Tastiera ── */
+        document.addEventListener('keydown', e => {
+          const rect = section.getBoundingClientRect();
+          if (Math.abs(rect.top) > 50) return;
+          if (e.key === 'ArrowRight' && currentIdx < TOTAL - 1) { e.preventDefault(); goTo(currentIdx + 1); }
+          else if (e.key === 'ArrowLeft' && currentIdx > 0)      { e.preventDefault(); goTo(currentIdx - 1); }
+        });
+
+        /* ══════ UTILITY CANVAS ══════ */
+        function resizeCv(cv) {
+          const p = cv.parentElement;
+          cv.width  = p.clientWidth  || p.offsetWidth;
+          cv.height = p.clientHeight || p.offsetHeight;
+        }
+
+        function makeGrid(cols, rows, W, H) {
+          const pts = [];
+          for (let r = 0; r < rows; r++)
+            for (let c = 0; c < cols; c++)
+              pts.push({ bx: (c + 0.5) / cols * W, by: (r + 0.5) / rows * H });
+          return pts;
+        }
+
+        /* ══════════════════════════════════════════════════
+           SLIDE 1 — Propagazione L'Aquila
+        ══════════════════════════════════════════════════ */
+        function initSlide1() {
+          const canL = document.getElementById('s3-c1-top');
+          const canR = document.getElementById('s3-c1-sec');
+          if (!canL || !canR) return;
+          const ctxL = canL.getContext('2d');
+          const ctxR = canR.getContext('2d');
+
+          function resize() { resizeCv(canL); resizeCv(canR); }
+          resize();
+          window.addEventListener('resize', resize);
+
+          const SC = 0.85;
+          const cities = [
+            { n: 'ROMA',    dx: -88*SC, dy:  62*SC, blink: 0 },
+            { n: 'PESCARA', dx:  82*SC, dy:  20*SC, blink: 0 },
+            { n: 'TERAMO',  dx: -12*SC, dy: -46*SC, blink: 0 },
+          ];
+
+          let waves  = [];
+          let wavesR = [];
+          let frame  = 0;
+          let paused = false;
+          let surfAlpha = 0;
+          let surfOffset = 0;
+
+          const SPAWN = 110;
+          const MAX_R = 420;
+
+          function spawnPair() {
+            waves.push(
+              { r:0, sp:1.8,  col:'#C4612A', lw:1.5, type:'P' },
+              { r:0, sp:1.08, col:'#3A7EC4', lw:2.5, type:'S' }
+            );
+            wavesR.push(
+              { r:0, sp:1.8,  col:'#C4612A', lw:1.5, type:'P', surfaced:false },
+              { r:0, sp:1.08, col:'#3A7EC4', lw:2.5, type:'S', surfaced:false }
+            );
+          }
+
+          function drawLeft() {
+            const W = canL.width, H = canL.height;
+            ctxL.clearRect(0, 0, W, H);
+            ctxL.fillStyle = '#06060f';
+            ctxL.fillRect(0, 0, W, H);
+
+            const ex = W * 0.5, ey = H * 0.45;
+
+            ctxL.save();
+            ctxL.beginPath();
+            ctxL.ellipse(ex, ey, W*0.42, H*0.38, 0, 0, Math.PI*2);
+            ctxL.fillStyle = 'rgba(26,26,46,0.5)';
+            ctxL.fill();
+            ctxL.restore();
+
+            waves.forEach(w => {
+              if (w.r <= 0) return;
+              const alpha = Math.max(0, 1 - w.r / MAX_R);
+              ctxL.beginPath();
+              ctxL.arc(ex, ey, w.r, 0, Math.PI*2);
+              ctxL.strokeStyle = w.col + Math.round(alpha*220).toString(16).padStart(2,'0');
+              ctxL.lineWidth = w.lw;
+              ctxL.stroke();
+            });
+
+            const head = { P: null, S: null };
+            waves.forEach(w => {
+              if (!head[w.type] || w.r > head[w.type].r) head[w.type] = w;
+            });
+            ctxL.font = '400 9px "JetBrains Mono", monospace';
+            ['P','S'].forEach(t => {
+              const w = head[t];
+              if (!w || w.r <= 10) return;
+              const ang = -Math.PI * 0.35;
+              const lx = ex + Math.cos(ang)*w.r + 6, ly = ey + Math.sin(ang)*w.r;
+              const alpha = Math.max(0, 1 - w.r/MAX_R);
+              ctxL.fillStyle = w.col + Math.round(alpha*200).toString(16).padStart(2,'0');
+              ctxL.fillText(t === 'P' ? 'P · 6 km/s' : 'S · 3,6 km/s', lx, ly);
+            });
+
+            cities.forEach(c => {
+              const cx = ex + c.dx, cy = ey + c.dy;
+              const bk = c.blink > 0 ? 0.5 + Math.sin(c.blink * 0.4) * 0.5 : 0;
+              ctxL.beginPath();
+              ctxL.arc(cx, cy, 4, 0, Math.PI*2);
+              ctxL.fillStyle = c.blink > 0
+                ? `rgba(245,237,224,${0.3 + bk*0.7})`
+                : 'rgba(245,237,224,0.3)';
+              ctxL.fill();
+              ctxL.fillStyle = 'rgba(245,237,224,0.45)';
+              ctxL.font = '400 8px "JetBrains Mono", monospace';
+              ctxL.fillText(c.n, cx+6, cy+3);
+              if (c.blink > 0) c.blink--;
+            });
+
+            const pulse = Math.sin(frame * 0.07) * 0.4 + 0.7;
+            ctxL.beginPath();
+            ctxL.arc(ex, ey, 7 + pulse*3, 0, Math.PI*2);
+            ctxL.fillStyle = 'rgba(139,26,26,0.25)';
+            ctxL.fill();
+            ctxL.beginPath();
+            ctxL.arc(ex, ey, 5, 0, Math.PI*2);
+            ctxL.fillStyle = '#8B1A1A';
+            ctxL.fill();
+            ctxL.fillStyle = 'rgba(245,237,224,0.6)';
+            ctxL.font = '500 8px "JetBrains Mono", monospace';
+            ctxL.fillText("L'AQUILA", ex+8, ey-8);
+          }
+
+          function drawRight() {
+            const W = canR.width, H = canR.height;
+            ctxR.clearRect(0, 0, W, H);
+
+            const KPX = (H - 60) / 15;
+            const SY  = 30;
+            const IY  = SY + 8.8 * KPX;
+            const HX  = W / 2;
+
+            ctxR.fillStyle = '#0e0e16'; ctxR.fillRect(0, 0, W, SY);
+            ctxR.fillStyle = '#1a2030'; ctxR.fillRect(0, SY, W, 3*KPX);
+            ctxR.fillStyle = '#232d3f'; ctxR.fillRect(0, SY+3*KPX, W, 5*KPX);
+            ctxR.fillStyle = '#1c2535'; ctxR.fillRect(0, SY+8*KPX, W, H);
+
+            ctxR.font = '300 8px "JetBrains Mono", monospace';
+            ctxR.fillStyle = 'rgba(245,237,224,0.2)';
+            ctxR.fillText('0–3 km · sedimenti', 8, SY + 1.5*KPX);
+            ctxR.fillText('3–8 km · calcari', 8, SY + 5*KPX);
+            ctxR.fillText('8–15 km · cristallino', 8, SY + 10*KPX);
+
+            ctxR.beginPath();
+            ctxR.moveTo(0, SY); ctxR.lineTo(W, SY);
+            ctxR.strokeStyle = 'rgba(245,237,224,0.6)';
+            ctxR.lineWidth = 2; ctxR.stroke();
+
+            wavesR.forEach(w => {
+              if (w.r <= 0) return;
+              const alpha = Math.max(0, 1 - w.r / (IY - SY + 80));
+              ctxR.beginPath();
+              ctxR.arc(HX, IY, w.r, Math.PI, Math.PI*2);
+              ctxR.strokeStyle = w.col + Math.round(alpha*200).toString(16).padStart(2,'0');
+              ctxR.lineWidth = w.lw;
+              ctxR.stroke();
+              if (!w.surfaced && w.r >= IY - SY) {
+                w.surfaced = true;
+                surfAlpha = 1;
+              }
+            });
+
+            if (surfAlpha > 0) {
+              surfOffset += 1;
+              surfAlpha = Math.max(0, surfAlpha - 0.003);
+              const lw = 1.5;
+              for (let dir = -1; dir <= 1; dir += 2) {
+                for (let i = 0; i < 4; i++) {
+                  const ox = dir * (surfOffset + i * 22);
+                  const amp = 8 * surfAlpha;
+                  ctxR.beginPath();
+                  ctxR.moveTo(HX + ox, SY);
+                  for (let x = 0; x < 22; x++) {
+                    ctxR.lineTo(HX + ox + dir*x, SY + Math.sin(x * 0.28) * amp);
+                  }
+                  ctxR.strokeStyle = `rgba(212,137,58,${surfAlpha * 0.7})`;
+                  ctxR.lineWidth = lw; ctxR.stroke();
+                }
+              }
+              ctxR.fillStyle = `rgba(212,137,58,${surfAlpha})`;
+              ctxR.font = '400 8px "JetBrains Mono", monospace';
+              ctxR.fillText('Onde superficiali', HX - 45, SY - 8);
+            }
+
+            const pulse = Math.sin(frame * 0.07) * 0.3 + 0.7;
+            ctxR.beginPath();
+            ctxR.arc(HX, IY, 6 + pulse*2, 0, Math.PI*2);
+            ctxR.fillStyle = 'rgba(196,97,42,0.25)'; ctxR.fill();
+            ctxR.beginPath();
+            ctxR.arc(HX, IY, 5, 0, Math.PI*2);
+            ctxR.fillStyle = '#C4612A'; ctxR.fill();
+            ctxR.fillStyle = 'rgba(245,237,224,0.5)';
+            ctxR.font = '400 8px "JetBrains Mono", monospace';
+            ctxR.fillText('IPOCENTRO · 8,8 km', HX + 8, IY + 4);
+          }
+
+          let running = true;
+          function loop() {
+            if (!running) return;
+            requestAnimationFrame(loop);
+            if (paused) return;
+            frame++;
+            if (frame % SPAWN === 0) spawnPair();
+            waves.forEach(w => { w.r += w.sp; });
+            wavesR.forEach(w => { w.r += w.sp; });
+            cities.forEach(c => {
+              const dist = Math.sqrt(c.dx*c.dx + c.dy*c.dy);
+              waves.forEach(w => {
+                if (w.type === 'P' && Math.abs(w.r - dist) < w.sp * 3 && c.blink === 0) c.blink = 40;
+              });
+            });
+            waves  = waves.filter(w => w.r < MAX_R + 50);
+            wavesR = wavesR.filter(w => w.r < 600);
+            drawLeft();
+            drawRight();
+          }
+
+          spawnPair();
+          loop();
+
+          const pauseBtn = document.getElementById('s3-s1-pause');
+          if (pauseBtn) pauseBtn.addEventListener('click', () => {
+            paused = !paused;
+            pauseBtn.textContent = paused ? '▶ RIPRODUCI' : '⏸ PAUSA';
+          });
+
+          const obs = new IntersectionObserver(es => {
+            running = es[0].isIntersecting;
+            if (running) loop();
+          }, { threshold: 0.1 });
+          obs.observe(document.getElementById('s3-s1'));
+        }
+
+        /* ══════════════════════════════════════════════════
+           SLIDE 3 — 4 corsie onde parallele
+        ══════════════════════════════════════════════════ */
+        function initSlide3() {
+          const ids   = ['s3-lc-p', 's3-lc-s', 's3-lc-love', 's3-lc-ray'];
+          const cvs   = ids.map(id => document.getElementById(id));
+          const ctxs  = cvs.map(cv => cv ? cv.getContext('2d') : null);
+
+          function resizeAll() { cvs.forEach(cv => { if (cv) resizeCv(cv); }); }
+          resizeAll();
+          window.addEventListener('resize', resizeAll);
+
+          let t = 0, playing = true, rafId = null;
+
+          const COLS = 16, ROWS = 2;
+          const R_DOT = 3;
+
+          function drawLane(ctx, cv, drawFn) {
+            if (!ctx || !cv) return;
+            const W = cv.width, H = cv.height;
+            ctx.clearRect(0, 0, W, H);
+            ctx.fillStyle = '#06060f';
+            ctx.fillRect(0, 0, W, H);
+            drawFn(ctx, W, H);
+          }
+
+          function drawP(ctx, W, H) {
+            const k = (2 * Math.PI) / W * 3;
+            const om = 0.06, A = H*0.22;
+            const pts = makeGrid(COLS, ROWS, W, H);
+            pts.forEach(p => {
+              const dx = A * Math.sin(k * p.bx - om * t);
+              ctx.beginPath();
+              ctx.arc(p.bx + dx, p.by, R_DOT, 0, Math.PI*2);
+              ctx.fillStyle = '#C4612A';
+              ctx.fill();
+            });
+          }
+
+          function drawS(ctx, W, H) {
+            const k = (2 * Math.PI) / W * 3;
+            const om = 0.036, A = H*0.22;
+            const pts = makeGrid(COLS, ROWS, W, H);
+            pts.forEach(p => {
+              const dy = A * Math.sin(k * p.bx - om * t);
+              ctx.beginPath();
+              ctx.arc(p.bx, p.by + dy, R_DOT, 0, Math.PI*2);
+              ctx.fillStyle = '#3A7EC4';
+              ctx.fill();
+            });
+          }
+
+          function drawLove(ctx, W, H) {
+            const k = (2 * Math.PI) / W * 3;
+            const om = 0.032, A = H*0.22;
+            const pts = makeGrid(COLS, ROWS, W, H);
+            pts.forEach(p => {
+              const depth = p.by / H;
+              const dx = A * Math.sin(k * p.bx - om * t) * (0.4 + depth * 0.6);
+              const dy = -dx * 0.12 * (1 - depth);
+              const alpha = 0.5 + depth * 0.5;
+              ctx.beginPath();
+              ctx.arc(p.bx + dx, p.by + dy, R_DOT, 0, Math.PI*2);
+              ctx.fillStyle = `rgba(212,137,58,${alpha})`;
+              ctx.fill();
+            });
+          }
+
+          function drawRayleigh(ctx, W, H) {
+            const k = (2 * Math.PI) / W * 3;
+            const om = 0.029, Ax = W*0.018, Ay = H*0.22;
+            const pts = makeGrid(COLS, ROWS, W, H);
+            pts.forEach(p => {
+              const ph = k * p.bx - om * t;
+              const dx = Ax * Math.sin(ph);
+              const dy = Ay * Math.cos(ph);
+              ctx.beginPath();
+              ctx.arc(p.bx + dx, p.by + dy, R_DOT, 0, Math.PI*2);
+              ctx.fillStyle = 'rgba(245,237,224,0.7)';
+              ctx.fill();
+            });
+          }
+
+          function tick() {
+            if (!playing) return;
+            rafId = requestAnimationFrame(tick);
+            t++;
+            if (cvs[0]) drawLane(ctxs[0], cvs[0], drawP);
+            if (cvs[1]) drawLane(ctxs[1], cvs[1], drawS);
+            if (cvs[2]) drawLane(ctxs[2], cvs[2], drawLove);
+            if (cvs[3]) drawLane(ctxs[3], cvs[3], drawRayleigh);
+          }
+
+          tick();
+
+          const playBtn = document.getElementById('s3-s3-playbtn');
+          if (playBtn) playBtn.addEventListener('click', () => {
+            playing = !playing;
+            playBtn.textContent = playing ? '⏸ PAUSA' : '▶ RIPRODUCI';
+            if (playing) tick();
+          });
+
+          const obs = new IntersectionObserver(es => {
+            const vis = es[0].isIntersecting;
+            if (!vis && rafId) { cancelAnimationFrame(rafId); rafId = null; }
+            if (vis && !rafId) tick();
+          }, { threshold: 0.1 });
+          obs.observe(document.getElementById('s3-s3'));
+        }
+
+        /* ══════════════════════════════════════════════════
+           SLIDES 4-7 — canvas circolari + particelle
+        ══════════════════════════════════════════════════ */
+        function startWaveSlide(slideId, topId, botId, color, waveType) {
+          const cv1 = document.getElementById(topId);
+          const cv2 = document.getElementById(botId);
+          if (!cv1 || !cv2) return;
+          const ctx1 = cv1.getContext('2d');
+          const ctx2 = cv2.getContext('2d');
+
+          function resize() { resizeCv(cv1); resizeCv(cv2); }
+          resize();
+          window.addEventListener('resize', resize);
+
+          let t = 0, running = true;
+          const COLS = 20, ROWS = 8;
+
+          function drawCircular() {
+            const W = cv1.width, H = cv1.height;
+            ctx1.clearRect(0, 0, W, H);
+            ctx1.fillStyle = '#06060f';
+            ctx1.fillRect(0, 0, W, H);
+            const cx = W/2, cy = H/2;
+            const PERIOD = 120;
+            for (let i = 0; i < 5; i++) {
+              const ph = (t + i * PERIOD/5) % PERIOD;
+              const r  = (ph / PERIOD) * Math.max(W, H) * 0.75;
+              const al = 1 - ph / PERIOD;
+              ctx1.beginPath();
+              ctx1.arc(cx, cy, r, 0, Math.PI*2);
+              ctx1.strokeStyle = color + Math.round(al * 200).toString(16).padStart(2,'0');
+              ctx1.lineWidth = waveType === 'P' ? 1.5 : 2.5;
+              ctx1.stroke();
+            }
+            ctx1.beginPath();
+            ctx1.arc(cx, cy, 6, 0, Math.PI*2);
+            ctx1.fillStyle = color; ctx1.fill();
+          }
+
+          function drawParticles() {
+            const W = cv2.width, H = cv2.height;
+            ctx2.clearRect(0, 0, W, H);
+            ctx2.fillStyle = '#06060f';
+            ctx2.fillRect(0, 0, W, H);
+            const k = (2*Math.PI) / W * 3;
+            const om = waveType === 'P' ? 0.06 : 0.036;
+            const A  = waveType === 'Love' ? H*0.12 : H*0.1;
+            const pts = makeGrid(COLS, ROWS, W, H);
+
+            if (waveType === 'P') {
+              for (let xi = 0; xi < W; xi += 4) {
+                const comp = Math.cos(k*xi - om*t);
+                if (comp > 0.5) {
+                  ctx2.fillStyle = `rgba(196,97,42,${(comp-0.5)*0.3})`;
+                  ctx2.fillRect(xi, 0, 4, H);
+                }
+              }
+              pts.forEach(p => {
+                const dx = A * Math.sin(k*p.bx - om*t);
+                ctx2.beginPath();
+                ctx2.arc(p.bx + dx, p.by, 2.5, 0, Math.PI*2);
+                ctx2.fillStyle = color; ctx2.fill();
+              });
+            } else if (waveType === 'S') {
+              pts.forEach(p => {
+                const dy = A * Math.sin(k*p.bx - om*t);
+                ctx2.beginPath();
+                ctx2.arc(p.bx, p.by + dy, 2.5, 0, Math.PI*2);
+                ctx2.fillStyle = color; ctx2.fill();
+              });
+            } else if (waveType === 'Love') {
+              pts.forEach(p => {
+                const depth = p.by / H;
+                const dx = A * Math.sin(k*p.bx - 0.032*t) * (0.3 + depth*0.7);
+                ctx2.beginPath();
+                ctx2.arc(p.bx + dx, p.by, 2.5, 0, Math.PI*2);
+                ctx2.fillStyle = color; ctx2.fill();
+              });
+            } else {
+              const Ax = W*0.015, Ay = H*0.1;
+              pts.forEach(p => {
+                const ph = k*p.bx - 0.029*t;
+                ctx2.beginPath();
+                ctx2.arc(p.bx + Ax*Math.sin(ph), p.by + Ay*Math.cos(ph), 2.5, 0, Math.PI*2);
+                ctx2.fillStyle = color; ctx2.fill();
+              });
+            }
+          }
+
+          function loop() {
+            if (!running) return;
+            requestAnimationFrame(loop);
+            t++;
+            drawCircular();
+            drawParticles();
+          }
+          loop();
+
+          const obs = new IntersectionObserver(es => {
+            running = es[0].isIntersecting;
+            if (running) loop();
+          }, { threshold: 0.1 });
+          obs.observe(document.getElementById(slideId));
+        }
+
+        function initSlide4() { startWaveSlide('s3-s4','s3-c4-top','s3-c4-bot','#C4612A','P'); }
+        function initSlide5() { startWaveSlide('s3-s5','s3-c5-top','s3-c5-bot','#3A7EC4','S'); }
+        function initSlide6() { startWaveSlide('s3-s6','s3-c6-top','s3-c6-bot','#D4893A','Love'); }
+        function initSlide7() { startWaveSlide('s3-s7','s3-c7-top','s3-c7-bot','rgba(245,237,224,0.8)','Rayleigh'); }
+
+        /* ══════════════════════════════════════════════════
+           SLIDE 8 — Calcolatore interattivo
+        ══════════════════════════════════════════════════ */
+        function initSlide8() {
+          const cv  = document.getElementById('s3-calc-canvas');
+          if (!cv) return;
+          const ctx = cv.getContext('2d');
+          resizeCv(cv);
+          window.addEventListener('resize', () => resizeCv(cv));
+
+          const S8 = {
+            vp: 5.0, vs: 2.8,
+            ipocentro: null,
+            waves: [],
+            faldaOn: false,
+            running: false,
+          };
+
+          document.querySelectorAll('.s3-preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              document.querySelectorAll('.s3-preset-btn').forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
+              S8.vp = parseFloat(btn.dataset.vp);
+              S8.vs = parseFloat(btn.dataset.vs);
+              updateVelDisplay();
+            });
+          });
+
+          function updateVelDisplay() {
+            const disp = document.getElementById('s3-vel-disp');
+            if (!disp) return;
+            const love = (S8.vs * 0.98).toFixed(1);
+            const ray  = (S8.vs * 0.92).toFixed(1);
+            disp.innerHTML = `Vp: ${S8.vp.toFixed(1)} km/s · Vs: ${S8.vs.toFixed(1)} km/s<br>Love: ~${love} km/s · Rayleigh: ~${ray} km/s`;
+          }
+          updateVelDisplay();
+
+          const toggle = document.getElementById('s3-falda-toggle');
+          const toggleLbl = document.getElementById('s3-falda-label');
+          if (toggle) toggle.addEventListener('click', () => {
+            S8.faldaOn = !S8.faldaOn;
+            toggle.classList.toggle('on', S8.faldaOn);
+            toggle.setAttribute('aria-checked', S8.faldaOn);
+            toggleLbl.textContent = S8.faldaOn ? 'Falda acquifera attiva' : 'Terreno omogeneo';
+            drawStatic();
+          });
+
+          cv.addEventListener('click', e => {
+            const rect = cv.getBoundingClientRect();
+            const sx = cv.width / rect.width, sy = cv.height / rect.height;
+            S8.ipocentro = { x: (e.clientX - rect.left)*sx, y: (e.clientY - rect.top)*sy };
+            S8.waves = [];
+            activateLaunchBtns(true);
+            drawAll();
+          });
+
+          function activateLaunchBtns(on) {
+            ['s3-launch-p','s3-launch-s','s3-launch-both'].forEach(id => {
+              const el = document.getElementById(id);
+              if (el) el.disabled = !on;
+            });
+          }
+
+          function launchWaves(type) {
+            if (!S8.ipocentro) return;
+            const speedP = S8.vp * 0.25;
+            const speedS = S8.vs * 0.25;
+            if (type === 'P' || type === 'both')
+              S8.waves.push({ r:0, type:'P', sp:speedP, blocked:false, surfaced:false, surfOff:0 });
+            if (type === 'S' || type === 'both')
+              S8.waves.push({ r:0, type:'S', sp:speedS, blocked:false, surfaced:false, surfOff:0 });
+            if (!S8.running) { S8.running = true; animLoop(); }
+          }
+
+          ['s3-launch-p','s3-launch-s','s3-launch-both'].forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('click', () => {
+              const map = { 's3-launch-p':'P','s3-launch-s':'S','s3-launch-both':'both' };
+              launchWaves(map[id]);
+            });
+          });
+
+          const resetBtn = document.getElementById('s3-calc-reset');
+          if (resetBtn) resetBtn.addEventListener('click', () => {
+            S8.waves = [];
+            S8.running = false;
+            drawAll();
+          });
+
+          function getSurfY() { return cv.height * 0.08; }
+          function getFaldaY() { return cv.height * 0.35; }
+          function getFaldaH() { return cv.height * 0.18; }
+
+          function drawStatic() {
+            const W = cv.width, H = cv.height;
+            ctx.clearRect(0, 0, W, H);
+            ctx.fillStyle = '#181828'; ctx.fillRect(0, 0, W, H);
+            const sy = getSurfY();
+            ctx.fillStyle = '#1a2030'; ctx.fillRect(0, sy, W, H-sy);
+            if (S8.faldaOn) {
+              const fy = getFaldaY(), fh = getFaldaH();
+              ctx.fillStyle = '#1a3a5c'; ctx.fillRect(0, fy, W, fh);
+              ctx.save();
+              ctx.strokeStyle = 'rgba(58,126,196,0.3)';
+              ctx.lineWidth = 1;
+              for (let x = 0; x < W; x += 16) {
+                ctx.beginPath(); ctx.moveTo(x, fy); ctx.lineTo(x+8, fy+fh);
+                ctx.stroke();
+              }
+              ctx.restore();
+              ctx.fillStyle = 'rgba(58,126,196,0.5)';
+              ctx.font = '400 9px "JetBrains Mono",monospace';
+              ctx.fillText('FALDA ACQUIFERA', 10, fy + fh/2 + 4);
+            }
+            ctx.beginPath(); ctx.moveTo(0, sy); ctx.lineTo(W, sy);
+            ctx.strokeStyle = 'rgba(245,237,224,0.5)'; ctx.lineWidth = 2; ctx.stroke();
+            if (!S8.ipocentro) {
+              ctx.fillStyle = 'rgba(245,237,224,0.15)';
+              ctx.font = '300 14px "Cormorant Garamond",serif';
+              ctx.textAlign = 'center';
+              ctx.fillText('Clicca nel canvas per posizionare l\'ipocentro', W/2, H/2);
+              ctx.textAlign = 'left';
+            }
+          }
+
+          let sWaveBlockedMsg = 0;
+
+          function drawAll() {
+            drawStatic();
+            if (!S8.ipocentro) return;
+            const { x: hx, y: hy } = S8.ipocentro;
+            const sy = getSurfY(), fy = getFaldaY();
+
+            S8.waves.forEach(w => {
+              if (w.type === 'P') {
+                const al = Math.max(0, 1 - w.r / (cv.width * 0.9));
+                ctx.beginPath();
+                ctx.arc(hx, hy, w.r, 0, Math.PI*2);
+                ctx.strokeStyle = `rgba(196,97,42,${al * 0.85})`;
+                ctx.lineWidth = 1.5; ctx.stroke();
+              } else {
+                if (S8.faldaOn && !w.blocked) {
+                  const distFalda = hy - fy;
+                  if (w.r >= Math.abs(distFalda)) { w.blocked = true; sWaveBlockedMsg = 120; }
+                }
+                if (!w.blocked) {
+                  const al = Math.max(0, 1 - w.r / (cv.width * 0.9));
+                  ctx.beginPath();
+                  ctx.arc(hx, hy, w.r, 0, Math.PI*2);
+                  ctx.strokeStyle = `rgba(58,126,196,${al * 0.85})`;
+                  ctx.lineWidth = 2.5; ctx.stroke();
+                } else {
+                  ctx.beginPath();
+                  ctx.arc(hx, hy, w.r, 0, Math.PI*2);
+                  ctx.strokeStyle = 'rgba(58,126,196,0.15)';
+                  ctx.lineWidth = 2; ctx.setLineDash([4,4]); ctx.stroke();
+                  ctx.setLineDash([]);
+                }
+              }
+
+              if (w.type === 'P' && !w.surfaced) {
+                const distSurf = hy - sy;
+                if (w.r >= Math.abs(distSurf)) { w.surfaced = true; }
+              }
+              if (w.surfaced && w.type === 'P') {
+                w.surfOff++;
+                const sof = w.surfOff;
+                for (let dir = -1; dir <= 1; dir += 2) {
+                  const ox = hx + dir * sof;
+                  const al = Math.max(0, 1 - sof / (cv.width * 0.6));
+                  ctx.beginPath();
+                  for (let xi = 0; xi <= 30; xi++) {
+                    const px = ox + dir*xi;
+                    const py = sy + Math.sin(xi * 0.4 - sof * 0.1) * 5 * al;
+                    xi === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+                  }
+                  ctx.strokeStyle = `rgba(212,137,58,${al * 0.7})`;
+                  ctx.lineWidth = 2; ctx.stroke();
+                }
+                if (sof < 60) {
+                  ctx.fillStyle = 'rgba(212,137,58,0.6)';
+                  ctx.font = '400 8px "JetBrains Mono",monospace';
+                  ctx.fillText('Love', hx + sof + 5, sy - 5);
+                  ctx.fillText('Rayleigh', hx - sof - 55, sy - 5);
+                }
+              }
+            });
+
+            if (sWaveBlockedMsg > 0) {
+              sWaveBlockedMsg--;
+              const alpha = Math.min(1, sWaveBlockedMsg / 30);
+              ctx.fillStyle = `rgba(139,26,26,${alpha})`;
+              ctx.font = '400 10px "JetBrains Mono",monospace';
+              ctx.textAlign = 'center';
+              ctx.fillText("Le onde S non si propagano nell'acqua", cv.width/2, getFaldaY() - 10);
+              ctx.textAlign = 'left';
+            }
+
+            ctx.beginPath(); ctx.arc(hx, hy, 7, 0, Math.PI*2);
+            ctx.fillStyle = 'rgba(196,97,42,0.3)'; ctx.fill();
+            ctx.beginPath(); ctx.arc(hx, hy, 5, 0, Math.PI*2);
+            ctx.fillStyle = '#C4612A'; ctx.fill();
+            ctx.fillStyle = 'rgba(245,237,224,0.5)';
+            ctx.font = '400 8px "JetBrains Mono",monospace';
+            ctx.fillText('IPOCENTRO', hx + 8, hy - 6);
+          }
+
+          function animLoop() {
+            if (!S8.running) return;
+            requestAnimationFrame(animLoop);
+            S8.waves.forEach(w => {
+              if (!w.blocked) w.r += w.sp;
+            });
+            drawAll();
+            if (S8.waves.every(w => w.r > cv.width * 1.2 || w.blocked)) {
+              S8.running = false;
+            }
+          }
+
+          drawStatic();
+
+          const obs = new IntersectionObserver(es => {
+            if (!es[0].isIntersecting) S8.running = false;
+          }, { threshold: 0.1 });
+          obs.observe(document.getElementById('s3-s8'));
+        }
+
+        /* ══════════════════════════════════════════════════
+           SLIDE 9 — Nucleo liquido della Terra
+        ══════════════════════════════════════════════════ */
+        function initSlide9() {
+          const cv  = document.getElementById('s3-core-canvas');
+          if (!cv) return;
+          const ctx = cv.getContext('2d');
+          resizeCv(cv);
+
+          const W = cv.width, H = cv.height;
+          const CX = W/2, CY = H/2;
+          const MAX_R = Math.min(W, H) * 0.47;
+
+          const layers = [
+            { rFrac:0.95, color:'#2d3a4a', label:'Crosta · solida',        state:'solido'  },
+            { rFrac:0.68, color:'#3d4a5a', label:'Mantello · solido',       state:'solido'  },
+            { rFrac:0.38, color:'#1a3a5c', label:'Nucleo est. · LIQUIDO',   state:'LIQUIDO' },
+            { rFrac:0.14, color:'#4a3020', label:'Nucleo int. · solido',    state:'solido'  },
+          ];
+
+          function drawCore() {
+            ctx.clearRect(0, 0, W, H);
+            ctx.fillStyle = '#06060f'; ctx.fillRect(0, 0, W, H);
+            layers.forEach(l => {
+              const r = l.rFrac * MAX_R;
+              ctx.beginPath(); ctx.arc(CX, CY, r, 0, Math.PI*2);
+              ctx.fillStyle = l.color; ctx.fill();
+              if (l.state === 'LIQUIDO') {
+                ctx.save();
+                ctx.clip();
+                ctx.strokeStyle = 'rgba(58,126,196,0.2)'; ctx.lineWidth = 1;
+                for (let xi = CX - r; xi < CX + r; xi += 14) {
+                  ctx.beginPath(); ctx.moveTo(xi, CY-r); ctx.lineTo(xi+r*0.5, CY+r);
+                  ctx.stroke();
+                }
+                ctx.restore();
+              }
+              ctx.fillStyle = 'rgba(245,237,224,0.35)';
+              ctx.font = '300 8px "JetBrains Mono",monospace';
+              ctx.textAlign = 'center';
+              ctx.fillText(l.label, CX, CY - r + 12);
+            });
+            ctx.textAlign = 'left';
+          }
+
+          drawCore();
+
+          let anim = null;
+          const statusEl = document.getElementById('s3-core-status');
+
+          function animRay(type) {
+            if (anim) { cancelAnimationFrame(anim); anim = null; }
+            drawCore();
+            const color = type === 'P' ? '#C4612A' : '#3A7EC4';
+            const mantleR = layers[1].rFrac * MAX_R;
+            let prog = 0;
+            const STEPS = 180;
+
+            function step() {
+              prog += 1/STEPS;
+              if (prog > 1) prog = 1;
+              drawCore();
+
+              const startX = CX - MAX_R;
+              const endX   = CX + MAX_R;
+              const currX  = startX + (endX - startX) * prog;
+
+              if (type === 'P') {
+                ctx.beginPath();
+                ctx.moveTo(startX, CY);
+                ctx.lineTo(Math.min(currX, endX), CY);
+                ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.stroke();
+
+                if (prog >= 1) {
+                  if (statusEl) {
+                    statusEl.textContent = "✓ L'onda P attraversa tutto";
+                    statusEl.style.color = '#C4612A';
+                  }
+                  return;
+                }
+              } else {
+                const stopX = CX - mantleR;
+                const drawTo = Math.min(currX, stopX);
+                ctx.beginPath();
+                ctx.moveTo(startX, CY);
+                ctx.lineTo(drawTo, CY);
+                ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.stroke();
+
+                if (currX >= stopX) {
+                  const flashAlpha = Math.sin(prog * Math.PI * 8) * 0.5 + 0.5;
+                  ctx.beginPath();
+                  ctx.arc(stopX, CY, 10, 0, Math.PI*2);
+                  ctx.fillStyle = `rgba(139,26,26,${flashAlpha * 0.8})`; ctx.fill();
+
+                  if (statusEl) {
+                    statusEl.textContent = "✗ L'onda S si ferma — nucleo esterno liquido";
+                    statusEl.style.color = '#8B1A1A';
+                  }
+
+                  ctx.fillStyle = 'rgba(0,0,0,0.45)';
+                  ctx.beginPath();
+                  ctx.arc(CX, CY, MAX_R, -Math.PI*0.3, Math.PI*0.3);
+                  ctx.lineTo(CX, CY); ctx.closePath(); ctx.fill();
+                  ctx.fillStyle = 'rgba(245,237,224,0.2)';
+                  ctx.font = '300 8px "JetBrains Mono",monospace';
+                  ctx.textAlign = 'center';
+                  ctx.fillText('Zona d\'ombra', CX + MAX_R*0.75, CY);
+                  ctx.textAlign = 'left';
+
+                  if (prog >= 1) return;
+                }
+              }
+              anim = requestAnimationFrame(step);
+            }
+            step();
+          }
+
+          const btnP = document.getElementById('s3-core-p');
+          const btnS = document.getElementById('s3-core-s');
+          if (btnP) btnP.addEventListener('click', () => animRay('P'));
+          if (btnS) btnS.addEventListener('click', () => animRay('S'));
+
+          const obs = new IntersectionObserver(es => {
+            if (!es[0].isIntersecting && anim) { cancelAnimationFrame(anim); anim = null; }
+          }, { threshold: 0.1 });
+          obs.observe(document.getElementById('s3-s9'));
+        }
+
+        /* Avvio carosello */
+        goTo(0, false);
+
+        return { goTo };
+      })();
+      </script>
+    </section><!-- /s-section3 -->
+
     <!-- ══ S4 · CITTÀ ══ -->
     <section class="slide" id="s-city">
         <div class="city-grid">
