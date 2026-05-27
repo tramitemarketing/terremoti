@@ -38,8 +38,7 @@
         /* ─── CUSTOM CURSOR ─── */
         #cursor {
             position: fixed;
-            width: 10px;
-            height: 10px;
+            width: 10px; height: 10px;
             background: var(--terracotta);
             border-radius: 50%;
             pointer-events: none;
@@ -50,8 +49,7 @@
         }
         #cursor-ring {
             position: fixed;
-            width: 32px;
-            height: 32px;
+            width: 32px; height: 32px;
             border: 1px solid rgba(196,97,42,0.4);
             border-radius: 50%;
             pointer-events: none;
@@ -75,9 +73,7 @@
             right: 1.8rem; top: 50%;
             transform: translateY(-50%);
             z-index: 200;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
+            display: flex; flex-direction: column; gap: 0.75rem;
         }
         .dot {
             width: 5px; height: 5px;
@@ -86,10 +82,7 @@
             cursor: pointer;
             transition: all 0.35s ease;
         }
-        .dot.active {
-            background: var(--terracotta);
-            transform: scale(1.8);
-        }
+        .dot.active { background: var(--terracotta); transform: scale(1.8); }
 
         #slide-counter {
             position: fixed;
@@ -174,10 +167,7 @@
             opacity: 0.5;
         }
 
-        .hero-inner {
-            position: relative; z-index: 2;
-            text-align: center;
-        }
+        .hero-inner { position: relative; z-index: 2; text-align: center; }
 
         .eyebrow {
             font-family: 'JetBrains Mono', monospace;
@@ -199,10 +189,7 @@
             opacity: 0;
             animation: riseUp 0.9s 0.7s forwards;
         }
-        .hero-title em {
-            font-style: italic;
-            color: var(--terracotta);
-        }
+        .hero-title em { font-style: italic; color: var(--terracotta); }
 
         .hero-sub {
             font-family: 'JetBrains Mono', monospace;
@@ -214,11 +201,7 @@
             animation: riseUp 0.9s 1.0s forwards;
         }
 
-        .hero-cta {
-            margin-top: 3.5rem;
-            opacity: 0;
-            animation: riseUp 0.9s 1.4s forwards;
-        }
+        .hero-cta { margin-top: 3.5rem; opacity: 0; animation: riseUp 0.9s 1.4s forwards; }
         .btn-enter {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem;
@@ -234,8 +217,7 @@
         }
         .btn-enter::before {
             content: '';
-            position: absolute;
-            inset: 0; left: -100%;
+            position: absolute; inset: 0; left: -100%;
             background: var(--terracotta);
             transition: left 0.35s ease;
             z-index: -1;
@@ -243,49 +225,24 @@
         .btn-enter:hover::before { left: 0; }
         .btn-enter:hover { border-color: var(--terracotta); }
 
-        /* epicenter pulse */
-        .epicenter {
-            position: absolute;
-            bottom: 28%; right: 18%;
-            opacity: 0;
-            animation: fadeIn 1s 2.2s forwards;
-        }
-        .pulse {
-            width: 10px; height: 10px;
-            background: var(--blood);
-            border-radius: 50%;
-            position: relative;
-        }
+        .epicenter { position: absolute; bottom: 28%; right: 18%; opacity: 0; animation: fadeIn 1s 2.2s forwards; }
+        .pulse { width: 10px; height: 10px; background: var(--blood); border-radius: 50%; position: relative; }
         .pulse::before, .pulse::after {
             content: '';
-            position: absolute;
-            inset: 0;
+            position: absolute; inset: 0;
             border: 1px solid var(--blood);
             border-radius: 50%;
             animation: pulseRing 2.5s ease-out infinite;
         }
         .pulse::after { animation-delay: 1.25s; }
-        @keyframes pulseRing {
-            0%   { inset: 0; opacity: 0.8; }
-            100% { inset: -25px; opacity: 0; }
-        }
-
-        @keyframes riseUp {
-            from { opacity: 0; transform: translateY(22px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
+        @keyframes pulseRing { 0% { inset: 0; opacity: 0.8; } 100% { inset: -25px; opacity: 0; } }
+        @keyframes riseUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { to { opacity: 1; } }
 
         /* ══════════════════ SLIDE 2 · DATI ══════════════════ */
         #s-data { background: var(--charcoal); }
 
-        .data-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.8fr;
-            width: 100%; height: 100%;
-        }
+        .data-grid { display: grid; grid-template-columns: 1fr 1.8fr; width: 100%; height: 100%; }
 
         .data-left {
             background: var(--terracotta);
@@ -295,8 +252,7 @@
         }
         .data-left::after {
             content: '';
-            position: absolute;
-            bottom: -25%; right: -25%;
+            position: absolute; bottom: -25%; right: -25%;
             width: 70%; aspect-ratio: 1;
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 50%;
@@ -310,18 +266,10 @@
             color: rgba(255,255,255,0.5);
             margin-bottom: 0.9rem;
         }
-        .panel-title {
-            font-size: clamp(2rem, 3.5vw, 3.8rem);
-            font-weight: 300;
-            line-height: 1.1;
-            color: #fff;
-        }
+        .panel-title { font-size: clamp(2rem, 3.5vw, 3.8rem); font-weight: 300; line-height: 1.1; color: #fff; }
         .panel-title em { font-style: italic; }
 
-        .data-right {
-            display: flex; flex-direction: column; justify-content: center;
-            padding: 4rem 5rem;
-        }
+        .data-right { display: flex; flex-direction: column; justify-content: center; padding: 4rem 5rem; }
         .stat-row {
             display: flex; align-items: baseline; gap: 1.2rem;
             padding: 1.6rem 0;
@@ -338,33 +286,154 @@
             min-width: 7.5rem;
             letter-spacing: -0.02em;
         }
-        .stat-info {}
-        .stat-label {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: var(--cream);
-            margin-bottom: 0.25rem;
+        .stat-label { font-size: 1.15rem; font-weight: 600; color: var(--cream); margin-bottom: 0.25rem; }
+        .stat-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em; color: rgba(245,237,224,0.35); }
+
+        /* ══════════════════ SLIDE 3 · SCIENZA — CAROSELLO ══════════════════ */
+        #s-science { background: #060810; padding: 0; }
+
+        /* ── Carosello container ── */
+        .sci-carousel {
+            width: 100%; height: 100%;
+            position: relative;
+            overflow: hidden;
         }
-        .stat-sub {
+
+        .sci-track {
+            display: flex;
+            width: 100%; height: 100%;
+            transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+        }
+
+        .sci-slide {
+            min-width: 100%; height: 100%;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ── Frecce ── */
+        .sci-arrow {
+            position: absolute;
+            top: 50%; transform: translateY(-50%);
+            z-index: 50;
+            width: 52px; height: 52px;
+            background: rgba(6, 8, 16, 0.82);
+            border: 1px solid rgba(245, 237, 224, 0.12);
+            color: rgba(245,237,224,0.7);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: border-color 0.3s, background 0.3s, color 0.3s, opacity 0.3s;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .sci-arrow:hover {
+            border-color: var(--blue);
+            background: rgba(58, 126, 196, 0.14);
+            color: var(--blue);
+        }
+        .sci-arrow svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+        .sci-prev { left: 1.2rem; }
+        .sci-next { right: 1.2rem; }
+        .sci-arrow[disabled] { opacity: 0.1; pointer-events: none; }
+
+        /* ── Nav bottom ── */
+        .sci-nav {
+            position: absolute;
+            bottom: 1.6rem; left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            display: flex; align-items: center; gap: 1.4rem;
+        }
+        .sci-dots-row { display: flex; gap: 0.55rem; align-items: center; }
+        .sci-dot-item {
+            width: 5px; height: 5px;
+            background: rgba(58, 126, 196, 0.2);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.35s ease;
+        }
+        .sci-dot-item.active { background: var(--blue); transform: scale(1.9); }
+        .sci-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.56rem;
+            letter-spacing: 0.28em;
+            color: rgba(245,237,224,0.18);
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* ── Hint swipe (mobile) ── */
+        .sci-swipe-hint {
+            position: absolute;
+            bottom: 3.8rem; left: 50%;
+            transform: translateX(-50%);
+            z-index: 49;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.5rem;
+            letter-spacing: 0.3em;
+            color: rgba(245,237,224,0.1);
+            text-transform: uppercase;
+            white-space: nowrap;
+            pointer-events: none;
+            display: none;
+        }
+        @media (pointer: coarse) { .sci-swipe-hint { display: block; } }
+
+        /* ── Placeholder sub-slides ── */
+        .sci-ph {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 0.8rem;
+            padding: 6rem 8rem;
+            background: #060810;
+        }
+        .sci-ph-tag {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.62rem;
-            letter-spacing: 0.1em;
-            color: rgba(245,237,224,0.35);
+            letter-spacing: 0.35em;
+            color: var(--blue);
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+        .sci-ph-title {
+            font-size: clamp(2rem, 4vw, 4.5rem);
+            font-weight: 300;
+            line-height: 1.1;
+            color: var(--cream);
+            text-align: center;
+        }
+        .sci-ph-title em { font-style: italic; color: var(--blue); }
+        .sci-ph-desc {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: rgba(245,237,224,0.4);
+            text-align: center;
+            max-width: 560px;
+            margin-top: 0.5rem;
+        }
+        .sci-ph-badge {
+            margin-top: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.55rem;
+            letter-spacing: 0.3em;
+            color: rgba(58,126,196,0.35);
+            text-transform: uppercase;
+            border: 1px solid rgba(58,126,196,0.15);
+            padding: 0.4rem 1rem;
         }
 
-        /* ══════════════════ SLIDE 3 · SCIENZA ══════════════════ */
-        #s-science { background: #060810; }
-
+        /* ── sci-3 · Onde P e S ── */
         .science-wrap {
             width: 100%; height: 100%;
             display: grid;
             grid-template-rows: auto 1fr;
-            padding: 4rem;
-            gap: 2.5rem;
+            padding: 3.5rem 4rem 4.5rem;
+            gap: 2rem;
         }
-        .science-head {
-            display: flex; justify-content: space-between; align-items: flex-end;
-        }
+        .science-head { display: flex; justify-content: space-between; align-items: flex-end; }
         .science-head-right {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.62rem;
@@ -374,82 +443,93 @@
             text-align: right;
             line-height: 1.8;
         }
-        .sci-title {
-            font-size: clamp(2rem, 3.5vw, 3.8rem);
-            font-weight: 300;
-            line-height: 1.15;
-        }
+        .sci-title { font-size: clamp(2rem, 3.5vw, 3.8rem); font-weight: 300; line-height: 1.15; }
         .sci-title span { color: var(--blue); }
 
-        .science-body {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
+        .science-body { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3.5rem; align-items: center; }
 
-        #wave-canvas {
-            width: 100%; height: 260px;
-            border: 1px solid rgba(58,126,196,0.15);
-            display: block;
-        }
+        #wave-canvas { width: 100%; height: 240px; border: 1px solid rgba(58,126,196,0.15); display: block; }
 
-        .wave-legend { display: flex; flex-direction: column; gap: 2rem; }
+        .wave-legend { display: flex; flex-direction: column; gap: 1.8rem; }
         .wave-item { display: flex; align-items: flex-start; gap: 1.2rem; }
-        .wave-bar {
-            width: 36px; height: 2px;
-            margin-top: 0.65rem; flex-shrink: 0;
-        }
+        .wave-bar { width: 36px; height: 2px; margin-top: 0.65rem; flex-shrink: 0; }
         .wave-bar.p  { background: var(--blue); }
         .wave-bar.s  { background: var(--red-wave); }
         .wave-bar.surf { background: rgba(196,97,42,0.5); }
-        .wave-tag {
+        .wave-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; color: rgba(245,237,224,0.4); text-transform: uppercase; margin-bottom: 0.35rem; }
+        .wave-desc { font-size: 0.97rem; line-height: 1.65; color: rgba(245,237,224,0.65); }
+
+        /* ── sci-4 · Storia sismografi ── */
+        .seismo-history {
+            width: 100%; height: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+        }
+        .seis-hist-left {
+            background: var(--blue);
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 4rem 3.5rem;
+            position: relative; overflow: hidden;
+        }
+        .seis-hist-left::after {
+            content: '';
+            position: absolute; bottom: -20%; right: -20%;
+            width: 60%; aspect-ratio: 1;
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 50%;
+        }
+        .seis-hist-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 0.9rem; }
+        .seis-hist-title { font-size: clamp(1.8rem, 3vw, 3.5rem); font-weight: 300; line-height: 1.1; color: #fff; }
+        .seis-hist-title em { font-style: italic; }
+        .seis-hist-right {
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 3.5rem 4.5rem 5rem;
+            gap: 0;
+            overflow-y: auto;
+        }
+        .timeline-item {
+            display: flex; gap: 1.4rem;
+            padding: 1.2rem 0;
+            border-bottom: 1px solid rgba(245,237,224,0.05);
+            position: relative;
+        }
+        .timeline-item:last-child { border-bottom: none; }
+        .tl-year {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.62rem;
-            letter-spacing: 0.2em;
-            color: rgba(245,237,224,0.4);
-            text-transform: uppercase;
-            margin-bottom: 0.35rem;
+            font-size: 0.68rem;
+            letter-spacing: 0.15em;
+            color: var(--blue);
+            min-width: 4rem;
+            padding-top: 0.1rem;
+            flex-shrink: 0;
         }
-        .wave-desc {
-            font-size: 0.97rem;
-            line-height: 1.65;
-            color: rgba(245,237,224,0.65);
+        .tl-dot {
+            width: 7px; height: 7px;
+            border: 1px solid var(--blue);
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 0.3rem;
         }
+        .tl-content {}
+        .tl-name { font-size: 1rem; font-weight: 600; color: var(--cream); margin-bottom: 0.2rem; }
+        .tl-desc { font-size: 0.85rem; line-height: 1.65; color: rgba(245,237,224,0.45); }
 
-        /* ══════════════════ SLIDE 4 · SISMOGRAFO ══════════════════ */
-        #s-seismo { background: #060606; }
-
+        /* ── sci-5 · Sismografo ── */
         .seismo-wrap {
             width: 100%; height: 100%;
-            padding: 4rem 5rem;
+            padding: 3.5rem 5rem 5rem;
             display: flex; flex-direction: column; justify-content: center;
-            gap: 2rem;
+            gap: 1.8rem;
+            background: #060606;
         }
-        .seismo-date {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem;
-            letter-spacing: 0.3em;
-            color: var(--terracotta);
-            text-transform: uppercase;
-        }
-        .seismo-title {
-            font-size: clamp(2rem, 3.2vw, 3.5rem);
-            font-weight: 300;
-            line-height: 1.2;
-        }
+        .seismo-date { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; color: var(--terracotta); text-transform: uppercase; }
+        .seismo-title { font-size: clamp(2rem, 3.2vw, 3.5rem); font-weight: 300; line-height: 1.2; }
 
         #seismo-canvas { width: 100%; height: 180px; display: block; }
 
-        .seismo-scale {
-            display: flex; justify-content: space-between;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.55rem;
-            letter-spacing: 0.1em;
-            color: rgba(245,237,224,0.2);
-        }
+        .seismo-scale { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.1em; color: rgba(245,237,224,0.2); }
 
-        .mag-display { text-align: center; padding-top: 1rem; }
+        .mag-display { text-align: center; padding-top: 0.5rem; }
         .mag-num {
             font-family: 'JetBrains Mono', monospace;
             font-size: clamp(5rem, 10vw, 10rem);
@@ -459,22 +539,57 @@
             line-height: 1;
             letter-spacing: -0.02em;
         }
-        .mag-sub {
+        .mag-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; color: rgba(245,237,224,0.3); text-transform: uppercase; margin-top: 0.4rem; }
+
+        /* ── sci-6 · Calcolo epicentro ── */
+        .epicentro-wrap {
+            width: 100%; height: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+        .epicentro-left {
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 3.5rem 4rem 5rem;
+            gap: 1.8rem;
+            background: #060810;
+        }
+        .epicentro-right {
+            display: flex; align-items: center; justify-content: center;
+            background: #050709;
+            padding: 3rem;
+        }
+        .formula-block {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(58,126,196,0.06);
+            border: 1px solid rgba(58,126,196,0.2);
+            border-left: 3px solid var(--blue);
+            padding: 1.4rem 1.8rem;
+            margin: 0.5rem 0;
+        }
+        .formula-main { font-size: 1.1rem; color: var(--blue); letter-spacing: 0.05em; line-height: 2; }
+        .formula-note { font-size: 0.6rem; color: rgba(245,237,224,0.35); letter-spacing: 0.12em; margin-top: 0.4rem; }
+        .ep-title { font-size: clamp(1.8rem, 3vw, 3.2rem); font-weight: 300; line-height: 1.1; }
+        .ep-title span { color: var(--blue); }
+        .ep-desc { font-size: 0.95rem; line-height: 1.75; color: rgba(245,237,224,0.5); }
+        .ep-data-row { display: flex; flex-direction: column; gap: 0.5rem; }
+        .ep-station {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.65rem 0;
+            border-bottom: 1px solid rgba(245,237,224,0.05);
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.62rem;
-            letter-spacing: 0.3em;
-            color: rgba(245,237,224,0.3);
-            text-transform: uppercase;
-            margin-top: 0.4rem;
         }
+        .ep-station:last-child { border-bottom: none; }
+        .ep-st-name { color: rgba(245,237,224,0.5); letter-spacing: 0.1em; }
+        .ep-st-dist { color: var(--blue); }
+        .ep-st-dt   { color: var(--terracotta); }
+        #epicentro-canvas { width: 100%; height: 100%; display: block; }
 
-        /* ══════════════════ SLIDE 5 · CITTÀ ══════════════════ */
+        /* ══════════════════ SLIDE 4 · CITTÀ ══════════════════ */
         #s-city { background: var(--black); }
 
-        .city-grid {
-            display: grid; grid-template-columns: 1fr 1fr;
-            width: 100%; height: 100%;
-        }
+        .city-grid { display: grid; grid-template-columns: 1fr 1fr; width: 100%; height: 100%; }
         .city-left {
             background: linear-gradient(150deg, #120800 0%, #1e0d00 100%);
             display: flex; flex-direction: column; justify-content: center;
@@ -483,65 +598,27 @@
         }
         .city-left::before {
             content: '309';
-            position: absolute;
-            right: -0.05em; bottom: -0.1em;
+            position: absolute; right: -0.05em; bottom: -0.1em;
             font-size: 28vw; font-weight: 700;
             color: rgba(196,97,42,0.035);
-            line-height: 1;
-            font-family: 'JetBrains Mono', monospace;
-            pointer-events: none;
-            user-select: none;
+            line-height: 1; font-family: 'JetBrains Mono', monospace;
+            pointer-events: none; user-select: none;
         }
         .city-tag { color: var(--terracotta); margin-bottom: 1.2rem; }
-        .city-title {
-            font-size: clamp(2rem, 3.5vw, 3.8rem);
-            font-weight: 300;
-            line-height: 1.15;
-            margin-bottom: 2rem;
-        }
-        .city-body {
-            font-size: 1rem;
-            line-height: 1.85;
-            color: rgba(245,237,224,0.6);
-        }
+        .city-title { font-size: clamp(2rem, 3.5vw, 3.8rem); font-weight: 300; line-height: 1.15; margin-bottom: 2rem; }
+        .city-body { font-size: 1rem; line-height: 1.85; color: rgba(245,237,224,0.6); }
 
-        .city-right {
-            display: grid; grid-template-rows: 1fr 1fr;
-        }
-        .damage-block {
-            display: flex; flex-direction: column; justify-content: center;
-            padding: 3.5rem 4rem;
-            border-bottom: 1px solid rgba(245,237,224,0.04);
-        }
+        .city-right { display: grid; grid-template-rows: 1fr 1fr; }
+        .damage-block { display: flex; flex-direction: column; justify-content: center; padding: 3.5rem 4rem; border-bottom: 1px solid rgba(245,237,224,0.04); }
         .damage-block:last-child { border-bottom: none; }
-        .damage-num {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: clamp(2.5rem, 5vw, 5rem);
-            font-weight: 300;
-            color: var(--terracotta);
-            line-height: 1;
-            letter-spacing: -0.02em;
-        }
-        .damage-label {
-            font-size: 1.1rem;
-            color: var(--cream);
-            margin-top: 0.5rem;
-        }
-        .damage-sub {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.6rem;
-            color: rgba(245,237,224,0.3);
-            letter-spacing: 0.12em;
-            margin-top: 0.3rem;
-        }
+        .damage-num { font-family: 'JetBrains Mono', monospace; font-size: clamp(2.5rem, 5vw, 5rem); font-weight: 300; color: var(--terracotta); line-height: 1; letter-spacing: -0.02em; }
+        .damage-label { font-size: 1.1rem; color: var(--cream); margin-top: 0.5rem; }
+        .damage-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: rgba(245,237,224,0.3); letter-spacing: 0.12em; margin-top: 0.3rem; }
 
-        /* ══════════════════ SLIDE 6 · OPERE D'ARTE ══════════════════ */
+        /* ══════════════════ SLIDE 5 · OPERE D'ARTE ══════════════════ */
         #s-art { background: #f5ede0; }
 
-        .art-grid {
-            display: grid; grid-template-columns: 1.2fr 1fr;
-            width: 100%; height: 100%;
-        }
+        .art-grid { display: grid; grid-template-columns: 1.2fr 1fr; width: 100%; height: 100%; }
 
         .art-panel-left {
             background: #100a04;
@@ -551,186 +628,48 @@
         }
         .art-lines {
             position: absolute; inset: 0;
-            background: repeating-linear-gradient(
-                0deg, transparent, transparent 45px,
-                rgba(196,97,42,0.025) 45px, rgba(196,97,42,0.025) 46px
-            );
+            background: repeating-linear-gradient(0deg, transparent, transparent 45px, rgba(196,97,42,0.025) 45px, rgba(196,97,42,0.025) 46px);
         }
-        .art-panel-label {
-            position: absolute;
-            top: 3.5rem; left: 3.5rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.58rem;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: rgba(245,237,224,0.25);
-        }
-        #art-name {
-            font-size: clamp(1.3rem, 2.2vw, 2.2rem);
-            font-weight: 600;
-            color: var(--cream);
-            margin-bottom: 0.4rem;
-            position: relative; z-index: 2;
-            transition: opacity 0.3s;
-        }
-        #art-year {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem;
-            letter-spacing: 0.18em;
-            color: rgba(245,237,224,0.35);
-            position: relative; z-index: 2;
-        }
-        .damage-bar-wrap {
-            margin-top: 1.2rem;
-            height: 2px;
-            background: rgba(245,237,224,0.07);
-            position: relative; z-index: 2;
-        }
-        #art-damage-fill {
-            position: absolute; top: 0; left: 0;
-            height: 100%;
-            background: var(--terracotta);
-            transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
-        }
-        #art-damage-pct {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.58rem;
-            color: rgba(245,237,224,0.3);
-            letter-spacing: 0.12em;
-            margin-top: 0.4rem;
-            position: relative; z-index: 2;
-        }
+        .art-panel-label { position: absolute; top: 3.5rem; left: 3.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(245,237,224,0.25); }
+        #art-name { font-size: clamp(1.3rem, 2.2vw, 2.2rem); font-weight: 600; color: var(--cream); margin-bottom: 0.4rem; position: relative; z-index: 2; transition: opacity 0.3s; }
+        #art-year { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.18em; color: rgba(245,237,224,0.35); position: relative; z-index: 2; }
+        .damage-bar-wrap { margin-top: 1.2rem; height: 2px; background: rgba(245,237,224,0.07); position: relative; z-index: 2; }
+        #art-damage-fill { position: absolute; top: 0; left: 0; height: 100%; background: var(--terracotta); transition: width 0.7s cubic-bezier(0.4,0,0.2,1); }
+        #art-damage-pct { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: rgba(245,237,224,0.3); letter-spacing: 0.12em; margin-top: 0.4rem; position: relative; z-index: 2; }
 
-        .art-panel-right {
-            background: #f5ede0;
-            display: flex; flex-direction: column; justify-content: center;
-            padding: 4rem;
-        }
-        .art-tag {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.6rem;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: var(--terracotta);
-            margin-bottom: 1.2rem;
-        }
-        .art-title {
-            font-size: clamp(1.8rem, 3vw, 3rem);
-            font-weight: 600;
-            line-height: 1.1;
-            color: #080808;
-            margin-bottom: 2rem;
-        }
+        .art-panel-right { background: #f5ede0; display: flex; flex-direction: column; justify-content: center; padding: 4rem; }
+        .art-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--terracotta); margin-bottom: 1.2rem; }
+        .art-title { font-size: clamp(1.8rem, 3vw, 3rem); font-weight: 600; line-height: 1.1; color: #080808; margin-bottom: 2rem; }
         .art-list { list-style: none; }
-        .art-item {
-            display: flex; align-items: center; gap: 0.9rem;
-            padding: 0.85rem 0;
-            border-bottom: 1px solid rgba(8,8,8,0.07);
-            font-size: 0.95rem;
-            color: rgba(8,8,8,0.65);
-            cursor: pointer;
-            transition: color 0.2s;
-        }
+        .art-item { display: flex; align-items: center; gap: 0.9rem; padding: 0.85rem 0; border-bottom: 1px solid rgba(8,8,8,0.07); font-size: 0.95rem; color: rgba(8,8,8,0.65); cursor: pointer; transition: color 0.2s; }
         .art-item:last-child { border-bottom: none; }
         .art-item:hover, .art-item.active { color: var(--terracotta); }
-        .art-item::before {
-            content: '';
-            width: 5px; height: 5px;
-            background: currentColor;
-            border-radius: 50%;
-            flex-shrink: 0;
-            transition: background 0.2s;
-        }
+        .art-item::before { content: ''; width: 5px; height: 5px; background: currentColor; border-radius: 50%; flex-shrink: 0; transition: background 0.2s; }
 
-        /* ══════════════════ SLIDE 7 · RICOSTRUZIONE ══════════════════ */
+        /* ══════════════════ SLIDE 6 · RICOSTRUZIONE ══════════════════ */
         #s-rebuild { background: var(--black); }
 
-        .rebuild-wrap {
-            width: 100%; height: 100%;
-            padding: 4rem 5rem;
-            display: flex; flex-direction: column; justify-content: center;
-        }
+        .rebuild-wrap { width: 100%; height: 100%; padding: 4rem 5rem; display: flex; flex-direction: column; justify-content: center; }
         .rebuild-head { margin-bottom: 3rem; }
-        .rebuild-title {
-            font-size: clamp(2rem, 3.5vw, 3.8rem);
-            font-weight: 300;
-            line-height: 1.15;
-        }
+        .rebuild-title { font-size: clamp(2rem, 3.5vw, 3.8rem); font-weight: 300; line-height: 1.15; }
 
-        .cards-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-        }
-        .card {
-            border: 1px solid rgba(245,237,224,0.07);
-            padding: 2rem;
-            position: relative; overflow: hidden;
-            transition: border-color 0.3s;
-        }
+        .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .card { border: 1px solid rgba(245,237,224,0.07); padding: 2rem; position: relative; overflow: hidden; transition: border-color 0.3s; }
         .card:hover { border-color: rgba(196,97,42,0.5); }
-        .card::before {
-            content: '';
-            position: absolute; top: 0; left: 0;
-            width: 3px; height: 0%;
-            background: var(--terracotta);
-            transition: height 0.4s ease;
-        }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 0%; background: var(--terracotta); transition: height 0.4s ease; }
         .card:hover::before { height: 100%; }
-        .card-num {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.6rem;
-            color: var(--terracotta);
-            letter-spacing: 0.25em;
-            margin-bottom: 1.3rem;
-        }
-        .card-title {
-            font-size: 1.35rem;
-            font-weight: 600;
-            color: var(--cream);
-            margin-bottom: 0.9rem;
-        }
-        .card-text {
-            font-size: 0.88rem;
-            line-height: 1.75;
-            color: rgba(245,237,224,0.5);
-        }
+        .card-num { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--terracotta); letter-spacing: 0.25em; margin-bottom: 1.3rem; }
+        .card-title { font-size: 1.35rem; font-weight: 600; color: var(--cream); margin-bottom: 0.9rem; }
+        .card-text { font-size: 0.88rem; line-height: 1.75; color: rgba(245,237,224,0.5); }
 
-        /* ══════════════════ SLIDE 8 · FINE ══════════════════ */
+        /* ══════════════════ SLIDE 7 · FINE ══════════════════ */
         #s-end { background: #050505; }
 
-        .end-wrap {
-            text-align: center;
-            max-width: 780px;
-            padding: 2rem;
-        }
-        .end-quote {
-            font-size: clamp(1.4rem, 2.8vw, 2.8rem);
-            font-weight: 300;
-            font-style: italic;
-            line-height: 1.55;
-            color: var(--cream);
-        }
-        .end-line {
-            width: 50px; height: 1px;
-            background: var(--terracotta);
-            margin: 2rem auto;
-        }
-        .end-source {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem;
-            letter-spacing: 0.25em;
-            color: var(--terracotta);
-            text-transform: uppercase;
-        }
-        .end-credits {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.58rem;
-            letter-spacing: 0.15em;
-            color: rgba(245,237,224,0.18);
-            text-transform: uppercase;
-            margin-top: 3rem;
-            line-height: 1.8;
-        }
+        .end-wrap { text-align: center; max-width: 780px; padding: 2rem; }
+        .end-quote { font-size: clamp(1.4rem, 2.8vw, 2.8rem); font-weight: 300; font-style: italic; line-height: 1.55; color: var(--cream); }
+        .end-line { width: 50px; height: 1px; background: var(--terracotta); margin: 2rem auto; }
+        .end-source { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em; color: var(--terracotta); text-transform: uppercase; }
+        .end-credits { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.15em; color: rgba(245,237,224,0.18); text-transform: uppercase; margin-top: 3rem; line-height: 1.8; }
 
         /* ─── NOISE OVERLAY ─── */
         body::after {
@@ -738,6 +677,77 @@
             position: fixed; inset: 0;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
             pointer-events: none; z-index: 500; opacity: 0.45;
+        }
+
+        /* ─── SVG triangolazione epicentro ─── */
+        .ep-svg-wrap { width: 100%; max-width: 380px; }
+        .ep-svg-wrap svg text { font-family: 'JetBrains Mono', monospace; }
+
+        /* ─── sci-1 · Fenomeni Sismici — tema bianco ─── */
+        #sci-1 { background: #F8F5EF; }
+
+        .s1-wrap { display: flex; width: 100%; height: 100%; }
+
+        .s1-text {
+            flex: 0 0 44%; display: flex; flex-direction: column;
+            gap: 0.85rem; padding: 2.2rem 1.8rem 1.5rem 2.8rem;
+            overflow-y: auto; border-right: 1px solid rgba(0,0,0,0.07);
+        }
+        .s1-tag {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+            text-transform: uppercase; letter-spacing: 0.12em;
+            color: rgba(196,97,42,0.85);
+        }
+        .s1-title {
+            font-size: clamp(1.9rem, 3vw, 2.7rem); font-weight: 300;
+            line-height: 1.1; color: #0f0f0f;
+        }
+        .s1-title em { color: var(--terracotta); font-style: italic; }
+        .s1-body { font-size: 0.82rem; line-height: 1.78; color: #2a2a2a; }
+        .s1-body strong { color: #0f0f0f; font-weight: 600; }
+        .s1-sep { height: 1px; background: rgba(0,0,0,0.09); margin: 0.2rem 0; }
+        .s1-section-label {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+            text-transform: uppercase; letter-spacing: 0.1em; color: rgba(0,0,0,0.38);
+        }
+        .s1-facts {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; margin-top: 0.2rem;
+        }
+        .s1-fact { border-left: 2px solid rgba(196,97,42,0.4); padding-left: 0.65rem; }
+        .s1-fl {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.58rem;
+            color: rgba(0,0,0,0.33); text-transform: uppercase;
+            letter-spacing: 0.1em; display: block;
+        }
+        .s1-fv { font-size: 0.8rem; color: #1a1a1a; }
+
+        .s1-right {
+            flex: 1; display: flex; flex-direction: column;
+            padding: 1.8rem 2rem 1.2rem 1.8rem; gap: 0; min-width: 0;
+        }
+        .s1-canvas-label {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.63rem;
+            color: rgba(196,97,42,0.75); margin-bottom: 0.5rem; min-height: 1.1rem;
+        }
+        #rebound-canvas {
+            width: 100%; flex: 1; display: block; min-height: 0;
+            border: 1px solid rgba(0,0,0,0.07); border-radius: 3px;
+        }
+        .s1-tl-wrap {
+            flex: 0 0 auto; margin-top: 1rem;
+            padding-top: 0.9rem; border-top: 1px solid rgba(0,0,0,0.07);
+        }
+        .s1-tl-head {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.6rem;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: rgba(0,0,0,0.35); margin-bottom: 0.5rem;
+        }
+        #timeline-canvas { width: 100%; display: block; }
+
+        @media (max-width: 640px) {
+            .s1-wrap { flex-direction: column; }
+            .s1-text { flex: none; overflow-y: visible; border-right: none;
+                border-bottom: 1px solid rgba(0,0,0,0.07); }
         }
     </style>
 </head>
@@ -757,13 +767,10 @@
         <div class="dot" data-i="4"></div>
         <div class="dot" data-i="5"></div>
         <div class="dot" data-i="6"></div>
-        <div class="dot" data-i="7"></div>
     </nav>
-    <div id="slide-counter">01 / 08</div>
+    <div id="slide-counter">01 / 07</div>
     <button id="fullscreen-btn" title="Schermo intero (F)">
-        <svg viewBox="0 0 24 24">
-            <path d="M3 3h6M3 3v6M21 3h-6M21 3v6M3 21h6M3 21v-6M21 21h-6M21 21v-6"/>
-        </svg>
+        <svg viewBox="0 0 24 24"><path d="M3 3h6M3 3v6M21 3h-6M21 3v6M3 21h6M3 21v-6M21 21h-6M21 21v-6"/></svg>
     </button>
     <div id="scroll-hint">
         <div class="scroll-mouse"></div>
@@ -781,9 +788,7 @@
                 <button class="btn-enter" id="btn-enter">↓ &nbsp;Scopri la storia</button>
             </div>
         </div>
-        <div class="epicenter">
-            <div class="pulse"></div>
-        </div>
+        <div class="epicenter"><div class="pulse"></div></div>
     </section>
 
     <!-- ══ S2 · DATI ══ -->
@@ -826,62 +831,954 @@
         </div>
     </section>
 
-    <!-- ══ S3 · SCIENZA ══ -->
-    <section class="slide" id="s-science">
-        <div class="science-wrap">
-            <div class="science-head">
-                <h2 class="sci-title">Come si <span>propaga</span><br>un terremoto</h2>
-                <div class="science-head-right">Geofisica<br>Sismica</div>
+    <!-- ══ S3 · SEZIONE 1 — CAROSELLO 6 SUB-SLIDE ══ -->
+
+    <!-- Leaflet CSS — solo per la sezione 1 -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <!-- ════════════ SEZIONE 1 — CSS ════════════ -->
+    <style>
+/* ═══════════════════════════════════════════════
+   SEZIONE 1 — CSS
+   Prefisso: .s1- / #s1-
+   ═══════════════════════════════════════════════ */
+
+/* ── Contenitore principale ── */
+#s-section1 {
+    height: 100vh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    position: relative;
+    overflow: hidden;
+    background: var(--black);
+}
+
+/* ── Carosello ── */
+#s1-carousel {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+#s1-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+.s1-slide {
+    width: 100vw;
+    min-width: 100vw;
+    height: 100%;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--black);
+}
+
+/* Slide 5 — scroll interno */
+#s1-s5 {
+    align-items: flex-start;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(196,97,42,0.3) transparent;
+}
+#s1-s5::-webkit-scrollbar { width: 3px; }
+#s1-s5::-webkit-scrollbar-track { background: transparent; }
+#s1-s5::-webkit-scrollbar-thumb { background: rgba(196,97,42,0.3); border-radius: 2px; }
+
+/* ── Frecce navigazione ── */
+.s1-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 50;
+    width: 52px;
+    height: 52px;
+    background: rgba(8,8,8,0.85);
+    border: 1px solid rgba(245,237,224,0.12);
+    color: rgba(245,237,224,0.6);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.3s, background 0.3s, color 0.3s, opacity 0.3s;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+.s1-arrow:hover {
+    border-color: var(--terracotta);
+    background: rgba(196,97,42,0.14);
+    color: var(--terracotta);
+}
+.s1-arrow svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+#s1-prev { left: 1.2rem; }
+#s1-next { right: 1.2rem; }
+.s1-arrow[disabled] { opacity: 0.08; pointer-events: none; }
+
+/* ── Nav dots + counter ── */
+.s1-nav {
+    position: absolute;
+    bottom: 1.6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+}
+.s1-dots-row { display: flex; gap: 0.55rem; align-items: center; }
+.s1-dot {
+    width: 5px;
+    height: 5px;
+    background: rgba(245,237,224,0.18);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.s1-dot.active {
+    background: var(--terracotta);
+    transform: scale(1.9);
+}
+#s1-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.28em;
+    color: rgba(245,237,224,0.18);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* Hint swipe mobile */
+.s1-swipe-hint {
+    position: absolute;
+    bottom: 3.8rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 49;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.3em;
+    color: rgba(245,237,224,0.1);
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+    display: none;
+}
+@media (pointer: coarse) { .s1-swipe-hint { display: block; } }
+
+/* ── Tipografia comune ── */
+.s1-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.35em;
+    color: var(--terracotta);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 1rem;
+}
+.s1-slide-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(2.2rem, 4vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--cream);
+    margin-bottom: 1.4rem;
+}
+.s1-slide-sub {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.25rem;
+    line-height: 1.7;
+    color: rgba(245,237,224,0.6);
+    margin-bottom: 1rem;
+}
+.s1-body-text {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: rgba(245,237,224,0.7);
+    margin-bottom: 1.2rem;
+}
+.s1-caption {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.18em;
+    color: rgba(245,237,224,0.25);
+    text-transform: uppercase;
+    display: block;
+    margin-top: 1.2rem;
+}
+.s1-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cream);
+    background: transparent;
+    border: 1px solid rgba(245,237,224,0.22);
+    padding: 0.7rem 1.8rem;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+.s1-btn:hover {
+    border-color: var(--terracotta);
+    background: rgba(196,97,42,0.08);
+}
+
+/* ── Layout a due colonne ── */
+.s1-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    height: 100%;
+    gap: 0;
+}
+.s1-slide-col-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem 4rem 4rem 5rem;
+    overflow: hidden;
+}
+.s1-slide-col-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem 5rem 4rem 3rem;
+    overflow: hidden;
+}
+
+/* ═══ SLIDE 1 ═══ */
+#s1-s1 { background: #060606; display: grid; grid-template-columns: 1fr 1fr; }
+#s1-s1 .s1-slide-col-left { background: transparent; }
+.s1-highlight {
+    color: var(--terracotta);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6em;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+}
+.s1-last-event {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: rgba(245,237,224,0.4);
+    margin-top: 0.8rem;
+    line-height: 1.7;
+}
+.s1-last-event span { color: rgba(245,237,224,0.7); }
+.s1-fallback {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: rgba(245,237,224,0.45);
+    border-left: 2px solid rgba(196,97,42,0.4);
+    padding-left: 1rem;
+    margin-top: 1rem;
+    font-style: italic;
+}
+.s1-map-wrap {
+    width: 100%;
+    height: 72vh;
+    border: 1px solid var(--terracotta);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+#s1-map { width: 100%; height: 100%; background: #060e18; }
+.s1-popup .leaflet-popup-content-wrapper {
+    background: rgba(8,8,8,0.95);
+    border: 1px solid rgba(196,97,42,0.35);
+    border-radius: 2px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+    color: var(--cream);
+    padding: 0;
+}
+.s1-popup .leaflet-popup-tip { background: rgba(8,8,8,0.95); }
+.s1-popup .leaflet-popup-content { margin: 0; }
+.s1-popup-inner { padding: 0.9rem 1.1rem; min-width: 180px; }
+.s1-popup-mag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: var(--terracotta);
+    letter-spacing: -0.02em;
+    display: block;
+    margin-bottom: 0.4rem;
+}
+.s1-popup-loc {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 0.95rem;
+    color: var(--cream);
+    display: block;
+    margin-bottom: 0.3rem;
+}
+.s1-popup-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    color: rgba(245,237,224,0.35);
+    text-transform: uppercase;
+    display: block;
+}
+
+/* ═══ SLIDE 2 ═══ */
+#s1-s2 { background: var(--charcoal); display: flex; }
+.s1-def-text {
+    flex: 0 0 52%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem 3rem 3rem 5rem;
+    border-right: 1px solid rgba(245,237,224,0.05);
+}
+.s1-def-visual {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 4rem 2rem 2rem;
+    gap: 1.5rem;
+}
+.s1-branch-svg-wrap { width: 100%; max-width: 340px; }
+.s1-branch-svg { width: 100%; height: auto; overflow: visible; }
+
+/* ═══ SLIDE 3 ═══ */
+#s1-s3 {
+    background: #050709;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+}
+.s1-canvas-wrap {
+    width: 100%;
+    height: 65vh;
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+#s1-fault-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    flex: 1;
+    min-height: 0;
+    border: 1px solid rgba(245, 237, 224, 0.05);
+}
+.s1-canvas-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(196, 97, 42, 0.7);
+    min-height: 1.2rem;
+    margin-bottom: 0.6rem;
+}
+.s1-phase-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+.s1-phase-item {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid rgba(245, 237, 224, 0.07);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: rgba(245, 237, 224, 0.3);
+    transition: border-color 0.35s, color 0.35s, background 0.35s;
+    cursor: default;
+    position: relative;
+}
+.s1-phase-item::before {
+    content: attr(data-phase);
+    font-size: 0.55rem;
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgba(245, 237, 224, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: border-color 0.35s, background 0.35s, color 0.35s;
+    color: rgba(245, 237, 224, 0.25);
+}
+.s1-phase-item.active {
+    border-color: rgba(196, 97, 42, 0.45);
+    color: var(--cream);
+    background: rgba(196, 97, 42, 0.06);
+}
+.s1-phase-item.active::before {
+    border-color: var(--terracotta);
+    background: var(--terracotta);
+    color: #fff;
+}
+.s1-years-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    color: rgba(58, 126, 196, 0.6);
+    position: absolute;
+    top: 2.5rem;
+    right: 2.5rem;
+    z-index: 5;
+}
+.s1-canvas-footer {
+    margin-top: 0.7rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.s1-canvas-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.14em;
+    color: rgba(245, 237, 224, 0.15);
+    text-transform: uppercase;
+}
+
+/* ═══ SLIDE 4 ═══ */
+#s1-s4 {
+    background: var(--charcoal);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 5rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(196,97,42,0.2) transparent;
+}
+.s1-slide-inner {
+    width: 100%;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 3.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.6rem;
+}
+.s1-tool-wrap {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 3rem;
+    align-items: start;
+    margin-top: 0.4rem;
+}
+.s1-sliders-col { display: flex; flex-direction: column; gap: 2rem; }
+.s1-slider-group { display: flex; flex-direction: column; gap: 0.55rem; }
+.s1-slider-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(245, 237, 224, 0.35);
+}
+.s1-slider-track-wrap { position: relative; }
+.s1-sliders-col input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 2px;
+    background: rgba(245, 237, 224, 0.1);
+    outline: none;
+    cursor: pointer;
+    border-radius: 1px;
+}
+.s1-sliders-col input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    border: 2px solid var(--charcoal);
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s;
+    box-shadow: 0 0 0 3px rgba(196, 97, 42, 0.18);
+}
+.s1-sliders-col input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.25); background: var(--cream); }
+.s1-sliders-col input[type="range"]::-moz-range-thumb {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--terracotta); border: 2px solid var(--charcoal);
+    cursor: pointer;
+}
+.s1-slider-ticks { display: flex; justify-content: space-between; margin-top: 0.4rem; }
+.s1-slider-ticks span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.48rem;
+    letter-spacing: 0.04em;
+    color: rgba(245, 237, 224, 0.22);
+    text-align: center;
+    flex: 1;
+}
+.s1-slider-ticks span:first-child { text-align: left; }
+.s1-slider-ticks span:last-child  { text-align: right; }
+.s1-slider-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: var(--terracotta);
+    margin-top: 0.25rem;
+    min-height: 1.2em;
+    transition: color 0.3s;
+}
+.s1-mag-val { font-size: 1.35rem; letter-spacing: -0.01em; font-weight: 400; }
+.s1-slider-desc {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgba(245, 237, 224, 0.42);
+    font-style: italic;
+    margin-top: 0.2rem;
+    min-height: 2.4em;
+    transition: opacity 0.35s ease;
+}
+.s1-energy-col { display: flex; align-items: stretch; }
+.s1-energy-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.7rem; width: 100%; }
+.s1-energy-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(245, 237, 224, 0.35);
+    display: block;
+    text-align: center;
+}
+.s1-energy-tank {
+    position: relative;
+    width: 64px;
+    height: 200px;
+    border: 1px solid rgba(245, 237, 224, 0.12);
+    background: rgba(0, 0, 0, 0.35);
+    overflow: visible;
+    flex-shrink: 0;
+}
+.s1-energy-fill {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%;
+    height: 0%;
+    background: linear-gradient(to top, #4CAF50 0%, var(--terracotta) 50%, var(--blood) 100%);
+    transition: height 0.45s cubic-bezier(0.4, 0, 0.2, 1), background 0.45s ease;
+    will-change: height;
+}
+.s1-paganica-marker {
+    position: absolute;
+    bottom: 81.54%;
+    left: 0; right: 0;
+    border-top: 1px dashed rgba(245, 237, 224, 0.45);
+    pointer-events: none;
+    z-index: 10;
+}
+.s1-paganica-marker span {
+    position: absolute;
+    left: calc(100% + 6px);
+    top: -0.65em;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.46rem;
+    letter-spacing: 0.08em;
+    color: rgba(245, 237, 224, 0.55);
+    white-space: nowrap;
+    line-height: 1;
+}
+.s1-energy-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.54rem;
+    letter-spacing: 0.06em;
+    color: rgba(245, 237, 224, 0.35);
+    text-align: center;
+    line-height: 1.55;
+    min-height: 2.4em;
+    transition: color 0.3s;
+}
+
+/* ═══ SLIDE 5 ═══ */
+#s1-s5 { background: var(--black); }
+#s1-s5 .s1-slide-inner { padding: 4rem 5rem 5rem; max-width: 900px; margin: 0 auto; width: 100%; }
+.s1-narrative-block { margin: 1.6rem 0; }
+.s1-narrative-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 0.7rem;
+    font-weight: 500;
+}
+.s1-divider { border: none; border-top: 1px solid rgba(245,237,224,0.08); margin: 0.4rem 0; }
+.s1-photos-row { display: flex; gap: 1.5rem; margin: 2.8rem 0; flex-wrap: wrap; }
+.s1-photo-placeholder {
+    position: relative;
+    background: #101010;
+    border: 1px dashed rgba(196, 97, 42, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.s1-photo-landscape { aspect-ratio: 16 / 9; flex: 1 1 55%; min-width: 260px; }
+.s1-photo-square    { aspect-ratio: 1 / 1; flex: 0 1 220px; min-width: 160px; }
+.s1-photo-placeholder .user-photo {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: none;
+}
+.s1-photo-placeholder .user-photo[src]:not([src=""]) { display: block; }
+.s1-photo-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: rgba(245, 237, 224, 0.2);
+    text-align: center;
+    padding: 0.6rem;
+    user-select: none;
+}
+.s1-canvas-section { margin: 2.4rem 0; }
+.s1-canvas-section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(245, 237, 224, 0.35);
+    margin-bottom: 1rem;
+}
+.s1-canvas-controls { display: flex; align-items: center; gap: 1.4rem; margin-bottom: 0.8rem; }
+#s1-paganica-canvas {
+    width: 100%; height: 320px; display: block;
+    border: 1px solid rgba(245, 237, 224, 0.07);
+}
+.s1-tech-card-section { margin: 2.4rem 0 3rem; }
+.s1-tech-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: rgba(245, 237, 224, 0.06);
+    border: 1px solid rgba(245, 237, 224, 0.06);
+    margin-bottom: 1rem;
+}
+.s1-tech-card {
+    background: var(--black);
+    padding: 1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    border: 1px solid rgba(196, 97, 42, 0.18);
+    transition: border-color 0.25s;
+}
+.s1-tech-card:hover { border-color: rgba(196, 97, 42, 0.5); }
+.s1-tech-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.54rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(245, 237, 224, 0.3);
+}
+.s1-tech-value { font-size: 0.95rem; font-weight: 600; color: var(--cream); line-height: 1.3; }
+.s1-source-caption {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.54rem;
+    letter-spacing: 0.14em;
+    color: rgba(245, 237, 224, 0.2);
+}
+
+/* ═══ SLIDE 6 ═══ */
+#s1-s6 { background: var(--black); }
+.s1-transition-wrap {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    max-width: 640px;
+    padding: 2rem;
+}
+.s1-bounce-arrow {
+    display: block;
+    font-size: 1.8rem;
+    color: var(--terracotta);
+    animation: s1-bounce 1.6s ease-in-out infinite;
+    margin-top: 1rem;
+    line-height: 1;
+}
+@keyframes s1-bounce {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(14px); }
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 768px) {
+    #s1-s3 { grid-template-columns: 1fr; }
+    .s1-tool-wrap { grid-template-columns: 1fr; }
+    .s1-photos-row { grid-template-columns: 1fr; }
+    #s1-s5 .s1-slide-inner { padding: 2.5rem 1.5rem 4rem; }
+    #s1-s4 { padding: 2rem 1rem; }
+}
+    </style>
+
+    <section class="slide" id="s-section1">
+      <div id="s1-carousel">
+        <div id="s1-track">
+
+          <!-- ─── Slide 1 ─── -->
+          <div class="s1-slide" id="s1-s1">
+            <div class="s1-slide-col-left">
+              <span class="s1-eyebrow">ITALIA · ULTIME 24 ORE</span>
+              <h2 class="s1-slide-title">Mentre leggi queste parole, la terra sta tremando.</h2>
+              <p class="s1-slide-sub">Nelle ultime 24 ore si sono verificati <span id="s1-quake-count" class="s1-highlight">—</span> terremoti percepibili in Italia.</p>
+              <p id="s1-last-event" class="s1-last-event" style="display:none">L'ultimo: <span id="s1-last-loc"></span>, <span id="s1-last-time"></span>, M <span id="s1-last-mag"></span></p>
+              <span class="s1-caption">Fonte: INGV · Rete Sismica Nazionale · soglia M ≥ 1.5</span>
+              <div id="s1-api-fallback" class="s1-fallback" style="display:none">I dati in tempo reale non sono disponibili. In Italia si verificano mediamente 10–15 terremoti percepibili ogni giorno.</div>
             </div>
-            <div class="science-body">
-                <canvas id="wave-canvas"></canvas>
-                <div class="wave-legend">
-                    <div class="wave-item">
-                        <div class="wave-bar p"></div>
-                        <div>
-                            <div class="wave-tag">Onde P · Primarie</div>
-                            <p class="wave-desc">Onde di compressione longitudinali. Le prime ad arrivare. Viaggiano in solidi e liquidi a 5–8 km/s nella crosta terrestre.</p>
-                        </div>
+            <div class="s1-slide-col-right">
+              <div class="s1-map-wrap">
+                <div id="s1-map"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── Slide 2 ─── -->
+          <div class="s1-slide" id="s1-s2">
+            <div class="s1-def-text">
+              <span class="s1-eyebrow">4.1 · FENOMENI SISMICI</span>
+              <h2 class="s1-slide-title">Un improvviso rilascio di energia.</h2>
+              <p class="s1-body-text">Un terremoto — o sisma — è una serie di improvvisi movimenti del terreno causati dalla propagazione di onde meccaniche attraverso le rocce. Queste onde trasportano energia.</p>
+              <p class="s1-body-text">Le rocce non sono rigide in modo assoluto: sotto pressione si deformano lentamente, accumulando energia elastica per secoli o millenni. Quando la deformazione supera il limite di rottura delle rocce, avviene la frattura. L'energia accumulata si libera istantaneamente sotto forma di onde sismiche.</p>
+              <p class="s1-body-text">Questo meccanismo è identico a quello di un ramo secco piegato fino a spezzarsi: la deformazione è lenta e silenziosa, la rottura è istantanea e violenta.</p>
+            </div>
+            <div class="s1-def-visual">
+              <svg class="s1-branch-svg" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+                <style>
+                  .branch-straight { animation: branchStraight 8s infinite; }
+                  @keyframes branchStraight { 0% { opacity: 1; } 24.9% { opacity: 1; } 25% { opacity: 0; } 100% { opacity: 0; } }
+                  .branch-bent { animation: branchBent 8s infinite; }
+                  @keyframes branchBent { 0% { opacity: 0; } 25% { opacity: 0; } 25.1% { opacity: 1; } 49.9% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 0; } }
+                  .branch-break { animation: branchBreak 8s infinite; }
+                  @keyframes branchBreak { 0% { opacity: 0; } 50% { opacity: 0; } 50.1% { opacity: 1; } 62% { opacity: 1; } 62.1% { opacity: 0; } 100% { opacity: 0; } }
+                  .branch-rebound { animation: branchRebound 8s infinite; }
+                  @keyframes branchRebound { 0% { opacity: 0; } 62% { opacity: 0; } 62.1% { opacity: 0.5; } 75% { opacity: 0.5; } 75.1% { opacity: 0; } 100% { opacity: 0; } }
+                  .label-integro { animation: labelIntegro 8s infinite; }
+                  @keyframes labelIntegro { 0% { visibility: visible; } 24.9% { visibility: visible; } 25% { visibility: hidden; } 100% { visibility: hidden; } }
+                  .label-deformazione { animation: labelDeformazione 8s infinite; }
+                  @keyframes labelDeformazione { 0% { visibility: hidden; } 25% { visibility: hidden; } 25.1% { visibility: visible; } 49.9% { visibility: visible; } 50% { visibility: hidden; } 100% { visibility: hidden; } }
+                  .label-rottura { animation: labelRottura 8s infinite; }
+                  @keyframes labelRottura { 0% { visibility: hidden; } 50% { visibility: hidden; } 50.1% { visibility: visible; } 62% { visibility: visible; } 62.1% { visibility: hidden; } 100% { visibility: hidden; } }
+                  .label-rimbalzo { animation: labelRimbalzo 8s infinite; }
+                  @keyframes labelRimbalzo { 0% { visibility: hidden; } 62% { visibility: hidden; } 62.1% { visibility: visible; } 75% { visibility: visible; } 75.1% { visibility: hidden; } 100% { visibility: hidden; } }
+                </style>
+                <g class="branch-straight"><line x1="20" y1="100" x2="300" y2="100" stroke="#F5EDE0" stroke-width="4" stroke-linecap="round"/></g>
+                <g class="branch-bent"><path d="M20,100 Q160,70 300,100" fill="none" stroke="var(--terracotta, #C4612A)" stroke-width="4" stroke-linecap="round"/></g>
+                <g class="branch-break">
+                  <line x1="20" y1="100" x2="155" y2="95" stroke="var(--blood, #8B1A1A)" stroke-width="4" stroke-linecap="round"/>
+                  <line x1="165" y1="105" x2="300" y2="100" stroke="var(--blood, #8B1A1A)" stroke-width="4" stroke-linecap="round"/>
+                </g>
+                <g class="branch-rebound">
+                  <line x1="20" y1="100" x2="140" y2="90" stroke="var(--blood, #8B1A1A)" stroke-width="4" stroke-linecap="round"/>
+                  <line x1="180" y1="110" x2="300" y2="100" stroke="var(--blood, #8B1A1A)" stroke-width="4" stroke-linecap="round"/>
+                </g>
+                <text class="label-integro" x="160" y="160" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="#F5EDE0" letter-spacing="2">INTEGRO</text>
+                <text class="label-deformazione" x="160" y="160" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="var(--terracotta, #C4612A)" letter-spacing="2">DEFORMAZIONE</text>
+                <text class="label-rottura" x="160" y="160" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="var(--blood, #8B1A1A)" letter-spacing="2">ROTTURA</text>
+                <text class="label-rimbalzo" x="160" y="160" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="var(--blood, #8B1A1A)" opacity="0.5" letter-spacing="2">RIMBALZO</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- ─── Slide 3 ─── -->
+          <div class="s1-slide" id="s1-s3">
+            <div class="s1-slide-col-left" style="display:flex;flex-direction:column;justify-content:center;gap:1.1rem;padding:3.5rem 3rem 3.5rem 4rem;border-right:1px solid rgba(245,237,224,0.055);overflow-y:auto;">
+              <span class="s1-eyebrow">H.F. REID · 1910</span>
+              <h2 class="s1-slide-title">La teoria del rimbalzo elastico.</h2>
+              <p class="s1-body-text">Dopo il terremoto di San Francisco del 1906, il geologo Harry Fielding Reid studiò le deformazioni del terreno lungo la faglia di San Andreas. Scoprì che i blocchi rocciosi su entrambi i lati si erano spostati elasticamente per decenni prima della rottura, per poi &ldquo;rimbalzare&rdquo; nella posizione di minima energia dopo il sisma.</p>
+              <ul class="s1-phase-list">
+                <li class="s1-phase-item" data-phase="1">Accumulo di tensione</li>
+                <li class="s1-phase-item" data-phase="2">Deformazione elastica</li>
+                <li class="s1-phase-item" data-phase="3">Rottura &mdash; rilascio energia</li>
+                <li class="s1-phase-item" data-phase="4">Rimbalzo alla posizione di equilibrio</li>
+              </ul>
+              <button id="s1-play-btn" class="s1-btn" onclick="startFaultAnim()">
+                <span>&#9654; Avvia</span>
+              </button>
+            </div>
+            <div class="s1-slide-col-right" style="display:flex;flex-direction:column;padding:2.5rem 2.5rem 2.5rem 2rem;background:#050709;position:relative;">
+              <div id="s1-fault-phase-label" class="s1-canvas-label">Fase 1 &mdash; Accumulo di tensione in corso</div>
+              <span id="s1-fault-years" class="s1-years-counter" style="display:none"></span>
+              <div class="s1-canvas-wrap">
+                <canvas id="s1-fault-canvas"></canvas>
+              </div>
+              <div class="s1-canvas-footer">
+                <span class="s1-canvas-note">Modello Reid 1910 &mdash; faglia trascorrente</span>
+                <span class="s1-canvas-note">Canvas interattivo</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── Slide 4 ─── -->
+          <div class="s1-slide" id="s1-s4">
+            <div class="s1-slide-inner">
+              <header>
+                <span class="s1-eyebrow">Legge di Gutenberg-Richter</span>
+                <h2 class="s1-slide-title">Più raro è il terremoto,<br>più è devastante.</h2>
+                <p class="s1-body-text">Una volta liberata l'energia, nelle rocce inizia ad accumularsi nuova energia elastica. I terremoti sono fenomeni ciclici. Il periodo di ritorno di un sisma è il tempo medio che intercorre tra due eventi sismici nella stessa area. Esiste una legge precisa: periodi di ritorno più lunghi corrispondono a sismi di magnitudo molto più elevata.</p>
+              </header>
+              <div class="s1-tool-wrap">
+                <div class="s1-sliders-col">
+                  <div class="s1-slider-group">
+                    <label class="s1-slider-label" for="s1-time-slider">Periodo di ritorno</label>
+                    <div class="s1-slider-track-wrap">
+                      <input id="s1-time-slider" type="range" min="0" max="8" value="3" step="1" aria-label="Periodo di ritorno">
                     </div>
-                    <div class="wave-item">
-                        <div class="wave-bar s"></div>
-                        <div>
-                            <div class="wave-tag">Onde S · Secondarie</div>
-                            <p class="wave-desc">Onde di taglio trasversali. Più lente (3–4 km/s), viaggiano solo nei solidi. Causano danni maggiori rispetto alle P.</p>
-                        </div>
+                    <div class="s1-slider-ticks" aria-hidden="true">
+                      <span>1g</span><span>1sett</span><span>1mese</span><span>1a</span><span>10a</span><span>50a</span><span>100a</span><span>200a</span><span>500a</span>
                     </div>
-                    <div class="wave-item">
-                        <div class="wave-bar surf"></div>
-                        <div>
-                            <div class="wave-tag">Onde superficiali</div>
-                            <p class="wave-desc">Le più distruttive. Si propagano lungo la superficie terrestre e sono responsabili del cedimento strutturale degli edifici.</p>
-                        </div>
-                    </div>
+                    <p id="s1-time-label" class="s1-slider-val">circa 1 anno</p>
+                  </div>
+                  <div class="s1-slider-group">
+                    <label class="s1-slider-label" for="s1-mag-slider">Magnitudo</label>
+                    <input id="s1-mag-slider" type="range" min="10" max="75" value="28" step="1" aria-label="Magnitudo momento">
+                    <p id="s1-mag-label" class="s1-slider-val s1-mag-val">M 2.8</p>
+                    <p id="s1-mag-desc" class="s1-slider-desc">Raramente percepito dalle persone</p>
+                  </div>
                 </div>
+                <div class="s1-energy-col">
+                  <div class="s1-energy-wrap">
+                    <label class="s1-energy-title">Energia accumulata</label>
+                    <div class="s1-energy-tank">
+                      <div id="s1-energy-fill" class="s1-energy-fill"></div>
+                      <div id="s1-paganica-marker" class="s1-paganica-marker">
+                        <span>&#8592; L'Aquila 2009</span>
+                      </div>
+                    </div>
+                    <p id="s1-energy-label" class="s1-energy-label">—</p>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+
+          <!-- ─── Slide 5 ─── -->
+          <div class="s1-slide" id="s1-s5" style="overflow-y:auto;align-items:flex-start;justify-content:flex-start;background:var(--black);padding:4rem 5rem;">
+            <div class="s1-slide-inner">
+              <span class="s1-eyebrow">6 APRILE 2009 · 03:32:39 UTC</span>
+              <h2 class="s1-slide-title">La Faglia di Paganica<br>si è mossa.</h2>
+              <p class="s1-slide-sub" style="font-style:italic;">Per pochi secondi. Dopo secoli di silenzio.</p>
+              <div class="s1-narrative-block">
+                <h4 class="s1-narrative-title">La faglia</h4>
+                <p class="s1-body-text">La Faglia di Paganica è una frattura nella crosta terrestre lunga circa 12 chilometri, orientata da nord-ovest a sud-est sotto la conca aquilana. È una faglia normale: i blocchi rocciosi su entrambi i lati si muovono in direzione opposta sotto l'effetto di forze estensionali — la crosta si allunga, si assottiglia, e si frattura.</p>
+              </div>
+              <hr class="s1-divider">
+              <div class="s1-narrative-block">
+                <h4 class="s1-narrative-title">L'accumulo</h4>
+                <p class="s1-body-text">Per centinaia di anni la faglia era rimasta immobile. Le forze tettoniche dell'Appennino centrale — dove la placca adriatica si scontra con quella europea — avevano lentamente deformato le rocce circostanti, accumulando tensione elastica senza che nessuno potesse vederlo o misurarlo direttamente.</p>
+              </div>
+              <hr class="s1-divider">
+              <div class="s1-narrative-block">
+                <h4 class="s1-narrative-title">Il movimento</h4>
+                <p class="s1-body-text">Alle 3:32 del mattino del 6 aprile 2009, la roccia ha ceduto. Il blocco del lato orientale della faglia è sceso di circa 20–30 centimetri rispetto a quello occidentale. Lo spostamento si è propagato lungo tutta la lunghezza della faglia in meno di 7 secondi. L'energia rilasciata — equivalente a circa 2.000 miliardi di joule — si è propagata verso la superficie in forma di onde sismiche.</p>
+              </div>
+              <hr class="s1-divider">
+              <div class="s1-narrative-block">
+                <h4 class="s1-narrative-title">Il contesto</h4>
+                <p class="s1-body-text">Non era il primo sisma in quella zona. L'Aquila era stata colpita da terremoti nel 1461 e nel 1703. Ma quasi 700 anni di silenzio avevano cancellato dalla memoria collettiva la pericolosità di quel suolo.</p>
+              </div>
+              <div class="s1-photos-row">
+                <div class="s1-photo-placeholder s1-photo-landscape">
+                  <img src="" class="user-photo" alt="Faglia di Paganica">
+                  <span class="s1-photo-label">[Foto: Faglia di Paganica — da caricare]</span>
+                </div>
+                <div class="s1-photo-placeholder s1-photo-square">
+                  <img src="" class="user-photo" alt="Mappa geologica">
+                  <span class="s1-photo-label">[Foto: Mappa geologica — da caricare]</span>
+                </div>
+              </div>
+              <div class="s1-canvas-section">
+                <p class="s1-canvas-section-title">Animazione: la roccia che cede</p>
+                <div class="s1-canvas-controls">
+                  <button id="s1-paganica-btn" class="s1-btn">&#9654; Avvia</button>
+                  <span id="s1-paganica-label" class="s1-canvas-label"></span>
+                </div>
+                <canvas id="s1-paganica-canvas" style="width:100%;height:320px;display:block;"></canvas>
+              </div>
+              <div class="s1-tech-card-section">
+                <p class="s1-canvas-section-title">Scheda tecnica — Faglia di Paganica</p>
+                <div class="s1-tech-grid">
+                  <div class="s1-tech-card"><span class="s1-tech-label">Tipo</span><span class="s1-tech-value">Faglia normale (estensionale)</span></div>
+                  <div class="s1-tech-card"><span class="s1-tech-label">Orientazione</span><span class="s1-tech-value">N120°–140° — NW–SE</span></div>
+                  <div class="s1-tech-card"><span class="s1-tech-label">Lunghezza rottura</span><span class="s1-tech-value">~12 km</span></div>
+                  <div class="s1-tech-card"><span class="s1-tech-label">Profondità ipocentro</span><span class="s1-tech-value">8,8 km</span></div>
+                  <div class="s1-tech-card"><span class="s1-tech-label">Spostamento co-sismico</span><span class="s1-tech-value">20–30 cm</span></div>
+                  <div class="s1-tech-card"><span class="s1-tech-label">Distanza epicentro–centro storico</span><span class="s1-tech-value">~3 km</span></div>
+                </div>
+                <p class="s1-source-caption">Fonte: Chiarabba et al., 2009 · Geophysical Research Letters · INGV</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── Slide 6 ─── -->
+          <div class="s1-slide" id="s1-s6" style="background:var(--black);display:flex;align-items:center;justify-content:center;text-align:center;">
+            <div class="s1-transition-wrap">
+              <span class="s1-eyebrow">SEZIONE 2 → LE ONDE SISMICHE</span>
+              <h2 class="s1-slide-title">Ma come si propaga questa energia?</h2>
+              <p class="s1-slide-sub">Le onde sismiche: tre tipi, tre comportamenti, tre effetti diversi.</p>
+              <div class="s1-bounce-arrow" aria-hidden="true">&#8595;</div>
+            </div>
+          </div>
+
+        </div><!-- /s1-track -->
+
+        <!-- Frecce navigazione -->
+        <button class="s1-arrow" id="s1-prev" disabled aria-label="Slide precedente">
+          <svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        </button>
+        <button class="s1-arrow" id="s1-next" aria-label="Slide successiva">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        </button>
+
+        <!-- Navigazione dots -->
+        <div class="s1-nav">
+          <div class="s1-dots-row">
+            <span class="s1-dot active" data-slide="0"></span>
+            <span class="s1-dot" data-slide="1"></span>
+            <span class="s1-dot" data-slide="2"></span>
+            <span class="s1-dot" data-slide="3"></span>
+            <span class="s1-dot" data-slide="4"></span>
+            <span class="s1-dot" data-slide="5"></span>
+          </div>
+          <span id="s1-counter">01 · 06</span>
         </div>
+
+        <span class="s1-swipe-hint">&#8592; Scorri &#8594;</span>
+      </div><!-- /s1-carousel -->
     </section>
 
-    <!-- ══ S4 · SISMOGRAFO ══ -->
-    <section class="slide" id="s-seismo">
-        <div class="seismo-wrap">
-            <div>
-                <div class="seismo-date">06 · 04 · 2009 — 03:32:39 UTC+1</div>
-                <h2 class="seismo-title">La registrazione<br>del sisma</h2>
-            </div>
-            <canvas id="seismo-canvas"></canvas>
-            <div class="seismo-scale">
-                <span>−120 s</span><span>−90 s</span><span>−60 s</span>
-                <span>−30 s</span><span>EVENTO</span><span>+30 s</span><span>+60 s</span>
-            </div>
-            <div class="mag-display">
-                <div class="mag-num">6.3</div>
-                <div class="mag-sub">Magnitudo momento · Mw</div>
-            </div>
-        </div>
-    </section>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- ══ S5 · CITTÀ ══ -->
+    <!-- ══ S4 · CITTÀ ══ -->
     <section class="slide" id="s-city">
         <div class="city-grid">
             <div class="city-left">
@@ -904,7 +1801,7 @@
         </div>
     </section>
 
-    <!-- ══ S6 · OPERE D'ARTE ══ -->
+    <!-- ══ S5 · OPERE D'ARTE ══ -->
     <section class="slide" id="s-art">
         <div class="art-grid">
             <div class="art-panel-left">
@@ -913,9 +1810,7 @@
                 <div>
                     <h3 id="art-name">Basilica di S.M. di Collemaggio</h3>
                     <div id="art-year">XIII sec. — Romanico abruzzese</div>
-                    <div class="damage-bar-wrap">
-                        <div id="art-damage-fill" style="width:80%"></div>
-                    </div>
+                    <div class="damage-bar-wrap"><div id="art-damage-fill" style="width:80%"></div></div>
                     <div id="art-damage-pct">80% — Danni gravi</div>
                 </div>
             </div>
@@ -923,48 +1818,18 @@
                 <span class="art-tag">Arte e memoria</span>
                 <h2 class="art-title">Monumenti<br>e opere<br>colpiti</h2>
                 <ul class="art-list" id="art-list">
-                    <li class="art-item active"
-                        data-name="Basilica di S.M. di Collemaggio"
-                        data-year="XIII sec. — Romanico abruzzese"
-                        data-dmg="80" data-label="Danni gravi">
-                        Basilica di S.M. di Collemaggio
-                    </li>
-                    <li class="art-item"
-                        data-name="Castello Cinquecentesco"
-                        data-year="XVI sec. — Architettura militare"
-                        data-dmg="45" data-label="Danni moderati">
-                        Castello Cinquecentesco
-                    </li>
-                    <li class="art-item"
-                        data-name="Duomo di San Massimo"
-                        data-year="XV–XVII sec. — Stile barocco"
-                        data-dmg="70" data-label="Danni gravi">
-                        Duomo di San Massimo
-                    </li>
-                    <li class="art-item"
-                        data-name="Fontana delle 99 Cannelle"
-                        data-year="XIII sec. — Scultura medievale"
-                        data-dmg="30" data-label="Danni lievi">
-                        Fontana delle 99 Cannelle
-                    </li>
-                    <li class="art-item"
-                        data-name="Palazzo Ardinghelli"
-                        data-year="XVIII sec. — Barocco civile"
-                        data-dmg="60" data-label="Danni significativi">
-                        Palazzo Ardinghelli
-                    </li>
-                    <li class="art-item"
-                        data-name="Chiesa di Santa Giusta"
-                        data-year="XIII sec. — Romanico"
-                        data-dmg="55" data-label="Danni moderati">
-                        Chiesa di Santa Giusta
-                    </li>
+                    <li class="art-item active" data-name="Basilica di S.M. di Collemaggio" data-year="XIII sec. — Romanico abruzzese" data-dmg="80" data-label="Danni gravi">Basilica di S.M. di Collemaggio</li>
+                    <li class="art-item" data-name="Castello Cinquecentesco" data-year="XVI sec. — Architettura militare" data-dmg="45" data-label="Danni moderati">Castello Cinquecentesco</li>
+                    <li class="art-item" data-name="Duomo di San Massimo" data-year="XV–XVII sec. — Stile barocco" data-dmg="70" data-label="Danni gravi">Duomo di San Massimo</li>
+                    <li class="art-item" data-name="Fontana delle 99 Cannelle" data-year="XIII sec. — Scultura medievale" data-dmg="30" data-label="Danni lievi">Fontana delle 99 Cannelle</li>
+                    <li class="art-item" data-name="Palazzo Ardinghelli" data-year="XVIII sec. — Barocco civile" data-dmg="60" data-label="Danni significativi">Palazzo Ardinghelli</li>
+                    <li class="art-item" data-name="Chiesa di Santa Giusta" data-year="XIII sec. — Romanico" data-dmg="55" data-label="Danni moderati">Chiesa di Santa Giusta</li>
                 </ul>
             </div>
         </div>
     </section>
 
-    <!-- ══ S7 · RICOSTRUZIONE ══ -->
+    <!-- ══ S6 · RICOSTRUZIONE ══ -->
     <section class="slide" id="s-rebuild">
         <div class="rebuild-wrap">
             <div class="rebuild-head">
@@ -991,7 +1856,7 @@
         </div>
     </section>
 
-    <!-- ══ S8 · FINE ══ -->
+    <!-- ══ S7 · FINE ══ -->
     <section class="slide" id="s-end">
         <div class="end-wrap">
             <p class="end-quote">"Le pietre di una città<br>custodiscono la memoria<br>di chi l'ha vissuta"</p>
@@ -1011,31 +1876,28 @@
 const cursor     = document.getElementById('cursor');
 const cursorRing = document.getElementById('cursor-ring');
 let mx = 0, my = 0, rx = 0, ry = 0;
-
 document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-
 (function animCursor() {
-    cursor.style.left = mx + 'px';
-    cursor.style.top  = my + 'px';
-    rx += (mx - rx) * 0.12;
-    ry += (my - ry) * 0.12;
-    cursorRing.style.left = rx + 'px';
-    cursorRing.style.top  = ry + 'px';
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    cursorRing.style.left = rx + 'px'; cursorRing.style.top = ry + 'px';
     requestAnimationFrame(animCursor);
 })();
 
 // ═══════════════════════════════════════════
 //  SLIDE TRACKING
 // ═══════════════════════════════════════════
-const slides     = document.querySelectorAll('.slide');
-const dots       = document.querySelectorAll('.dot');
+const slides      = document.querySelectorAll('.slide');
+const dots        = document.querySelectorAll('.dot');
 const progressBar = document.getElementById('progress-bar');
-const counter    = document.getElementById('slide-counter');
-const scrollHint = document.getElementById('scroll-hint');
+const counter     = document.getElementById('slide-counter');
+const scrollHint  = document.getElementById('scroll-hint');
 
-let currentIdx = 0;
+let currentIdx  = 0;
 let scrolledOnce = false;
 const triggered = new Set();
+
+const SCIENCE_IDX = 2; // indice di #s-section1 nell'array verticale
 
 const observer = new IntersectionObserver(entries => {
     entries.forEach(e => {
@@ -1044,16 +1906,12 @@ const observer = new IntersectionObserver(entries => {
             if (i !== currentIdx) {
                 currentIdx = i;
                 updateUI(i);
-                if (i > 0 && !scrolledOnce) {
-                    scrolledOnce = true;
-                    scrollHint.classList.add('hidden');
-                }
+                if (i > 0 && !scrolledOnce) { scrolledOnce = true; scrollHint.classList.add('hidden'); }
                 onSlideEnter(i, e.target);
             }
         }
     });
 }, { threshold: 0.5 });
-
 slides.forEach(s => observer.observe(s));
 
 function updateUI(i) {
@@ -1062,12 +1920,11 @@ function updateUI(i) {
     counter.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
 }
 
-dots.forEach(d => d.addEventListener('click', () => {
-    slides[+d.dataset.i].scrollIntoView({ behavior: 'smooth' });
-}));
+dots.forEach(d => d.addEventListener('click', () =>
+    slides[+d.dataset.i].scrollIntoView({ behavior: 'smooth' })));
 
 // ═══════════════════════════════════════════
-//  FULLSCREEN
+//  FULLSCREEN + KEYBOARD
 // ═══════════════════════════════════════════
 document.getElementById('fullscreen-btn').addEventListener('click', toggleFS);
 document.getElementById('btn-enter').addEventListener('click', () =>
@@ -1079,6 +1936,7 @@ function toggleFS() {
 }
 
 document.addEventListener('keydown', e => {
+    // Navigazione verticale (frecce su/giù — le sx/dx sono gestite dall'IIFE sezione1)
     if (e.key === 'ArrowDown' || e.key === 'PageDown')
         slides[Math.min(currentIdx + 1, slides.length - 1)].scrollIntoView({ behavior: 'smooth' });
     else if (e.key === 'ArrowUp' || e.key === 'PageUp')
@@ -1088,9 +1946,725 @@ document.addEventListener('keydown', e => {
 });
 
 // ═══════════════════════════════════════════
-//  HERO CANVAS — seismic background waves
+//  SEZIONE 1 — Carousel + INGV + Canvas
 // ═══════════════════════════════════════════
-const hc  = document.getElementById('hero-canvas');
+(function() {
+  'use strict';
+
+  /* ── Costanti ── */
+  const TOTAL_SLIDES = 6;
+  const triggered = new Set();
+  let currentIdx = 0;
+  let isAnimating = false;
+
+  /* ── Elementi DOM ── */
+  const section  = document.getElementById('s-section1');
+  const track    = document.getElementById('s1-track');
+  const dots     = document.querySelectorAll('.s1-dot');
+  const prevBtn  = document.getElementById('s1-prev');
+  const nextBtn  = document.getElementById('s1-next');
+  const counter  = document.getElementById('s1-counter');
+
+  /* ── Navigazione ── */
+  function goToSlide(idx, animate) {
+    if (idx < 0 || idx >= TOTAL_SLIDES) return;
+    isAnimating = true;
+    if (animate === false) {
+      track.style.transition = 'none';
+      track.style.transform = `translateX(calc(${idx} * -100vw))`;
+      requestAnimationFrame(() => { track.style.transition = ''; isAnimating = false; });
+    } else {
+      track.style.transform = `translateX(calc(${idx} * -100vw))`;
+      track.addEventListener('transitionend', () => { isAnimating = false; }, { once: true });
+      setTimeout(() => { isAnimating = false; }, 700); // safety fallback
+    }
+    currentIdx = idx;
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    if (counter) counter.textContent = String(idx + 1).padStart(2,'0') + ' · ' + String(TOTAL_SLIDES).padStart(2,'0');
+    if (prevBtn) prevBtn.disabled = idx === 0;
+    if (nextBtn) nextBtn.disabled = idx === TOTAL_SLIDES - 1;
+    onSlideEnter(idx);
+  }
+
+  function onSlideEnter(idx) {
+    if (triggered.has(idx)) return;
+    triggered.add(idx);
+    if (idx === 0) { fetchINGV(); initMap(); }
+    if (idx === 2) { startFaultAnim(); }
+    if (idx === 3) { initSliders(); }
+    if (idx === 4) { initPaganicanCanvas(); }
+  }
+
+  /* ── Wheel ── */
+  function onWheel(e) {
+    const goingDown = e.deltaY > 0;
+    const goingUp   = e.deltaY < 0;
+    if (goingDown && currentIdx === TOTAL_SLIDES - 1) return;
+    if (goingUp   && currentIdx === 0)                return;
+    e.preventDefault(); e.stopPropagation();
+    if (isAnimating) return;
+    goingDown ? goToSlide(currentIdx + 1) : goToSlide(currentIdx - 1);
+  }
+  section.addEventListener('wheel', onWheel, { passive: false });
+
+  /* ── Touch ── */
+  let touchX = 0;
+  section.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  section.addEventListener('touchend', e => {
+    if (isAnimating) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (dx < -50) goToSlide(currentIdx + 1);
+    else if (dx > 50) goToSlide(currentIdx - 1);
+  });
+
+  /* ── Frecce + Dots ── */
+  if (prevBtn) prevBtn.addEventListener('click', () => goToSlide(currentIdx - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => goToSlide(currentIdx + 1));
+  dots.forEach((d, i) => d.addEventListener('click', () => goToSlide(i)));
+
+  /* ── Tastiera ── */
+  document.addEventListener('keydown', e => {
+    const rect = section.getBoundingClientRect();
+    if (Math.abs(rect.top) > 50) return;
+    if (e.key === 'ArrowRight' && currentIdx < TOTAL_SLIDES - 1) { e.preventDefault(); goToSlide(currentIdx + 1); }
+    else if (e.key === 'ArrowLeft' && currentIdx > 0) { e.preventDefault(); goToSlide(currentIdx - 1); }
+  });
+
+  /* ═══ API INGV ═══ */
+  let mapInstance = null;
+
+  function isoNow(offsetMs) {
+    return new Date(Date.now() + (offsetMs || 0)).toISOString().replace(/\.\d{3}Z$/, '');
+  }
+
+  function parseINGV(text) {
+    const lines = text.trim().split('\n').slice(1);
+    return lines.map(line => {
+      const cols = line.split('|');
+      if (cols.length < 13) return null;
+      return {
+        id: cols[0].trim(), time: cols[1].trim(),
+        lat: parseFloat(cols[2]), lon: parseFloat(cols[3]),
+        depth: parseFloat(cols[4]), magType: cols[9].trim(),
+        mag: parseFloat(cols[10]), location: cols[12].trim(),
+      };
+    }).filter(e => e && !isNaN(e.lat) && !isNaN(e.mag));
+  }
+
+  function markerStyle(mag) {
+    if (mag < 2.0) return { color: 'rgba(100,180,100,0.7)',  radius: 5 };
+    if (mag < 3.5) return { color: 'rgba(212,137,58,0.8)',   radius: 8 };
+    if (mag < 5.0) return { color: 'rgba(196,97,42,0.9)',    radius: 12 };
+    return             { color: 'rgba(139,26,26,1.0)',        radius: 18 };
+  }
+
+  function formatDateTime(isoStr) {
+    try {
+      const d = new Date(isoStr.replace(' ', 'T'));
+      return d.toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) + ' UTC';
+    } catch (e) { return isoStr; }
+  }
+
+  function addMarkersToMap(events) {
+    if (!mapInstance) return;
+    events.forEach(ev => {
+      const style = markerStyle(ev.mag);
+      const circle = L.circleMarker([ev.lat, ev.lon], {
+        radius: style.radius, fillColor: style.color, color: 'transparent', fillOpacity: 1, weight: 0,
+      });
+      const html = `<div class="s1-popup-inner"><span class="s1-popup-mag">M ${ev.mag.toFixed(1)}</span><span class="s1-popup-loc">${ev.location}</span><span class="s1-popup-meta">${formatDateTime(ev.time)}<br>Profondità: ${ev.depth} km</span></div>`;
+      circle.bindPopup(html, { className: 's1-popup', maxWidth: 260, closeButton: false });
+      circle.on('mouseover', function() { this.openPopup(); });
+      circle.on('mouseout',  function() { this.closePopup(); });
+      circle.addTo(mapInstance);
+    });
+  }
+
+  function countUpElement(el, target, duration) {
+    if (!el) return;
+    const start = performance.now();
+    (function tick(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * ease);
+      if (p < 1) requestAnimationFrame(tick);
+    })(start);
+  }
+
+  function fetchINGV() {
+    const endTime   = isoNow(0);
+    const startTime = isoNow(-24 * 60 * 60 * 1000);
+    const url = `https://webservices.ingv.it/fdsnws/event/1/query?format=text&minmag=1.5&starttime=${startTime}&endtime=${endTime}&orderby=time`;
+    fetch(url)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(text => {
+        const events = parseINGV(text);
+        if (!events.length) { showFallback(); return; }
+        const countEl = document.getElementById('s1-quake-count');
+        countUpElement(countEl, events.length, 1400);
+        const lastEl = document.getElementById('s1-last-event');
+        const locEl  = document.getElementById('s1-last-loc');
+        const timeEl = document.getElementById('s1-last-time');
+        const magEl  = document.getElementById('s1-last-mag');
+        const first  = events[0];
+        if (lastEl && first) {
+          if (locEl)  locEl.textContent  = first.location;
+          if (timeEl) timeEl.textContent = formatDateTime(first.time);
+          if (magEl)  magEl.textContent  = first.mag.toFixed(1);
+          lastEl.style.display = 'block';
+        }
+        addMarkersToMap(events);
+      })
+      .catch(() => { showFallback(); });
+  }
+
+  function showFallback() {
+    const fb = document.getElementById('s1-api-fallback');
+    const le = document.getElementById('s1-last-event');
+    const cq = document.getElementById('s1-quake-count');
+    if (fb) fb.style.display = 'block';
+    if (le) le.style.display = 'none';
+    if (cq) cq.textContent   = '—';
+  }
+
+  function initMap() {
+    if (mapInstance) return;
+    if (typeof L === 'undefined') return;
+    mapInstance = L.map('s1-map', {
+      scrollWheelZoom: false, zoomControl: false, attributionControl: false,
+      dragging: true, touchZoom: false, doubleClickZoom: false, boxZoom: false,
+    });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 18 }).addTo(mapInstance);
+    mapInstance.fitBounds([[36.5, 6.6], [47.1, 18.5]], { padding: [8, 8] });
+    L.control.attribution({ position: 'bottomleft', prefix: false })
+      .addTo(mapInstance)
+      .setPrefix('<span style="font-family:monospace;font-size:0.45rem;letter-spacing:0.08em;color:rgba(245,237,224,0.15)">INGV · CartoDB</span>');
+  }
+
+  /* ═══ FAULT ANIMATION — Slide 3 ═══ */
+
+  /* Stato animazione faglia */
+  const FAULT_ANIM = { running: false, animId: null, initialized: false, phase: 1, paused: false, phaseStart: 0, t: 0 };
+
+  function startFaultAnim() {
+    const canvas      = document.getElementById('s1-fault-canvas');
+    const phaseLabel  = document.getElementById('s1-fault-phase-label');
+    const yearsEl     = document.getElementById('s1-fault-years');
+    const playBtn     = document.getElementById('s1-play-btn');
+    const phaseItems  = document.querySelectorAll('.s1-phase-item');
+
+    if (!canvas) return;
+
+    if (FAULT_ANIM.initialized && FAULT_ANIM.running) {
+      cancelAnimationFrame(FAULT_ANIM.animId);
+      FAULT_ANIM.running = false;
+      if (playBtn) playBtn.querySelector('span').innerHTML = '&#9654; Riprendi';
+      return;
+    }
+
+    if (FAULT_ANIM.initialized && !FAULT_ANIM.running) {
+      FAULT_ANIM.running = true;
+      if (playBtn) playBtn.querySelector('span').innerHTML = '&#9646;&#9646; Pausa';
+      FAULT_ANIM.phaseStart = performance.now() - FAULT_ANIM.t;
+      loop(performance.now());
+      return;
+    }
+
+    FAULT_ANIM.initialized = true;
+    FAULT_ANIM.running     = true;
+    FAULT_ANIM.phase       = 1;
+    FAULT_ANIM.t           = 0;
+
+    if (playBtn) playBtn.querySelector('span').innerHTML = '&#9646;&#9646; Pausa';
+
+    canvas.width  = canvas.offsetWidth  || 500;
+    canvas.height = canvas.offsetHeight || 380;
+
+    const ctx    = canvas.getContext('2d');
+    const W      = canvas.width;
+    const H      = canvas.height;
+
+    const faultX  = W / 2;
+    const blockW  = W / 2 - 20;
+    const numRefLines = 5;
+    const refLineSpacing = H / (numRefLines + 1);
+
+    let leftOffY  = 0;
+    let rightOffY = 0;
+    let shearAmt  = 0;
+    let waves     = [];
+    let flashAlpha = 0;
+
+    const PHASE_DUR = { 1: 1500, 2: 3000, 3: 400, 4: 1000 };
+    const YEARS_MAX = 306;
+
+    FAULT_ANIM.phaseStart = performance.now();
+
+    function aggiornaFaseUI(fase) {
+      phaseItems.forEach(function(item) {
+        item.classList.toggle('active', parseInt(item.dataset.phase) === fase);
+      });
+    }
+
+    const FASE_LABELS = {
+      1: 'Fase 1 — Accumulo di tensione in corso',
+      2: 'Fase 2 — Deformazione elastica dei blocchi',
+      3: 'Fase 3 — Rottura — rilascio istantaneo di energia',
+      4: 'Fase 4 — Rimbalzo alla posizione di equilibrio'
+    };
+
+    function aggiornaLabel(fase) {
+      if (phaseLabel) phaseLabel.textContent = FASE_LABELS[fase] || '';
+    }
+
+    function disegnaBlocco(x, y, w, h, lato) {
+      const gradColore = lato === 'sinistro'
+        ? ctx.createLinearGradient(x, y, x + w, y + h)
+        : ctx.createLinearGradient(x + w, y, x, y + h);
+      gradColore.addColorStop(0,   '#1a1e2e');
+      gradColore.addColorStop(0.5, '#141824');
+      gradColore.addColorStop(1,   '#0e1018');
+      ctx.fillStyle = gradColore;
+      ctx.fillRect(x, y, w, h);
+      ctx.save();
+      ctx.strokeStyle = 'rgba(245, 237, 224, 0.03)';
+      ctx.lineWidth = 0.5;
+      const righeStrati = Math.floor(h / 18);
+      for (let i = 1; i <= righeStrati; i++) {
+        ctx.beginPath(); ctx.moveTo(x, y + i * 18); ctx.lineTo(x + w, y + i * 18); ctx.stroke();
+      }
+      ctx.restore();
+      ctx.save();
+      ctx.strokeStyle = 'rgba(196, 97, 42, 0.08)';
+      ctx.lineWidth = 1;
+      if (lato === 'sinistro') {
+        ctx.beginPath(); ctx.moveTo(x + w, y); ctx.lineTo(x + w, y + h); ctx.stroke();
+      } else {
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + h); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function disegnaLineeRiferimento(shear, fase) {
+      const alpha = fase === 2 ? 0.55 : 0.22;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(245, 237, 224, ' + alpha + ')';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      for (let i = 1; i <= numRefLines; i++) {
+        const yBase  = i * refLineSpacing;
+        const yLeft  = yBase - shear / 2;
+        const yRight = yBase + shear / 2;
+        ctx.beginPath(); ctx.moveTo(20, yLeft + leftOffY); ctx.lineTo(faultX - 15, yLeft + leftOffY); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(faultX + 15, yRight + rightOffY); ctx.lineTo(W - 20, yRight + rightOffY); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function disegnaFaglia(fase, flashA) {
+      ctx.save();
+      if (fase <= 2) {
+        ctx.setLineDash([6, 5]); ctx.strokeStyle = 'rgba(196, 97, 42, 0.35)'; ctx.lineWidth = 1.5;
+      } else {
+        const intensita = Math.min(1, flashA + 0.6);
+        ctx.setLineDash([]);
+        ctx.strokeStyle = 'rgba(196, 97, 42, ' + intensita + ')';
+        ctx.lineWidth = 2;
+        ctx.shadowColor = 'rgba(196, 97, 42, 0.8)';
+        ctx.shadowBlur  = 12 * intensita;
+      }
+      ctx.beginPath(); ctx.moveTo(faultX, 0); ctx.lineTo(faultX, H); ctx.stroke();
+      ctx.restore();
+    }
+
+    function disegnaFrecce(progresso) {
+      const alpha   = Math.min(0.75, progresso * 1.5);
+      const arrowLen = 28 + progresso * 14;
+      const arrowPx  = 7;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(196, 97, 42, ' + alpha + ')';
+      ctx.fillStyle   = 'rgba(196, 97, 42, ' + alpha + ')';
+      ctx.lineWidth   = 1.5;
+      for (let i = 0; i < 3; i++) {
+        const xF = 40 + i * (blockW / 4); const yF = H * 0.35;
+        ctx.beginPath(); ctx.moveTo(xF, yF); ctx.lineTo(xF, yF + arrowLen); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(xF, yF + arrowLen); ctx.lineTo(xF - arrowPx/2, yF + arrowLen - arrowPx); ctx.lineTo(xF + arrowPx/2, yF + arrowLen - arrowPx); ctx.closePath(); ctx.fill();
+      }
+      for (let i = 0; i < 3; i++) {
+        const xF = faultX + 35 + i * (blockW / 4); const yF = H * 0.65;
+        ctx.beginPath(); ctx.moveTo(xF, yF); ctx.lineTo(xF, yF - arrowLen); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(xF, yF - arrowLen); ctx.lineTo(xF - arrowPx/2, yF - arrowLen + arrowPx); ctx.lineTo(xF + arrowPx/2, yF - arrowLen + arrowPx); ctx.closePath(); ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function disegnaOnde() {
+      waves.forEach(function(w) {
+        ctx.save(); ctx.beginPath(); ctx.arc(w.x, w.y, w.r, 0, Math.PI * 2);
+        ctx.strokeStyle = w.color; ctx.globalAlpha = Math.max(0, w.alpha); ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore();
+      });
+    }
+
+    function disegnaFlash(alpha) {
+      if (alpha <= 0) return;
+      ctx.save(); ctx.fillStyle = 'rgba(196, 97, 42, ' + alpha * 0.18 + ')'; ctx.fillRect(0, 0, W, H); ctx.restore();
+    }
+
+    function spawnaOnde() {
+      waves.push({ x: faultX, y: H / 3, r: 2, maxR: 200, speed: 2.5, color: '#C4612A', alpha: 0.9, baseAlpha: 0.9 });
+      waves.push({ x: faultX, y: H * 0.7, r: 2, maxR: 200, speed: 2.5, color: '#C4612A', alpha: 0.9, baseAlpha: 0.9 });
+      setTimeout(function() {
+        waves.push({ x: faultX, y: H / 3, r: 2, maxR: 200, speed: 1.5, color: '#3A7EC4', alpha: 0.85, baseAlpha: 0.85 });
+        waves.push({ x: faultX, y: H * 0.7, r: 2, maxR: 200, speed: 1.5, color: '#3A7EC4', alpha: 0.85, baseAlpha: 0.85 });
+      }, 200);
+    }
+
+    function aggiornaOnde() {
+      waves = waves.filter(function(w) {
+        w.r += w.speed; w.alpha = (1 - w.r / w.maxR) * w.baseAlpha; return w.r < w.maxR;
+      });
+    }
+
+    let ondePSpawnate = false;
+
+    function cambiafase(nuovaFase, ora) {
+      FAULT_ANIM.phase = nuovaFase; FAULT_ANIM.phaseStart = ora;
+      aggiornaFaseUI(nuovaFase); aggiornaLabel(nuovaFase);
+      if (nuovaFase === 1) {
+        leftOffY = 0; rightOffY = 0; shearAmt = 0; waves = []; flashAlpha = 0; ondePSpawnate = false;
+        if (yearsEl) { yearsEl.style.display = 'none'; yearsEl.textContent = ''; }
+      }
+      if (nuovaFase === 2) { if (yearsEl) yearsEl.style.display = 'block'; }
+      if (nuovaFase === 3) { ondePSpawnate = false; if (yearsEl) yearsEl.style.display = 'none'; }
+    }
+
+    function loop(ora) {
+      if (!FAULT_ANIM.running) return;
+      const elapsoPase = ora - FAULT_ANIM.phaseStart;
+      const fase       = FAULT_ANIM.phase;
+      const durata     = PHASE_DUR[fase];
+      const progresso  = Math.min(1, elapsoPase / durata);
+
+      if (elapsoPase >= durata) {
+        const prossima = fase < 4 ? fase + 1 : 1;
+        cambiafase(prossima, ora);
+        FAULT_ANIM.animId = requestAnimationFrame(loop);
+        return;
+      }
+
+      if (fase === 1) { shearAmt = 0; leftOffY = 0; rightOffY = 0; flashAlpha = 0; }
+      if (fase === 2) {
+        shearAmt = progresso * 18;
+        const anni = Math.round(progresso * YEARS_MAX);
+        if (yearsEl) yearsEl.textContent = anni + ' anni';
+      }
+      if (fase === 3) {
+        const ease = 1 - Math.pow(1 - progresso, 3);
+        shearAmt   = 18 * (1 - ease);
+        flashAlpha = progresso < 0.3 ? progresso / 0.3 : 1 - (progresso - 0.3) / 0.7;
+        leftOffY   = -Math.sin(progresso * Math.PI) * 5;
+        rightOffY  =  Math.sin(progresso * Math.PI) * 5;
+        if (!ondePSpawnate) { spawnaOnde(); ondePSpawnate = true; }
+      }
+      if (fase === 4) {
+        const ease = 1 - Math.pow(1 - progresso, 2);
+        shearAmt   = 0;
+        leftOffY   = -(1 - ease) * 4;
+        rightOffY  =  (1 - ease) * 4;
+        flashAlpha = 0;
+      }
+
+      aggiornaOnde();
+
+      let shakeX = 0, shakeY = 0;
+      if (fase === 3) {
+        const intensitaShake = (1 - progresso) * 4;
+        shakeX = (Math.random() - 0.5) * intensitaShake;
+        shakeY = (Math.random() - 0.5) * intensitaShake;
+      }
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#050709'; ctx.fillRect(0, 0, W, H);
+      ctx.save(); ctx.translate(shakeX, shakeY);
+      disegnaBlocco(0, leftOffY, faultX - 15, H, 'sinistro');
+      disegnaBlocco(faultX + 15, rightOffY, W - (faultX + 15), H, 'destro');
+      disegnaLineeRiferimento(shearAmt, fase);
+      disegnaFaglia(fase, flashAlpha);
+      if (fase === 2) { disegnaFrecce(progresso); }
+      if (fase === 3) { disegnaFlash(flashAlpha); }
+      disegnaOnde();
+      ctx.restore();
+
+      FAULT_ANIM.animId = requestAnimationFrame(loop);
+    }
+
+    aggiornaFaseUI(1);
+    aggiornaLabel(1);
+    FAULT_ANIM.phaseStart = performance.now();
+    FAULT_ANIM.animId = requestAnimationFrame(loop);
+  }
+
+  /* ═══ SLIDERS — Slide 4 ═══ */
+
+  const GR_TABLE = [
+    { anni: 0.003, label: '1 giorno',     mag: 1.0 },
+    { anni: 0.02,  label: '1 settimana',  mag: 1.5 },
+    { anni: 0.08,  label: '1 mese',       mag: 2.0 },
+    { anni: 1,     label: '1 anno',       mag: 2.8 },
+    { anni: 10,    label: '10 anni',      mag: 3.8 },
+    { anni: 50,    label: '50 anni',      mag: 4.9 },
+    { anni: 100,   label: '100 anni',     mag: 5.5 },
+    { anni: 200,   label: '200 anni',     mag: 6.0 },
+    { anni: 500,   label: '500 anni',     mag: 6.5 },
+  ];
+
+  function getMagDesc(m) {
+    if (m < 2.0) return 'Impercettibile — solo i sismografi lo registrano';
+    if (m < 3.0) return 'Raramente percepito dalle persone';
+    if (m < 4.0) return 'Spesso percepito, danni rarissimi';
+    if (m < 5.0) return 'Avvertito da tutti, piccoli danni';
+    if (m < 6.0) return 'Danni moderati agli edifici';
+    if (m < 7.0) return "Danni gravi — come L'Aquila 2009 (M 6.3)";
+    return 'Catastrofico';
+  }
+
+  function formatEnergy(m) {
+    const e = Math.pow(10, 1.5 * m + 4.8);
+    if (e >= 1e15) return `~${(e/1e15).toFixed(0)} quadrilioni di joule`;
+    if (e >= 1e12) return `~${(e/1e12).toFixed(0)} miliardi di joule`;
+    if (e >= 1e9)  return `~${(e/1e9).toFixed(0)} milioni di joule`;
+    return `~${e.toFixed(0)} joule`;
+  }
+
+  function energyColor(mag) {
+    const t = Math.min(Math.max((mag - 1.0) / (7.5 - 1.0), 0), 1);
+    const r = Math.round(76  + t * (139 - 76));
+    const g = Math.round(175 + t * (26  - 175));
+    const b = Math.round(80  + t * (26  - 80));
+    return `rgb(${r},${g},${b})`;
+  }
+
+  function updateEnergy(mag) {
+    const fill  = document.getElementById('s1-energy-fill');
+    const label = document.getElementById('s1-energy-label');
+    const pct   = ((mag - 1.0) / (7.5 - 1.0)) * 100;
+    if (fill) {
+      fill.style.height = pct + '%';
+      fill.style.background = `linear-gradient(to top, #8B1A1A, ${energyColor(mag)})`;
+    }
+    if (label) label.textContent = formatEnergy(mag);
+  }
+
+  function updateFromTimeIdx(idx) {
+    idx = Math.max(0, Math.min(GR_TABLE.length - 1, idx));
+    const row = GR_TABLE[idx];
+    const mag = row.mag;
+    const magSlider = document.getElementById('s1-mag-slider');
+    const timeLabel = document.getElementById('s1-time-label');
+    const magLabel  = document.getElementById('s1-mag-label');
+    const magDesc   = document.getElementById('s1-mag-desc');
+    if (magSlider) magSlider.value = Math.round(mag * 10);
+    if (timeLabel) timeLabel.textContent = 'circa ' + row.label;
+    if (magLabel)  magLabel.textContent  = 'M ' + mag.toFixed(1);
+    if (magDesc)   magDesc.textContent   = getMagDesc(mag);
+    updateEnergy(mag);
+  }
+
+  function updateFromMagVal(val) {
+    const mag = val / 10;
+    let closest = 0, minDiff = Infinity;
+    GR_TABLE.forEach((row, i) => {
+      const diff = Math.abs(row.mag - mag);
+      if (diff < minDiff) { minDiff = diff; closest = i; }
+    });
+    const timeSlider = document.getElementById('s1-time-slider');
+    const timeLabel  = document.getElementById('s1-time-label');
+    const magLabel   = document.getElementById('s1-mag-label');
+    const magDesc    = document.getElementById('s1-mag-desc');
+    if (timeSlider) timeSlider.value = closest;
+    if (timeLabel)  timeLabel.textContent  = 'circa ' + GR_TABLE[closest].label;
+    if (magLabel)   magLabel.textContent   = 'M ' + mag.toFixed(1);
+    if (magDesc)    magDesc.textContent    = getMagDesc(mag);
+    updateEnergy(mag);
+  }
+
+  function initSliders() {
+    const ts = document.getElementById('s1-time-slider');
+    const ms = document.getElementById('s1-mag-slider');
+    if (!ts || !ms) return;
+    ts.addEventListener('input', function () { updateFromTimeIdx(+this.value); });
+    ms.addEventListener('input', function () { updateFromMagVal(+this.value); });
+    updateFromTimeIdx(3);
+  }
+
+  /* ═══ CANVAS PAGANICA — Slide 5 ═══ */
+
+  function drawPagStrati(ctx, W, H) {
+    ctx.fillStyle = '#1a2030'; ctx.fillRect(0, 0, W, H * 0.13);
+    ctx.fillStyle = '#232d3f'; ctx.fillRect(0, H * 0.13, W, H * 0.40);
+    ctx.fillStyle = '#1c2535'; ctx.fillRect(0, H * 0.53, W, H * 0.47);
+    ctx.fillStyle = 'rgba(245,237,224,0.2)';
+    ctx.font = '500 9px "JetBrains Mono"';
+    ctx.fillText('0–2 km  ·  sedimenti', 10, H * 0.08);
+    ctx.fillText('2–8 km  ·  calcari', 10, H * 0.33);
+    ctx.fillText('8–15 km  ·  roccia cristallina', 10, H * 0.75);
+  }
+
+  function drawPagFault(ctx, W, H, solid, glowing) {
+    const x0 = W * 0.35, y0 = H, x1 = W * 0.65, y1 = 0;
+    ctx.strokeStyle = glowing ? '#E8C060' : '#C4612A';
+    ctx.lineWidth   = glowing ? 2.5 : 1.5;
+    ctx.setLineDash(solid ? [] : [6, 4]);
+    ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  function drawPagArrow(ctx, x1, y1, x2, y2, color) {
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    const hw = 7;
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - hw * Math.cos(angle - 0.4), y2 - hw * Math.sin(angle - 0.4));
+    ctx.lineTo(x2 - hw * Math.cos(angle + 0.4), y2 - hw * Math.sin(angle + 0.4));
+    ctx.closePath(); ctx.fill();
+  }
+
+  function setLabelPag(text) {
+    const el = document.getElementById('s1-paganica-label');
+    if (el) el.textContent = text;
+  }
+
+  function drawPaganicanPhase1() {
+    const c = document.getElementById('s1-paganica-canvas');
+    if (!c) return;
+    c.width = c.offsetWidth || 800; c.height = 320;
+    const ctx = c.getContext('2d'), W = c.width, H = c.height;
+    ctx.clearRect(0, 0, W, H);
+    drawPagStrati(ctx, W, H);
+    drawPagFault(ctx, W, H, false, false);
+    drawPagArrow(ctx, W * 0.25, H * 0.50, W * 0.12, H * 0.35, 'rgba(196,58,58,0.65)');
+    drawPagArrow(ctx, W * 0.75, H * 0.50, W * 0.88, H * 0.65, 'rgba(196,58,58,0.65)');
+    setLabelPag('Tensione accumulata — ~700 anni');
+  }
+
+  function initPaganicanCanvas() {
+    const btn = document.getElementById('s1-paganica-btn');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      if (this.textContent.includes('Rivedi')) {
+        this.textContent = '▶ Avvia';
+        drawPaganicanPhase1();
+      } else {
+        this.textContent = '⏳';
+        this.disabled = true;
+        runPaganicanAnim();
+      }
+    });
+    const canvas = document.getElementById('s1-paganica-canvas');
+    if (canvas) { canvas.width = canvas.offsetWidth || 800; canvas.height = 320; drawPaganicanPhase1(); }
+  }
+
+  function runPaganicanAnim() {
+    const canvas = document.getElementById('s1-paganica-canvas');
+    if (!canvas) return;
+    canvas.width = canvas.offsetWidth || 800; canvas.height = 320;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+
+    let leftOffY = 0, rightOffY = 0;
+    let cracks = [];
+    let flashAlpha = 0;
+    let shakeFrames = 0;
+    const animStart = performance.now();
+
+    const faultX0 = W * 0.35, faultY0 = H;
+    const faultX1 = W * 0.65, faultY1 = 0;
+    const numCracks = 18;
+    for (let i = 0; i < numCracks; i++) {
+      const t  = i / numCracks;
+      const cx = faultX0 + (faultX1 - faultX0) * t;
+      const cy = faultY0 + (faultY1 - faultY0) * t;
+      const angle = Math.atan2(faultY1 - faultY0, faultX1 - faultX0) + Math.PI / 2;
+      const side  = (Math.random() > 0.5) ? 1 : -1;
+      const len   = 4 + Math.random() * 5;
+      cracks.push({ cx, cy, dx: Math.cos(angle) * side * len, dy: Math.sin(angle) * side * len, visible: false, alpha: 1.0 });
+    }
+
+    function frame(now) {
+      const elapsed = now - animStart;
+      const PHASE1_END = 2000, PHASE2_END = 2600, PHASE3_END = 3800;
+
+      ctx.save();
+      if (shakeFrames > 0) { ctx.translate((Math.random()-0.5)*4, (Math.random()-0.5)*4); shakeFrames--; }
+      ctx.clearRect(-10,-10,W+20,H+20);
+
+      if (elapsed < PHASE1_END) {
+        drawPagStrati(ctx, W, H);
+        drawPagFault(ctx, W, H, false, false);
+        drawPagArrow(ctx, W*0.25, H*0.5, W*0.12, H*0.35, 'rgba(196,58,58,0.65)');
+        drawPagArrow(ctx, W*0.75, H*0.5, W*0.88, H*0.65, 'rgba(196,58,58,0.65)');
+        setLabelPag('Tensione accumulata — ~700 anni');
+      } else if (elapsed < PHASE2_END) {
+        const p2 = (elapsed - PHASE1_END) / (PHASE2_END - PHASE1_END);
+        if (p2 > 0.05 && shakeFrames === 0) shakeFrames = 8;
+        drawPagStrati(ctx, W, H);
+        drawPagFault(ctx, W, H, true, true);
+        const visibleCount = Math.floor(p2 * numCracks);
+        cracks.forEach((c, i) => {
+          if (i < visibleCount) {
+            ctx.strokeStyle = `rgba(255,200,100,${c.alpha * 0.7})`; ctx.lineWidth = 0.8;
+            ctx.beginPath(); ctx.moveTo(c.cx, c.cy); ctx.lineTo(c.cx + c.dx, c.cy + c.dy); ctx.stroke();
+          }
+        });
+        flashAlpha = Math.sin(p2 * Math.PI) * 0.6;
+        if (flashAlpha > 0) { ctx.fillStyle = `rgba(255,240,200,${flashAlpha})`; ctx.fillRect(0,0,W,H); }
+        setLabelPag('6 aprile 2009 · 03:32:39 UTC — Rottura');
+      } else if (elapsed < PHASE3_END) {
+        const p3 = (elapsed - PHASE2_END) / (PHASE3_END - PHASE2_END);
+        const ease = 1 - Math.pow(1 - p3, 3);
+        leftOffY  = -8  * ease;
+        rightOffY =  28 * ease;
+        ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W * 0.5, H); ctx.clip(); ctx.translate(0, leftOffY);
+        drawPagStrati(ctx, W, H); ctx.restore();
+        ctx.save(); ctx.beginPath(); ctx.rect(W * 0.5, 0, W * 0.5, H); ctx.clip(); ctx.translate(0, rightOffY);
+        drawPagStrati(ctx, W, H); ctx.restore();
+        drawPagFault(ctx, W, H, true, false);
+        if (p3 > 0.3) {
+          const labelAlpha = Math.min((p3 - 0.3) / 0.3, 1);
+          drawPagArrow(ctx, W*0.78, H*0.35, W*0.78, H*0.35 + 28*ease, `rgba(196,58,58,${labelAlpha * 0.9})`);
+          ctx.fillStyle = `rgba(245,237,224,${labelAlpha * 0.5})`; ctx.font = '500 9px "JetBrains Mono"';
+          ctx.fillText('~25 cm', W*0.80, H*0.35 + 14*ease);
+        }
+        cracks.forEach(c => {
+          c.alpha = Math.max(0, 1 - p3 * 2);
+          if (c.alpha > 0) {
+            ctx.strokeStyle = `rgba(255,200,100,${c.alpha * 0.5})`; ctx.lineWidth = 0.8;
+            ctx.beginPath(); ctx.moveTo(c.cx, c.cy); ctx.lineTo(c.cx + c.dx, c.cy + c.dy); ctx.stroke();
+          }
+        });
+        setLabelPag('Scorrimento completato in < 7 secondi');
+      } else {
+        const btn = document.getElementById('s1-paganica-btn');
+        if (btn) { btn.textContent = '↺ Rivedi'; btn.disabled = false; }
+        ctx.restore(); return;
+      }
+
+      ctx.restore();
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ── Init ── */
+  goToSlide(0, false);
+
+})();
+
+// ═══════════════════════════════════════════
+//  HERO CANVAS
+// ═══════════════════════════════════════════
+const hc   = document.getElementById('hero-canvas');
 const hctx = hc.getContext('2d');
 let ht = 0;
 
@@ -1098,17 +2672,16 @@ function resizeHero() { hc.width = hc.offsetWidth; hc.height = hc.offsetHeight; 
 resizeHero();
 new ResizeObserver(resizeHero).observe(hc.parentElement);
 
-// Mouse tracking
-let heroHover = false, heroMX = 0, heroMY = 0;
+let heroHover = false, heroMX = 0, heroMY = 0, heroSpeed = 0;
 hc.addEventListener('mousemove', e => {
     const rect = hc.getBoundingClientRect();
-    heroMX = e.clientX - rect.left;
-    heroMY = e.clientY - rect.top;
-    heroHover = true;
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    const dx = mx - heroMX, dy = my - heroMY;
+    heroSpeed += Math.sqrt(dx*dx + dy*dy);
+    heroMX = mx; heroMY = my; heroHover = true;
 });
-hc.addEventListener('mouseleave', () => { heroHover = false; });
+hc.addEventListener('mouseleave', () => { heroHover = false; heroSpeed = 0; });
 
-// One spring oscillator per row — 22 numbers, zero lag, always stable
 const heroRows = 22;
 const heroDisp = new Float32Array(heroRows);
 const heroVel  = new Float32Array(heroRows);
@@ -1117,100 +2690,104 @@ function drawHero() {
     hctx.clearRect(0, 0, hc.width, hc.height);
     const W = hc.width, H = hc.height;
     const rowH = H / heroRows;
-
-    // Update per-row spring oscillators
+    const impulse = heroHover ? Math.min(heroSpeed * 0.06, 2.0) : 0;
+    heroSpeed = 0;
     for (let r = 0; r < heroRows; r++) {
-        const y0    = rowH * r + rowH / 2;
+        const y0 = rowH * r + rowH / 2;
         const distY = Math.abs(heroMY - y0);
-        const prox  = heroHover ? Math.max(0, 1 - distY / (rowH * 1.8)) : 0;
-        heroVel[r] += prox * 0.18;
-        heroVel[r]  = (heroVel[r] - heroDisp[r] * 0.018) * 0.91;
+        const prox = heroHover ? Math.max(0, 1 - distY / (rowH * 2)) : 0;
+        heroVel[r] += impulse * prox;
+        heroVel[r] = (heroVel[r] - heroDisp[r] * 0.012) * 0.94;
         heroDisp[r] += heroVel[r];
     }
-
-    // Draw strings
     for (let r = 0; r < heroRows; r++) {
-        const y0     = rowH * r + rowH / 2;
+        const y0 = rowH * r + rowH / 2;
         const baseAmp = 1.8 + Math.sin(r * 0.6 + ht * 0.25) * 1.2;
-        const freq   = 0.013 + r * 0.0008;
-        const phase  = ht * 0.9 + r * 0.9;
-        const disp   = heroDisp[r];
-
+        const freq = 0.013 + r * 0.0008;
+        const phase = ht * 0.9 + r * 0.9;
+        const disp = heroDisp[r];
         hctx.beginPath();
         for (let x = 0; x <= W; x += 4) {
-            const env  = Math.sin((x / W) * Math.PI);
+            const env = Math.sin((x / W) * Math.PI);
             const wave = Math.sin(x * freq + phase) * baseAmp * env;
             x === 0 ? hctx.moveTo(x, y0 + wave + disp * env) : hctx.lineTo(x, y0 + wave + disp * env);
         }
-
-        const nearRow    = heroHover && Math.abs(heroMY - y0) < rowH;
-        const extraAlpha = nearRow ? 0.07 : 0;
-        const alpha      = 0.28 + Math.sin(r * 0.5 + ht * 0.15) * 0.06 + extraAlpha;
+        const nearRow = heroHover && Math.abs(heroMY - y0) < rowH;
+        const alpha = 0.28 + Math.sin(r * 0.5 + ht * 0.15) * 0.06 + (nearRow ? 0.07 : 0);
         hctx.strokeStyle = `rgba(196,97,42,${alpha})`;
-        hctx.lineWidth   = nearRow ? 1.8 : 1.35;
+        hctx.lineWidth = nearRow ? 1.8 : 1.35;
         hctx.stroke();
     }
-
     ht += 0.035;
     requestAnimationFrame(drawHero);
 }
 drawHero();
 
 // ═══════════════════════════════════════════
-//  WAVE CANVAS — P & S wave animation
+//  WAVE CANVAS — sci-3 (canvas rimosso con il vecchio carousel)
 // ═══════════════════════════════════════════
-const wc  = document.getElementById('wave-canvas');
-const wctx = wc.getContext('2d');
+const wc   = document.getElementById('wave-canvas');
+const wctx = wc ? wc.getContext('2d') : null;
 let wt = 0, wAnimating = false;
 
-function resizeWave() { wc.width = wc.offsetWidth; wc.height = wc.offsetHeight || 260; }
-resizeWave();
+function resizeWave() { if (wc) { wc.width = wc.offsetWidth; wc.height = wc.offsetHeight || 240; } }
+if (wc) resizeWave();
 
 function drawWaves() {
+    if (!wctx) return;
     wctx.clearRect(0, 0, wc.width, wc.height);
     const W = wc.width, H = wc.height;
 
-    // Grid lines
+    // Grid
     wctx.strokeStyle = 'rgba(58,126,196,0.06)';
     wctx.lineWidth = 1;
     for (let y = 0; y < H; y += 32) { wctx.beginPath(); wctx.moveTo(0,y); wctx.lineTo(W,y); wctx.stroke(); }
     for (let x = 0; x < W; x += 64) { wctx.beginPath(); wctx.moveTo(x,0); wctx.lineTo(x,H); wctx.stroke(); }
 
-    // P wave
+    // Onde P
     wctx.beginPath();
     for (let x = 0; x <= W; x += 2) {
         const env  = Math.sin((x / W) * Math.PI);
         const wave = Math.sin(x * 0.04 - wt * 3.2) * 28 * env;
-        x === 0 ? wctx.moveTo(x, H * 0.32 + wave) : wctx.lineTo(x, H * 0.32 + wave);
+        x === 0 ? wctx.moveTo(x, H * 0.28 + wave) : wctx.lineTo(x, H * 0.28 + wave);
     }
     wctx.strokeStyle = 'rgba(58,126,196,0.9)';
     wctx.lineWidth = 2;
     wctx.stroke();
 
-    // S wave
+    // Label P
+    wctx.fillStyle = 'rgba(58,126,196,0.5)';
+    wctx.font = '500 9px "JetBrains Mono"';
+    wctx.fillText('P · 6 km/s', 8, H * 0.28 - 12);
+
+    // Onde S
     wctx.beginPath();
     for (let x = 0; x <= W; x += 2) {
         const env  = Math.sin((x / W) * Math.PI);
-        const wave = Math.sin(x * 0.025 - wt * 1.9) * 38 * env;
-        x === 0 ? wctx.moveTo(x, H * 0.7 + wave) : wctx.lineTo(x, H * 0.7 + wave);
+        const wave = Math.sin(x * 0.025 - wt * 1.9) * 42 * env;
+        x === 0 ? wctx.moveTo(x, H * 0.72 + wave) : wctx.lineTo(x, H * 0.72 + wave);
     }
     wctx.strokeStyle = 'rgba(196,58,58,0.9)';
     wctx.lineWidth = 2;
     wctx.stroke();
+
+    // Label S
+    wctx.fillStyle = 'rgba(196,58,58,0.5)';
+    wctx.fillText('S · 3.6 km/s', 8, H * 0.72 - 15);
 
     wt += 0.04;
     if (wAnimating) requestAnimationFrame(drawWaves);
 }
 
 // ═══════════════════════════════════════════
-//  SEISMOGRAPH CANVAS
+//  SEISMOGRAPH CANVAS — sci-5
 // ═══════════════════════════════════════════
-const sc  = document.getElementById('seismo-canvas');
-const sctx = sc.getContext('2d');
+const sc   = document.getElementById('seismo-canvas');
+const sctx = sc ? sc.getContext('2d') : null;
 let sgData = [];
 
-function resizeSeismo() { sc.width = sc.offsetWidth; sc.height = sc.offsetHeight || 180; }
-resizeSeismo();
+function resizeSeismo() { if (sc) { sc.width = sc.offsetWidth; sc.height = sc.offsetHeight || 180; } }
+if (sc) resizeSeismo();
 
 function buildSeismoData(n) {
     const d = [];
@@ -1229,6 +2806,7 @@ function buildSeismoData(n) {
 sgData = buildSeismoData(600);
 
 function drawSeismo(prog) {
+    if (!sctx) return;
     sctx.clearRect(0, 0, sc.width, sc.height);
     const W = sc.width, H = sc.height, mid = H / 2;
 
@@ -1237,16 +2815,23 @@ function drawSeismo(prog) {
     sctx.lineWidth = 1;
     for (let y = 0; y < H; y += 20) { sctx.beginPath(); sctx.moveTo(0,y); sctx.lineTo(W,y); sctx.stroke(); }
 
-    // Event line
+    // Linea evento
     const ex = W * 0.42;
     sctx.setLineDash([5, 5]);
     sctx.strokeStyle = 'rgba(139,26,26,0.45)';
     sctx.lineWidth = 1;
-    sctx.beginPath(); sctx.moveTo(ex, 0); sctx.lineTo(ex, H); sctx.stroke();
+    sctx.beginPath(); sctx.moveTo(ex,0); sctx.lineTo(ex,H); sctx.stroke();
     sctx.setLineDash([]);
     sctx.fillStyle = 'rgba(139,26,26,0.55)';
     sctx.font = '500 9px "JetBrains Mono"';
     sctx.fillText('03:32:39', ex + 5, 13);
+
+    // Fasi P e S labels
+    const px = W * 0.34, sx = W * 0.38;
+    sctx.fillStyle = 'rgba(58,126,196,0.5)';
+    sctx.fillText('P', px, H - 5);
+    sctx.fillStyle = 'rgba(196,58,58,0.5)';
+    sctx.fillText('S', sx, H - 5);
 
     // Waveform
     const count = Math.floor(sgData.length * prog);
@@ -1254,11 +2839,12 @@ function drawSeismo(prog) {
     for (let i = 0; i < count; i++) {
         const x = (i / sgData.length) * W;
         const y = mid + sgData[i];
-        i === 0 ? sctx.moveTo(x, y) : sctx.lineTo(x, y);
+        i === 0 ? sctx.moveTo(x,y) : sctx.lineTo(x,y);
     }
-    const grad = sctx.createLinearGradient(0, 0, W, 0);
+    const grad = sctx.createLinearGradient(0,0,W,0);
     grad.addColorStop(0,    'rgba(245,237,224,0.15)');
-    grad.addColorStop(0.38, 'rgba(245,237,224,0.35)');
+    grad.addColorStop(0.33, 'rgba(58,126,196,0.6)');
+    grad.addColorStop(0.40, 'rgba(245,237,224,0.35)');
     grad.addColorStop(0.44, 'rgba(196,97,42,0.95)');
     grad.addColorStop(0.58, 'rgba(139,26,26,0.85)');
     grad.addColorStop(1,    'rgba(245,237,224,0.25)');
@@ -1267,6 +2853,121 @@ function drawSeismo(prog) {
     sctx.stroke();
 }
 drawSeismo(1);
+
+// ═══════════════════════════════════════════
+//  EPICENTRO CANVAS — sci-6
+// ═══════════════════════════════════════════
+function drawEpicentroCanvas() {
+    const ec   = document.getElementById('epicentro-canvas');
+    if (!ec) return;
+    const ectx = ec.getContext('2d');
+    const W = ec.width, H = ec.height;
+
+    // Stazioni (coordinate normalizzate 0-1 sullo spazio canvas)
+    const stations = [
+        { name: 'AQU',  nx: 0.46, ny: 0.52, d: 9,  color: 'rgba(58,126,196,' },
+        { name: 'FIAM', nx: 0.28, ny: 0.22, d: 38, color: 'rgba(196,97,42,' },
+        { name: 'AMAT', nx: 0.72, ny: 0.18, d: 61, color: 'rgba(139,26,26,' },
+        { name: 'SUL',  nx: 0.74, ny: 0.72, d: 50, color: 'rgba(212,137,58,' },
+    ];
+
+    // Epicentro (circa al centro)
+    const EX = 0.48 * W, EY = 0.46 * H;
+
+    // Scale: pixels per km — usiamo la stazione più lontana (AMAT 61 km)
+    // La stazione AMAT è a (0.72,0.18) → distanza pixel dall'epicentro
+    const amat = stations[2];
+    const dxPx = (amat.nx - 0.48) * W;
+    const dyPx = (amat.ny - 0.46) * H;
+    const distAMAT_px = Math.sqrt(dxPx*dxPx + dyPx*dyPx);
+    const scale = distAMAT_px / amat.d; // px per km
+
+    let animFrame = 0;
+    const totalFrames = 90;
+
+    function drawFrame() {
+        ectx.clearRect(0, 0, W, H);
+
+        // Sfondo
+        ectx.fillStyle = '#050709';
+        ectx.fillRect(0, 0, W, H);
+
+        // Griglia leggera
+        ectx.strokeStyle = 'rgba(58,126,196,0.04)';
+        ectx.lineWidth = 1;
+        for (let x = 0; x < W; x += 40) { ectx.beginPath(); ectx.moveTo(x,0); ectx.lineTo(x,H); ectx.stroke(); }
+        for (let y = 0; y < H; y += 40) { ectx.beginPath(); ectx.moveTo(0,y); ectx.lineTo(W,y); ectx.stroke(); }
+
+        const progress = Math.min(animFrame / totalFrames, 1);
+        const eased = 1 - Math.pow(1 - progress, 2);
+
+        // Cerchi che crescono
+        stations.forEach(st => {
+            const sx = st.nx * W, sy = st.ny * H;
+            const maxR = st.d * scale;
+            const r = maxR * eased;
+
+            // Cerchio principale
+            ectx.beginPath();
+            ectx.arc(sx, sy, r, 0, Math.PI * 2);
+            ectx.strokeStyle = st.color + '0.5)';
+            ectx.lineWidth = 1.5;
+            ectx.setLineDash([4, 4]);
+            ectx.stroke();
+            ectx.setLineDash([]);
+
+            // Area fill leggera
+            ectx.beginPath();
+            ectx.arc(sx, sy, r, 0, Math.PI * 2);
+            ectx.fillStyle = st.color + '0.03)';
+            ectx.fill();
+
+            // Punto stazione
+            ectx.beginPath();
+            ectx.arc(sx, sy, 5, 0, Math.PI * 2);
+            ectx.fillStyle = st.color + '0.9)';
+            ectx.fill();
+
+            // Label stazione
+            ectx.fillStyle = 'rgba(245,237,224,0.55)';
+            ectx.font = '500 10px "JetBrains Mono"';
+            ectx.fillText(st.name, sx + 8, sy - 6);
+        });
+
+        // Epicentro — appare quando i cerchi si intersecano (~75% animazione)
+        if (progress > 0.65) {
+            const alpha = Math.min((progress - 0.65) / 0.35, 1);
+            // Glow
+            const grd = ectx.createRadialGradient(EX, EY, 0, EX, EY, 20);
+            grd.addColorStop(0, `rgba(196,97,42,${0.4 * alpha})`);
+            grd.addColorStop(1, 'transparent');
+            ectx.beginPath();
+            ectx.arc(EX, EY, 20, 0, Math.PI * 2);
+            ectx.fillStyle = grd;
+            ectx.fill();
+
+            // Punto epicentro
+            ectx.beginPath();
+            ectx.arc(EX, EY, 6, 0, Math.PI * 2);
+            ectx.fillStyle = `rgba(196,97,42,${alpha})`;
+            ectx.fill();
+
+            // Label
+            ectx.fillStyle = `rgba(196,97,42,${alpha})`;
+            ectx.font = '600 10px "JetBrains Mono"';
+            ectx.fillText('EPICENTRO', EX + 10, EY + 4);
+            ectx.fillStyle = `rgba(245,237,224,${alpha * 0.4})`;
+            ectx.font = '9px "JetBrains Mono"';
+            ectx.fillText('42.348°N · 13.380°E', EX + 10, EY + 16);
+        }
+
+        if (animFrame < totalFrames + 20) {
+            animFrame++;
+            requestAnimationFrame(drawFrame);
+        }
+    }
+    drawFrame();
+}
 
 // ═══════════════════════════════════════════
 //  COUNT-UP
@@ -1280,9 +2981,7 @@ function countUp(el) {
         const p = Math.min((now - t0) / dur, 1);
         const e = 1 - Math.pow(1 - p, 3);
         const v = target * e;
-        el.textContent = dec > 0
-            ? v.toFixed(dec)
-            : Math.floor(v).toLocaleString('it-IT');
+        el.textContent = dec > 0 ? v.toFixed(dec) : Math.floor(v).toLocaleString('it-IT');
         if (p < 1) requestAnimationFrame(tick);
     })(t0);
 }
@@ -1291,40 +2990,27 @@ function countUp(el) {
 //  PER-SLIDE ENTRY ANIMATIONS
 // ═══════════════════════════════════════════
 function onSlideEnter(i, el) {
-    if (triggered.has(i)) return;
+    if (triggered.has(i)) { return; }
     triggered.add(i);
 
-    if (i === 1) {
+    if (i === 1) { // dati
         el.querySelectorAll('.stat-num[data-val]').forEach((n, j) =>
             setTimeout(() => countUp(n), j * 180));
     }
-    if (i === 2) {
-        wAnimating = true;
-        resizeWave();
-        drawWaves();
-    }
-    if (i === 3) {
-        resizeSeismo();
-        let p = 0;
-        (function tick() {
-            p = Math.min(p + 0.007, 1);
-            drawSeismo(p);
-            if (p < 1) requestAnimationFrame(tick);
-        })();
-    }
-    if (i === 4) {
+    // sezione 1 (SCIENCE_IDX): gestita dal proprio IIFE
+    if (i === 3) { // città
         el.querySelectorAll('.damage-num[data-val]').forEach((n, j) =>
             setTimeout(() => countUp(n), 300 + j * 200));
     }
 }
 
 // ═══════════════════════════════════════════
-//  ART PANEL INTERACTION
+//  ART PANEL
 // ═══════════════════════════════════════════
-const artName    = document.getElementById('art-name');
-const artYear    = document.getElementById('art-year');
-const artFill    = document.getElementById('art-damage-fill');
-const artPct     = document.getElementById('art-damage-pct');
+const artName = document.getElementById('art-name');
+const artYear = document.getElementById('art-year');
+const artFill = document.getElementById('art-damage-fill');
+const artPct  = document.getElementById('art-damage-pct');
 
 document.getElementById('art-list').querySelectorAll('.art-item').forEach(item => {
     item.addEventListener('click', () => {
@@ -1340,7 +3026,13 @@ document.getElementById('art-list').querySelectorAll('.art-item').forEach(item =
     });
 });
 
-window.addEventListener('resize', () => { resizeHero(); resizeWave(); resizeSeismo(); });
+/* resizeWave e resizeSeismo rimossi insieme al vecchio carousel scientifico */
+window.addEventListener('resize', () => { resizeHero(); });
+
+// ═══════════════════════════════════════════
+//  THREE.JS FAULT ANIMATION — rimosso (sostituito da IIFE sezione1)
+// ═══════════════════════════════════════════
+
 </script>
 </body>
 </html>
