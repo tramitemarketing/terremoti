@@ -18,6 +18,7 @@
     position: relative;
     overflow: hidden;
     background: var(--black);
+    display: block; /* previene override da .slide flex del padre */
 }
 
 /* ── Carosello ── */
@@ -70,7 +71,7 @@
 .s2-arrow svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; }
 #s2-prev { left: 1.2rem; }
 #s2-next { right: 1.2rem; }
-.s2-arrow[disabled] { opacity: 0.08; pointer-events: none; }
+.s2-arrow:disabled { opacity: 0.08; pointer-events: none; }
 
 /* ── Nav dots + counter ── */
 .s2-nav {
@@ -464,7 +465,6 @@
     justify-content: center;
     padding: 3rem 4rem;
     gap: 2rem;
-    overflow-y: auto;
 }
 .s2-s3-text { max-width: 800px; text-align: center; }
 .s2-s3-text .s2-slide-title { margin-bottom: 0.8rem; }
@@ -512,12 +512,6 @@
     background: var(--terracotta);
     border: none;
     cursor: pointer;
-}
-.s2-depth-val-row {
-    text-align: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--terracotta);
 }
 .s2-canvas-tool-wrap {
     display: flex;
@@ -636,7 +630,7 @@
     <div id="s2-track">
 
       <!-- ─── Slide 1 — Mappa + Lista ─── -->
-      <div class="s2-slide" id="s2-s1" style="flex-direction:column;align-items:stretch;">
+      <div class="s2-slide" id="s2-s1">
         <div class="s2-cols">
           <!-- Sinistra: lista -->
           <div class="s2-col-left">
@@ -710,7 +704,7 @@
               <span id="s2-depth-val">8,8 km</span>
               <span>300 km — Profondo</span>
             </div>
-            <input type="range" id="s2-depth-slider" min="0" max="300" step="0.5" value="8.8">
+            <input type="range" id="s2-depth-slider" min="1" max="300" step="0.5" value="8.8">
           </div>
           <div class="s2-canvas-tool-wrap">
             <canvas id="s2-depth-canvas" width="400" height="300"></canvas>
@@ -738,7 +732,7 @@
         <span class="s2-transition-eyebrow">SEZIONE 3 → LE ONDE SISMICHE</span>
         <h2 class="s2-transition-title">Ma come si propaga questa energia attraverso la roccia?</h2>
         <p class="s2-transition-sub">Esistono tre tipi di onde sismiche. Tre comportamenti diversi. Tre effetti diversi.</p>
-        <span class="s2-bounce-arrow">↓</span>
+        <span class="s2-bounce-arrow" aria-hidden="true">↓</span>
       </div>
 
     </div><!-- /s2-track -->
@@ -754,10 +748,10 @@
     <!-- Nav dots + counter -->
     <div class="s2-nav">
       <div class="s2-dots-row">
-        <button class="s2-dot active" data-slide="0"></button>
-        <button class="s2-dot" data-slide="1"></button>
-        <button class="s2-dot" data-slide="2"></button>
-        <button class="s2-dot" data-slide="3"></button>
+        <button class="s2-dot active" data-slide="0" aria-label="Slide 1"></button>
+        <button class="s2-dot" data-slide="1" aria-label="Slide 2"></button>
+        <button class="s2-dot" data-slide="2" aria-label="Slide 3"></button>
+        <button class="s2-dot" data-slide="3" aria-label="Slide 4"></button>
       </div>
       <span id="s2-counter">01 · 04</span>
     </div>
