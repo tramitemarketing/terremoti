@@ -972,9 +972,80 @@
     });
   }
 
-  /* Stub sicuri per task 5 */
-  function s2SelectEvent(idx)        { /* Task 5 */ }
-  function s2DeselectEvent()         { /* Task 5 */ }
+  /* ════════════════════════════════════════════
+     Hover sync, info panel, depth bar — Task 5
+     ════════════════════════════════════════════ */
+
+  function s2SelectEvent(idx) {
+    const ev = s2Events[idx];
+    if (!ev) return;
+
+    /* 1. Highlight list row */
+    document.querySelectorAll('.s2-event-row').forEach((row, i) => {
+      row.classList.toggle('s2-event-row--active', i === idx);
+    });
+
+    /* 2. Highlight map marker */
+    s2Markers.forEach((m, i) => {
+      if (i === idx) {
+        m.setStyle({ fillColor: '#F5EDE0', fillOpacity: 1, radius: s2DepthRadius(ev.depth) + 4 });
+      } else {
+        m.setStyle({ fillColor: '#C4612A', fillOpacity: 0.75, radius: s2DepthRadius(s2Events[i].depth) });
+      }
+    });
+
+    /* 3. Populate and show info panel */
+    const placeholder = document.getElementById('s2-info-placeholder');
+    const grid        = document.getElementById('s2-info-grid');
+    if (!grid) return;
+
+    const place = ev.location.length > 30
+      ? ev.location.substring(0, 30) + '…'
+      : ev.location;
+
+    grid.innerHTML = `
+      <div class="s2-info-cell">
+        <span class="s2-info-key s2-info-key--hypo">IPOCENTRO</span>
+        <span class="s2-info-val s2-info-val--hypo">${ev.depth} km</span>
+      </div>
+      <div class="s2-info-cell">
+        <span class="s2-info-key s2-info-key--epi">EPICENTRO</span>
+        <span class="s2-info-val s2-info-val--epi">${ev.lat.toFixed(4)}°N · ${ev.lon.toFixed(4)}°E</span>
+      </div>
+      <div class="s2-info-cell">
+        <span class="s2-info-key">DISTANZA DA L'AQUILA</span>
+        <span class="s2-info-val">~${Math.round(s2Haversine(ev.lat, ev.lon, 42.3476, 13.3800))} km</span>
+      </div>
+      <div class="s2-info-cell">
+        <span class="s2-info-key">MAGNITUDO</span>
+        <span class="s2-info-val">M ${ev.mag.toFixed(1)}</span>
+      </div>
+      <div class="s2-info-cell">
+        <span class="s2-info-key">LUOGO</span>
+        <span class="s2-info-val">${place}</span>
+      </div>`;
+
+    if (placeholder) placeholder.style.display = 'none';
+    grid.style.display = '';
+  }
+
+  function s2DeselectEvent() {
+    /* 1. Remove active class from all rows */
+    document.querySelectorAll('.s2-event-row').forEach(row => {
+      row.classList.remove('s2-event-row--active');
+    });
+
+    /* 2. Reset all markers to default style */
+    s2Markers.forEach((m, i) => {
+      m.setStyle({ fillColor: '#C4612A', fillOpacity: 0.75, radius: s2DepthRadius(s2Events[i].depth) });
+    });
+
+    /* 3. Hide info grid, show placeholder */
+    const placeholder = document.getElementById('s2-info-placeholder');
+    const grid        = document.getElementById('s2-info-grid');
+    if (grid)        grid.style.display = 'none';
+    if (placeholder) placeholder.style.display = '';
+  }
 
   function s2AddMarkersToMap(events) {
     if (!s2Map) return;
@@ -1043,7 +1114,13 @@
     });
     L.marker([42.3476, 13.3800], { icon: aqIcon, interactive: false }).addTo(s2Map);
   }
-  function s2AnimateDepthBar()     { /* Task 5 */ }
+  function s2AnimateDepthBar() {
+    const bar = document.getElementById('s2-depth-bar');
+    if (!bar) return;
+    requestAnimationFrame(() => {
+      bar.style.height = ((8.8 / 30) * 100).toFixed(1) + '%';
+    });
+  }
   function s2InitHypocenterCanvas(){ /* Task 6 */ }
   function s2InitDepthSlider()     { /* Task 7 */ }
 
