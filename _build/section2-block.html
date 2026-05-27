@@ -848,6 +848,13 @@
   s2GoTo(0, false);
 
   /* ════════════════════════════════════════════
+     MAPPA LEAFLET
+     ════════════════════════════════════════════ */
+
+  let s2Map     = null;
+  let s2Markers = []; /* array parallelo a s2Events */
+
+  /* ════════════════════════════════════════════
      DATI INGV
      ════════════════════════════════════════════ */
 
@@ -965,10 +972,30 @@
     });
   }
 
-  /* Stub sicuri per task 4 e 5 */
-  function s2AddMarkersToMap(events) { /* Task 4 */ }
+  /* Stub sicuri per task 5 */
   function s2SelectEvent(idx)        { /* Task 5 */ }
   function s2DeselectEvent()         { /* Task 5 */ }
+
+  function s2AddMarkersToMap(events) {
+    if (!s2Map) return;
+    /* Rimuovi vecchi marker eventi */
+    s2Markers.forEach(m => m.remove());
+    s2Markers = [];
+
+    events.forEach((ev, i) => {
+      const circle = L.circleMarker([ev.lat, ev.lon], {
+        radius:      s2DepthRadius(ev.depth),
+        fillColor:   '#C4612A',
+        fillOpacity: 0.75,
+        color:       'transparent',
+        weight:      0,
+      });
+      circle.on('mouseover', () => s2SelectEvent(i));
+      circle.on('mouseout',  s2DeselectEvent);
+      circle.addTo(s2Map);
+      s2Markers.push(circle);
+    });
+  }
 
   /* ════════════════════════════════════════════
      Funzioni lazy — implementate nei task 3–7
@@ -993,7 +1020,29 @@
         s2AddMarkersToMap(s2Events); /* Task 4 — stub sicuro */
       });
   }
-  function s2InitMap()             { /* Task 4 */ }
+  function s2InitMap() {
+    if (s2Map) return;
+    s2Map = L.map('s2-map', {
+      scrollWheelZoom: false,
+      zoomControl: false,
+      attributionControl: true,
+    });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap contributors &copy; CartoDB',
+      subdomains: 'abcd',
+      maxZoom: 19,
+    }).addTo(s2Map);
+    s2Map.fitBounds([[35.0, 6.0], [47.5, 19.0]]);
+
+    /* Marker speciale L'Aquila 2009 — stella pulsante (non interattiva) */
+    const aqIcon = L.divIcon({
+      className: '',
+      html: '<div class="s2-aquila-star"></div>',
+      iconSize: [20, 20],
+      iconAnchor: [10, 10],
+    });
+    L.marker([42.3476, 13.3800], { icon: aqIcon, interactive: false }).addTo(s2Map);
+  }
   function s2AnimateDepthBar()     { /* Task 5 */ }
   function s2InitHypocenterCanvas(){ /* Task 6 */ }
   function s2InitDepthSlider()     { /* Task 7 */ }
