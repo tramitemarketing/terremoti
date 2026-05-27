@@ -1371,7 +1371,140 @@
     /* Esponi il cancellation per quando l'animazione parte */
     btn.addEventListener('click', () => { cancelAnimationFrame(idleId); }, { once: true });
   }
-  function s2InitDepthSlider()     { /* Task 7 */ }
+  /* ════════════════════════════════════════════
+     SLIDE 3 — SLIDER PROFONDITÀ + CANVAS DANNO
+     ════════════════════════════════════════════ */
+
+  function s2InitDepthSlider() {
+    const slider    = document.getElementById('s2-depth-slider');
+    const valLabel  = document.getElementById('s2-depth-val');
+    const canvas    = document.getElementById('s2-depth-canvas');
+    const ctx       = canvas.getContext('2d');
+    const infoR     = document.getElementById('s2-info-radius');
+    const infoMCS   = document.getElementById('s2-info-mcs');
+    const presets   = document.querySelectorAll('.s2-preset-btn');
+    const W = canvas.width, H = canvas.height;
+
+    const SURF_Y = 40; /* y della superficie nel canvas */
+
+    /* Interpolazione colore blood→blue in base alla profondità */
+    function s2LerpColor(depth) {
+      const t = Math.min(depth / 300, 1);
+      const r = Math.round(139 + (58  - 139) * t);
+      const g = Math.round(26  + (126 - 26)  * t);
+      const b = Math.round(26  + (196 - 26)  * t);
+      return `rgb(${r},${g},${b})`;
+    }
+
+    function s2MCSLabel(depth) {
+      if (depth < 10)  return 'IX–X MCS';
+      if (depth < 30)  return 'VII–VIII MCS';
+      if (depth < 70)  return 'V–VI MCS';
+      return 'III–IV MCS';
+    }
+
+    /* Disegna il canvas per una data profondità */
+    function drawDepthCanvas(depth) {
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#050709';
+      ctx.fillRect(0, 0, W, H);
+
+      const epicX  = W / 2;
+      /* y ipocentro: scala lineare SURF_Y → H-20 */
+      const hypoY  = SURF_Y + (depth / 300) * (H - SURF_Y - 20);
+      const rPx    = 30 + (depth / 300) * 150;  /* raggio cerchio danno */
+      const wPx    = 8  - (depth / 300) * 7;    /* spessore bordo */
+      const color  = s2LerpColor(depth);
+
+      /* Superficie */
+      ctx.strokeStyle = 'rgba(245,237,224,0.6)';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, SURF_Y); ctx.lineTo(W, SURF_Y); ctx.stroke();
+      ctx.fillStyle = 'rgba(245,237,224,0.3)';
+      ctx.font = '9px "JetBrains Mono", monospace';
+      ctx.fillText('Superficie', 6, SURF_Y - 5);
+
+      /* Linea tratteggiata epicentro→ipocentro */
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = 'rgba(245,237,224,0.12)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(epicX, SURF_Y); ctx.lineTo(epicX, hypoY); ctx.stroke();
+      ctx.setLineDash([]);
+
+      /* Cerchio danno sulla superficie */
+      ctx.strokeStyle = color;
+      ctx.lineWidth = Math.max(1, wPx);
+      ctx.beginPath(); ctx.arc(epicX, SURF_Y, rPx, 0, Math.PI * 2); ctx.stroke();
+      /* Fill molto tenue */
+      ctx.globalAlpha = 0.06;
+      ctx.fillStyle = color;
+      ctx.beginPath(); ctx.arc(epicX, SURF_Y, rPx, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
+
+      /* Punto ipocentro */
+      ctx.fillStyle = '#C4612A';
+      ctx.beginPath(); ctx.arc(epicX, hypoY, 6, 0, Math.PI * 2); ctx.fill();
+      /* Glow */
+      const grd = ctx.createRadialGradient(epicX, hypoY, 0, epicX, hypoY, 18);
+      grd.addColorStop(0, 'rgba(196,97,42,0.4)');
+      grd.addColorStop(1, 'rgba(196,97,42,0)');
+      ctx.fillStyle = grd;
+      ctx.beginPath(); ctx.arc(epicX, hypoY, 18, 0, Math.PI * 2); ctx.fill();
+
+      /* Label profondità vicino al punto */
+      ctx.fillStyle = 'rgba(196,97,42,0.8)';
+      ctx.font = '9px "JetBrains Mono", monospace';
+      ctx.fillText(`${depth % 1 === 0 ? depth : depth.toFixed(1)} km`, epicX + 10, hypoY + 4);
+    }
+
+    /* Aggiorna tutto con un dato valore di depth */
+    function updateAll(depth) {
+      drawDepthCanvas(depth);
+      const depthStr = Number.isInteger(depth) ? depth.toString() : depth.toFixed(1);
+      valLabel.textContent = depthStr.replace('.', ',') + ' km';
+      const km = Math.round(10 + (depth / 300) * 390);
+      infoR.textContent = `~${km} km`;
+      infoMCS.textContent = s2MCSLabel(depth);
+    }
+
+    /* Slider → aggiorna direttamente */
+    slider.addEventListener('input', () => {
+      const depth = parseFloat(slider.value);
+      updateAll(depth);
+      /* Rimuovi preset attivo */
+      presets.forEach(p => {
+        p.classList.toggle('s2-preset-btn--active', parseFloat(p.dataset.depth) === depth);
+      });
+    });
+
+    /* Preset con animazione easing */
+    presets.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = parseFloat(btn.dataset.depth);
+        const start  = parseFloat(slider.value);
+        const t0 = performance.now();
+        const DURATION = 800;
+        function animPreset(now) {
+          const p = Math.min((now - t0) / DURATION, 1);
+          const ease = 1 - Math.pow(1 - p, 3); /* cubic ease-out */
+          const curr = start + (target - start) * ease;
+          slider.value = curr;
+          updateAll(curr);
+          if (p < 1) requestAnimationFrame(animPreset);
+          else {
+            slider.value = target;
+            updateAll(target);
+          }
+        }
+        requestAnimationFrame(animPreset);
+        presets.forEach(p => p.classList.remove('s2-preset-btn--active'));
+        btn.classList.add('s2-preset-btn--active');
+      });
+    });
+
+    /* Disegno iniziale con L'Aquila (8.8 km) */
+    updateAll(8.8);
+  }
 
 })();
 </script>
