@@ -1121,7 +1121,251 @@
       bar.style.height = ((8.8 / 30) * 100).toFixed(1) + '%'; /* 8.8 km ipocentro L'Aquila / 30 km scala massima */
     });
   }
-  function s2InitHypocenterCanvas(){ /* Task 6 */ }
+  /* ════════════════════════════════════════════
+     SLIDE 2 — ANIMAZIONE IPOCENTRO → EPICENTRO
+     ════════════════════════════════════════════ */
+
+  function s2InitHypocenterCanvas() {
+    const canvas  = document.getElementById('s2-hypo-canvas');
+    const ctx     = canvas.getContext('2d');
+    const btn     = document.getElementById('s2-anim-btn');
+    const label   = document.getElementById('s2-hypo-label');
+    const phases  = document.querySelectorAll('.s2-phase-item');
+    const W = canvas.width, H = canvas.height;
+
+    /* Coordinate ipocentro (70% della profondità del canvas) */
+    const hypoCX = W / 2, hypoCY = H * 0.70;
+    /* Superficie = y fissa */
+    const SURF_Y = 32;
+
+    let animId  = null;
+    let phase   = 0;
+    let started = false;
+
+    /* Strati geologici */
+    const layers = [
+      { y0: SURF_Y,     y1: SURF_Y + 84,  color: '#1a2030' }, /* sedimenti 0–5 km */
+      { y0: SURF_Y + 84, y1: SURF_Y + 252, color: '#232d3f' }, /* roccia compatta 5–15 km */
+      { y0: SURF_Y + 252, y1: H,           color: '#1c2535' }, /* crosta inferiore 15–25 km */
+    ];
+
+    /* Attiva label testo sinistra */
+    function setPhase(n) {
+      phases.forEach((p, i) => p.classList.toggle('active', i === n - 1));
+    }
+
+    /* Disegna strati + superficie */
+    function drawLayers() {
+      ctx.fillStyle = '#050709';
+      ctx.fillRect(0, 0, W, H);
+      layers.forEach(l => {
+        ctx.fillStyle = l.color;
+        ctx.fillRect(0, l.y0, W, l.y1 - l.y0);
+      });
+      /* Linea superficie */
+      ctx.strokeStyle = '#F5EDE0';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, SURF_Y); ctx.lineTo(W, SURF_Y); ctx.stroke();
+      /* Label superficie */
+      ctx.fillStyle = 'rgba(245,237,224,0.4)';
+      ctx.font = '10px "JetBrains Mono", monospace';
+      ctx.letterSpacing = '2px';
+      ctx.fillText('SUPERFICIE', 8, SURF_Y - 6);
+    }
+
+    /* Disegna punto ipocentro pulsante */
+    let hypoPhase = 0;
+    function drawHypo(glow) {
+      const scale = 1 + 0.4 * Math.abs(Math.sin(hypoPhase));
+      const r = 6 * scale;
+      ctx.save();
+      ctx.translate(hypoCX, hypoCY);
+      if (glow) {
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, r * 3);
+        grad.addColorStop(0, 'rgba(196,97,42,0.6)');
+        grad.addColorStop(1, 'rgba(196,97,42,0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath(); ctx.arc(0, 0, r * 3, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.fillStyle = '#C4612A';
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      /* Label */
+      ctx.fillStyle = 'rgba(196,97,42,0.7)';
+      ctx.font = '9px "JetBrains Mono", monospace';
+      ctx.fillText('IPOCENTRO · 8,8 km', hypoCX + 12, hypoCY + 4);
+    }
+
+    /* ── Fase 1: stato iniziale + pulsazione ipocentro ── */
+    function runPhase1() {
+      phase = 1; setPhase(1);
+      label.textContent = 'Roccia sotto tensione — ipocentro in formazione';
+      let t = 0;
+      function tick() {
+        drawLayers();
+        hypoPhase = t * 0.05;
+        drawHypo(true);
+        t++;
+        if (t < 60) animId = requestAnimationFrame(tick); /* 1s @ 60fps */
+        else runPhase2();
+      }
+      animId = requestAnimationFrame(tick);
+    }
+
+    /* ── Fase 2: flash rilascio energia (0.5s) ── */
+    function runPhase2() {
+      phase = 2; setPhase(2);
+      label.textContent = 'Frattura — rilascio istantaneo di energia';
+      let t = 0;
+      function tick() {
+        drawLayers(); drawHypo(false);
+        /* Flash bianco sull'ipocentro */
+        const opacity = t < 15 ? t / 15 : Math.max(0, 1 - (t - 15) / 15);
+        ctx.save();
+        ctx.globalAlpha = opacity * 0.85;
+        const grad = ctx.createRadialGradient(hypoCX, hypoCY, 0, hypoCX, hypoCY, 30);
+        grad.addColorStop(0, '#ffffff');
+        grad.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath(); ctx.arc(hypoCX, hypoCY, 30, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+        t++;
+        if (t < 30) animId = requestAnimationFrame(tick);
+        else runPhase3();
+      }
+      animId = requestAnimationFrame(tick);
+    }
+
+    /* ── Fase 3: onda che sale verso la superficie (2.5s ≈ 150 frame) ── */
+    function runPhase3() {
+      phase = 3; setPhase(3);
+      label.textContent = 'Onda di volume sale verso la superficie';
+      const maxR = hypoCY - SURF_Y; /* distanza ipocentro→superficie */
+      let r = 0;
+      const trail = []; /* scie */
+      function tick() {
+        drawLayers(); drawHypo(false);
+        /* Scia: cerchi precedenti in dissolvenza */
+        trail.forEach((tr, i) => {
+          const age = trail.length - i;
+          const alpha = Math.max(0, 0.35 - age * 0.03);
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.strokeStyle = '#C4612A';
+          ctx.lineWidth = 1.5;
+          /* Solo metà superiore */
+          ctx.beginPath();
+          ctx.arc(hypoCX, hypoCY, tr, Math.PI, 0);
+          ctx.stroke();
+          ctx.restore();
+        });
+        /* Onda corrente */
+        ctx.save();
+        ctx.strokeStyle = '#C4612A';
+        ctx.lineWidth = 2;
+        ctx.globalAlpha = 0.7;
+        ctx.beginPath();
+        ctx.arc(hypoCX, hypoCY, r, Math.PI, 0);
+        ctx.stroke();
+        ctx.restore();
+
+        trail.push(r);
+        if (trail.length > 12) trail.shift();
+        r += maxR / 150;
+        if (r < maxR) animId = requestAnimationFrame(tick);
+        else runPhase4(r);
+      }
+      animId = requestAnimationFrame(tick);
+    }
+
+    /* ── Fase 4: freeze epicentro ── */
+    function runPhase4(finalR) {
+      phase = 4; setPhase(4);
+      label.textContent = 'Epicentro raggiunto — partenza onde superficiali';
+      /* Disegna frame congelato */
+      drawLayers(); drawHypo(false);
+      ctx.save();
+      ctx.strokeStyle = '#C4612A';
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = 0.5;
+      ctx.beginPath();
+      ctx.arc(hypoCX, hypoCY, finalR, Math.PI, 0);
+      ctx.stroke();
+      ctx.restore();
+      /* Punto epicentro pulsante */
+      let epicPhase = 0;
+      let epicId;
+      function pulseEpic() {
+        /* Ridisegna solo la zona superficie per non disturbare il canvas */
+        ctx.clearRect(hypoCX - 30, SURF_Y - 20, 60, 50);
+        drawLayers();
+        /* Ridisegna strati sopra */
+        ctx.strokeStyle = '#F5EDE0'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, SURF_Y); ctx.lineTo(W, SURF_Y); ctx.stroke();
+        ctx.fillStyle = 'rgba(245,237,224,0.4)'; ctx.font = '10px "JetBrains Mono", monospace';
+        ctx.fillText('SUPERFICIE', 8, SURF_Y - 6);
+        /* Punto epicentro */
+        const ep = 8 + 4 * Math.abs(Math.sin(epicPhase));
+        ctx.save();
+        const eGrad = ctx.createRadialGradient(hypoCX, SURF_Y, 0, hypoCX, SURF_Y, ep * 2.5);
+        eGrad.addColorStop(0, 'rgba(58,126,196,0.5)');
+        eGrad.addColorStop(1, 'rgba(58,126,196,0)');
+        ctx.fillStyle = eGrad;
+        ctx.beginPath(); ctx.arc(hypoCX, SURF_Y, ep * 2.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#3A7EC4';
+        ctx.beginPath(); ctx.arc(hypoCX, SURF_Y, ep, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+        /* Label EPICENTRO fade-in */
+        ctx.globalAlpha = Math.min(1, epicPhase / 30);
+        ctx.fillStyle = '#3A7EC4';
+        ctx.font = 'bold 18px "Cormorant Garamond", serif';
+        ctx.fillText('EPICENTRO', hypoCX + 14, SURF_Y + 5);
+        ctx.font = '9px "JetBrains Mono", monospace';
+        ctx.fillStyle = 'rgba(58,126,196,0.7)';
+        ctx.fillText('Da qui partono le onde superficiali', hypoCX + 14, SURF_Y + 18);
+        ctx.globalAlpha = 1;
+        epicPhase += 0.05;
+        epicId = requestAnimationFrame(pulseEpic);
+      }
+      epicId = requestAnimationFrame(pulseEpic);
+      btn.textContent = '↺ Rivedi';
+      btn._epicId = epicId;
+    }
+
+    /* Reset completo */
+    function s2Reset() {
+      if (animId) cancelAnimationFrame(animId);
+      if (btn._epicId) cancelAnimationFrame(btn._epicId);
+      hypoPhase = 0;
+      drawLayers(); drawHypo(true);
+      phases.forEach(p => p.classList.remove('active'));
+      label.textContent = 'Clicca "Avvia" per iniziare';
+      btn.textContent = '▶ Avvia';
+    }
+
+    btn.addEventListener('click', () => {
+      if (animId) cancelAnimationFrame(animId);
+      if (btn._epicId) cancelAnimationFrame(btn._epicId);
+      s2Reset();
+      setTimeout(runPhase1, 50);
+    });
+
+    /* Disegno iniziale */
+    drawLayers(); drawHypo(true);
+
+    /* Pulsazione idle ipocentro */
+    let idleId;
+    function idlePulse() {
+      if (phase > 0) return; /* animazione avviata — stop idle */
+      drawLayers();
+      hypoPhase += 0.04;
+      drawHypo(true);
+      idleId = requestAnimationFrame(idlePulse);
+    }
+    idleId = requestAnimationFrame(idlePulse);
+    /* Esponi il cancellation per quando l'animazione parte */
+    btn.addEventListener('click', () => { cancelAnimationFrame(idleId); }, { once: true });
+  }
   function s2InitDepthSlider()     { /* Task 7 */ }
 
 })();
