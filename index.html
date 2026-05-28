@@ -17242,11 +17242,20 @@ document.addEventListener('keydown', e => {
     if (el) el.textContent = text;
   }
 
+  function pagSetup(c) {
+    const dpr = window.devicePixelRatio || 1;
+    const W = c.offsetWidth || 800, H = 320;
+    c.width = W * dpr; c.height = H * dpr;
+    c.style.width = W + 'px'; c.style.height = '320px';
+    const ctx = c.getContext('2d');
+    ctx.scale(dpr, dpr);
+    return { ctx, W, H };
+  }
+
   function drawPaganicanPhase1() {
     const c = document.getElementById('s1-paganica-canvas');
     if (!c) return;
-    c.width = c.offsetWidth || 800; c.height = 320;
-    const ctx = c.getContext('2d'), W = c.width, H = c.height;
+    const { ctx, W, H } = pagSetup(c);
     ctx.clearRect(0, 0, W, H);
     drawPagStrati(ctx, W, H);
     drawPagFault(ctx, W, H, false, false);
@@ -17268,16 +17277,13 @@ document.addEventListener('keydown', e => {
         runPaganicanAnim();
       }
     });
-    const canvas = document.getElementById('s1-paganica-canvas');
-    if (canvas) { canvas.width = canvas.offsetWidth || 800; canvas.height = 320; drawPaganicanPhase1(); }
+    drawPaganicanPhase1();
   }
 
   function runPaganicanAnim() {
     const canvas = document.getElementById('s1-paganica-canvas');
     if (!canvas) return;
-    canvas.width = canvas.offsetWidth || 800; canvas.height = 320;
-    const ctx = canvas.getContext('2d');
-    const W = canvas.width, H = canvas.height;
+    const { ctx, W, H } = pagSetup(canvas);
 
     let leftOffY = 0, rightOffY = 0;
     let cracks = [];
