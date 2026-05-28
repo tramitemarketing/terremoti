@@ -2640,8 +2640,25 @@
     else if (e.key === 'ArrowLeft' && s2CurrentIdx > 0) { e.preventDefault(); s2GoTo(s2CurrentIdx - 1); }
   });
 
-  /* ── Inizializza ── */
-  s2GoTo(0, false);
+  /* ── Inizializza posizione carosello (senza caricare dati) ──
+     NON chiamare s2GoTo(0, false) qui: Leaflet non è ancora caricato
+     (il <script src="leaflet.js"> viene dopo nel DOM). s2InitMap()
+     chiamerebbe L.map() prima che L esista → crash e TDZ sull'intera IIFE.
+     La mappa viene inizializzata lazily via IntersectionObserver. ── */
+  s2Track.style.transition = 'none';
+  s2Track.style.transform  = 'translateX(0)';
+  requestAnimationFrame(() => { s2Track.style.transition = ''; });
+  s2Dots.forEach((d, i) => d.classList.toggle('active', i === 0));
+  if (s2Counter) s2Counter.textContent = '01 · 04';
+  if (s2Prev) s2Prev.disabled = true;
+
+  /* Carica dati slide 0 quando sezione entra in vista (Leaflet caricato) */
+  new IntersectionObserver(function(entries, obs) {
+    if (entries[0].isIntersecting) {
+      obs.disconnect();
+      s2OnSlideEnter(0);
+    }
+  }, { threshold: 0.5 }).observe(s2Section);
 
   /* ════════════════════════════════════════════
      MAPPA LEAFLET
@@ -2871,7 +2888,7 @@
     const now   = new Date();
     const start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     const fmt   = d => d.toISOString().replace(/\.\d{3}Z$/, '');
-    const url   = `https://webservices.ingv.it/fdsnws/event/1/query?format=text&minmag=1.5&starttime=${fmt(start)}&endtime=${fmt(now)}&orderby=time&limit=200`;
+    const url   = `https://webservices.ingv.it/fdsnws/event/1/query?format=text&minmag=1.5&starttime=${fmt(start)}&endtime=${fmt(now)}&orderby=time&limit=50`;
 
     fetch(url)
       .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
