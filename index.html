@@ -726,16 +726,7 @@
 
         /* ══ PICCOLE ANIMAZIONI — ART & CASE ══════════════════════════════ */
 
-        /* ── Ribaltamento (Meccanismo) ── */
-        .art-wall-anim { display:flex; align-items:flex-end; gap:5px; height:70px; margin:1.1rem 0 0.6rem; }
-        .art-wb { border-radius:1px; background:rgba(196,97,42,0.1); border:1px solid rgba(196,97,42,0.3); flex-shrink:0; }
-        .art-wb-t  { animation: wbTilt 5.5s ease-in-out 0.8s infinite; transform-origin:bottom left; }
-        .art-wb-t2 { animation: wbTilt 5.5s ease-in-out 2.0s infinite; transform-origin:bottom left; }
-        @keyframes wbTilt {
-          0%,42%  { transform:rotate(0deg); opacity:1; }
-          62%,80% { transform:rotate(21deg); opacity:0.55; }
-          100%    { transform:rotate(0deg); opacity:1; }
-        }
+        /* ── Ribaltamento: vedere canvas #ribalt-canvas ── */
 
         /* ── Griglia 88 chiese (Intro) ── */
         .art-church-grid { display:flex; flex-wrap:wrap; gap:4px; margin-top:1rem; width:154px; }
@@ -13319,14 +13310,8 @@ function s5_initSlide5() {
             <div class="art-sr dark">
               <span class="art-sr-bg-num">02</span>
               <span class="art-sr-tag">Cinematismo prevalente</span>
-              <div class="art-wall-anim">
-                <div class="art-wb" style="width:19px;height:66px;"></div>
-                <div class="art-wb" style="width:19px;height:50px;"></div>
-                <div class="art-wb art-wb-t" style="width:19px;height:58px;"></div>
-                <div class="art-wb art-wb-t2" style="width:19px;height:44px;"></div>
-                <div class="art-wb" style="width:19px;height:70px;"></div>
-                <div class="art-wb art-wb-t" style="width:19px;height:54px;animation-delay:1.6s;"></div>
-              </div>
+              <canvas id="ribalt-canvas" width="240" height="172"
+                style="display:block;width:240px;height:172px;margin:0.8rem 0 0.4rem;"></canvas>
               <div class="art-sr-quote">Le pareti non cedono verso l'interno. Si aprono verso l'esterno.<span class="art-sr-attribution">— Tecnici del Comune di L'Aquila</span></div>
             </div>
           </div>
@@ -14788,6 +14773,211 @@ function onSlideEnter(i, el) {
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); goCase(curCase + 1); }
     else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goCase(curCase - 1); }
   });
+})();
+
+
+// ═══════════════════════════════════════════
+//  RIBALTAMENTO CANVAS — onde + pareti esterne
+// ═══════════════════════════════════════════
+(function() {
+  'use strict';
+  var canvas = document.getElementById('ribalt-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  var t = 0;
+  var CYCLE = 320; // frames per ciclo
+
+  function ease(x) {
+    return x < 0.5 ? 2*x*x : 1 - Math.pow(-2*x + 2, 2) / 2;
+  }
+
+  function drawWaves(phase, amp) {
+    var layers = [
+      { y0: H-30, f: 0.038, a: 1.00, alpha: 0.70, lw: 1.6 },
+      { y0: H-18, f: 0.058, a: 0.60, alpha: 0.40, lw: 1.1 },
+      { y0: H- 7, f: 0.024, a: 0.35, alpha: 0.22, lw: 0.8 }
+    ];
+    layers.forEach(function(l) {
+      ctx.beginPath();
+      for (var x = 0; x <= W; x++) {
+        var y = l.y0
+          + Math.sin(x * l.f + phase)           * amp * l.a
+          + Math.sin(x * l.f * 1.8 + phase*1.4) * amp * l.a * 0.35;
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = 'rgba(196,97,42,' + l.alpha + ')';
+      ctx.lineWidth   = l.lw;
+      ctx.stroke();
+    });
+  }
+
+  function drawWall(pivX, pivY, wallH, wallW, angle, side) {
+    ctx.save();
+    ctx.translate(pivX, pivY);
+    ctx.rotate(angle);
+
+    var x0 = side === 'L' ? -wallW : 0;
+
+    // Corpo
+    ctx.fillStyle   = 'rgba(196,97,42,0.10)';
+    ctx.strokeStyle = 'rgba(196,97,42,0.80)';
+    ctx.lineWidth   = 1.6;
+    ctx.fillRect(x0, -wallH, wallW, wallH);
+    ctx.strokeRect(x0, -wallH, wallW, wallH);
+
+    // Giunti orizzontali (corsi di mattoni)
+    ctx.lineWidth = 0.5;
+    for (var hy = 11; hy < wallH; hy += 11) {
+      ctx.strokeStyle = 'rgba(196,97,42,0.28)';
+      ctx.beginPath();
+      ctx.moveTo(x0,       -wallH + hy);
+      ctx.lineTo(x0+wallW, -wallH + hy);
+      ctx.stroke();
+    }
+    // Giunti verticali alternati
+    for (var hy2 = 0; hy2 < wallH; hy2 += 11) {
+      var off = (Math.floor(hy2/11) % 2) ? wallW*0.5 : wallW*0.33;
+      ctx.strokeStyle = 'rgba(196,97,42,0.20)';
+      ctx.beginPath();
+      ctx.moveTo(x0 + off, -wallH + hy2);
+      ctx.lineTo(x0 + off, -wallH + hy2 + 11);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+
+  function arrow(x1, y1, x2, y2, alpha) {
+    var dx = x2-x1, dy = y2-y1;
+    var ang = Math.atan2(dy, dx);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+    ctx.strokeStyle = 'rgba(196,97,42,' + alpha + ')';
+    ctx.lineWidth   = 1.4;
+    ctx.stroke();
+    var s = 8;
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - s*Math.cos(ang-0.42), y2 - s*Math.sin(ang-0.42));
+    ctx.lineTo(x2 - s*Math.cos(ang+0.42), y2 - s*Math.sin(ang+0.42));
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(196,97,42,' + alpha + ')';
+    ctx.fill();
+  }
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+
+    var p = (t % CYCLE) / CYCLE;           // 0 → 1
+
+    // Ampiezza onde: cresce, picco, poi cala
+    var wAmp;
+    if      (p < 0.12) wAmp = 2 + p/0.12 * 7;
+    else if (p < 0.38) wAmp = 9 + (p-0.12)/0.26 * 12;
+    else if (p < 0.72) wAmp = 21;
+    else                wAmp = 21 * (1-(p-0.72)/0.28);
+
+    // Angolo di ribaltamento: 0 → ~75° → reset
+    var tilt;
+    if      (p < 0.28) tilt = 0;
+    else if (p < 0.68) tilt = ease((p-0.28)/0.40) * 1.28;
+    else if (p < 0.84) tilt = 1.28;
+    else                tilt = 1.28 * (1-(p-0.84)/0.16);
+
+    var wPhase = t * 0.09;
+    var cx     = W / 2;
+    var baseY  = H - 38;
+    var wallH  = 82;
+    var wallW  = 17;
+    var span   = 50;   // semidistanza tra i pilastri
+
+    // ── terreno ──────────────────────────────
+    ctx.beginPath();
+    ctx.moveTo(0, baseY+2); ctx.lineTo(W, baseY+2);
+    ctx.strokeStyle = 'rgba(196,97,42,0.25)';
+    ctx.lineWidth   = 1;
+    ctx.stroke();
+
+    // ── onde sotterranee (sotto il terreno) ──
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, baseY+2, W, H - baseY - 2);
+    ctx.clip();
+    drawWaves(wPhase, wAmp);
+    ctx.restore();
+
+    // ── onde in superficie (propagazione leggera) ──
+    ctx.save();
+    ctx.globalAlpha = Math.min(0.22, wAmp * 0.010);
+    ctx.beginPath(); ctx.rect(0, 0, W, baseY+2); ctx.clip();
+    drawWaves(wPhase + 0.5, wAmp * 0.3);
+    ctx.restore();
+
+    // ── parete sinistra (pivot cx-span, ruota a sinistra) ──
+    drawWall(cx - span, baseY, wallH, wallW, -tilt, 'L');
+
+    // ── parete destra (pivot cx+span, ruota a destra) ──
+    drawWall(cx + span, baseY, wallH, wallW, tilt, 'R');
+
+    // ── arco/volta che collega le pareti (decade con il crollo) ──
+    if (tilt < 1.15) {
+      var archFade = Math.max(0, 0.75 - tilt * 0.55);
+      var drop     = tilt * 18;
+      var lAX = cx - span + Math.sin(tilt) * wallH * 0.08;
+      var lAY = baseY - wallH * Math.cos(tilt) + drop;
+      var rAX = cx + span - Math.sin(tilt) * wallH * 0.08;
+      var rAY = baseY - wallH * Math.cos(tilt) + drop;
+      ctx.beginPath();
+      ctx.moveTo(lAX, lAY);
+      ctx.quadraticCurveTo(cx, lAY - 24 + tilt*18, rAX, rAY);
+      ctx.strokeStyle = 'rgba(196,97,42,' + archFade + ')';
+      ctx.lineWidth   = 1.6;
+      ctx.stroke();
+
+      // cornice base arco (linee orizzontali sulle pareti)
+      ctx.beginPath();
+      ctx.moveTo(lAX - wallW*Math.cos(-tilt), lAY - wallW*Math.sin(-tilt));
+      ctx.lineTo(lAX, lAY);
+      ctx.strokeStyle = 'rgba(196,97,42,' + archFade*0.5 + ')';
+      ctx.lineWidth   = 0.8;
+      ctx.stroke();
+    }
+
+    // ── frecce di forza verso l'esterno ──────
+    if (tilt > 0.05) {
+      var aAlpha = Math.min(0.85, tilt * 1.4);
+      var aLen   = 16 + tilt * 14;
+
+      // Calcola punto mediano parete sinistra dopo rotazione
+      var lMX = (cx - span) - Math.sin(tilt) * wallH * 0.5;
+      var lMY = baseY       - Math.cos(tilt) * wallH * 0.5;
+      // Direzione perpendicolare outward per parete sinistra
+      var lDX = -Math.cos(tilt), lDY = -Math.sin(tilt);
+      arrow(lMX, lMY, lMX + lDX*aLen, lMY + lDY*aLen, aAlpha);
+
+      // Parete destra
+      var rMX = (cx + span) + Math.sin(tilt) * wallH * 0.5;
+      var rMY = baseY       - Math.cos(tilt) * wallH * 0.5;
+      var rDX =  Math.cos(tilt), rDY = -Math.sin(tilt);
+      arrow(rMX, rMY, rMX + rDX*aLen, rMY + rDY*aLen, aAlpha);
+    }
+
+    // ── etichetta testuale (appare solo durante il crollo) ──
+    if (tilt > 0.25 && tilt < 1.20) {
+      var tAlpha = Math.min(0.5, (tilt-0.25)*1.2);
+      ctx.fillStyle = 'rgba(196,97,42,' + tAlpha + ')';
+      ctx.font      = '500 8px "JetBrains Mono", monospace';
+      ctx.letterSpacing = '0.12em';
+      ctx.textAlign = 'center';
+      ctx.fillText('FUORI DAL PIANO', cx, baseY + 22);
+    }
+
+    t++;
+    requestAnimationFrame(loop);
+  }
+
+  loop();
 })();
 
 /* resizeWave e resizeSeismo rimossi insieme al vecchio carousel scientifico */
