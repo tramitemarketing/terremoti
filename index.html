@@ -1496,8 +1496,8 @@
     gap: 2.6rem;
 }
 #s1-s4 .s1-slide-inner {
-    max-width: 1120px;
-    gap: 1rem;
+    gap: 1.4rem;
+    padding: 2.2rem 4rem;
 }
 .s1-tool-wrap {
     display: grid;
@@ -1653,7 +1653,37 @@
     flex-direction: column;
     gap: 1.6rem;
 }
-.s1-s5-header { display: flex; flex-direction: column; gap: 0.35rem; }
+.s1-s5-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2.5rem;
+}
+.s1-s5-title-col { display: flex; flex-direction: column; gap: 0.35rem; flex: 1; }
+.s1-s5-photo-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+.s1-s5-photo {
+    width: 220px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 2px;
+    border: 1px solid rgba(196,97,42,0.25);
+    display: block;
+}
+.s1-s5-photo[src=""] { display: none; } /* nasconde segnaposto vuoto */
+.s1-s5-photo-caption {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.12em;
+    color: rgba(245,237,224,0.2);
+}
+#s1-s5 { align-items: flex-start; }
+.s1-s5-wrap { padding-top: 2.5rem; }
 .s1-s5-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1834,10 +1864,6 @@
               <p class="s1-body-text">Questo meccanismo è identico a quello di un ramo secco piegato fino a spezzarsi: la deformazione è lenta e silenziosa, la rottura è istantanea e violenta.</p>
             </div>
             <div class="s1-def-visual">
-              <div class="s1-branch-controls">
-                <button id="s1-branch-btn" class="s1-btn"><span>&#9646;&#9646; Pausa</span></button>
-                <span id="s1-branch-label" class="s1-canvas-label"></span>
-              </div>
               <div class="s1-branch-svg-wrap">
                 <svg id="s1-branch-svg" viewBox="0 0 340 170" xmlns="http://www.w3.org/2000/svg">
                   <!-- strati rocciosi di sfondo -->
@@ -1862,6 +1888,10 @@
                 <li class="s1-phase-item" data-phase="3">Rottura — rilascio istantaneo di energia</li>
                 <li class="s1-phase-item" data-phase="4">Rimbalzo — ritorno all'equilibrio</li>
               </ul>
+              <div class="s1-branch-controls" style="margin-top:0.6rem;">
+                <button id="s1-branch-btn" class="s1-btn"><span>&#9646;&#9646; Pausa</span></button>
+                <span id="s1-branch-label" class="s1-canvas-label"></span>
+              </div>
             </div>
           </div>
 
@@ -1942,9 +1972,16 @@
           <div class="s1-slide" id="s1-s5">
             <div class="s1-s5-wrap">
               <div class="s1-s5-header">
-                <span class="s1-eyebrow">6 APRILE 2009 · 03:32:39</span>
-                <h2 class="s1-slide-title">La Faglia di Paganica<br>si è mossa.</h2>
-                <p class="s1-slide-sub" style="font-style:italic;">Per pochi secondi. Dopo secoli di silenzio.</p>
+                <div class="s1-s5-title-col">
+                  <span class="s1-eyebrow">6 APRILE 2009 · 03:32:39</span>
+                  <h2 class="s1-slide-title">La Faglia di Paganica<br>si è mossa.</h2>
+                  <p class="s1-slide-sub" style="font-style:italic;">Per pochi secondi. Dopo secoli di silenzio.</p>
+                </div>
+                <div class="s1-s5-photo-wrap">
+                  <!-- sostituisci src con il percorso della foto INGV -->
+                  <img src="" alt="Faglia di Paganica — INGV" class="s1-s5-photo" id="s1-s5-photo">
+                  <span class="s1-s5-photo-caption">Foto: INGV</span>
+                </div>
               </div>
               <div class="s1-s5-grid">
                 <div class="s1-s5-col">
