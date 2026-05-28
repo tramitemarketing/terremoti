@@ -1496,9 +1496,17 @@
     gap: 2.6rem;
 }
 #s1-s4 .s1-slide-inner {
-    gap: 1.4rem;
-    padding: 2.2rem 4rem;
+    max-width: 1160px;
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 0.6rem 3.5rem;
+    padding: 2.5rem 4rem;
+    align-items: start;
 }
+#s1-s4 header         { grid-column: 1; grid-row: 1; }
+#s1-s4 .s1-slider-hint { grid-column: 1; grid-row: 2; margin-bottom: 0; align-self: start; }
+#s1-s4 .s1-tool-wrap  { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; align-self: center; }
 .s1-tool-wrap {
     display: grid;
     grid-template-columns: 1fr 260px;
@@ -1647,12 +1655,14 @@
 .s1-s5-wrap {
     width: 100%;
     max-width: 1060px;
-    padding: 3rem 5rem;
+    padding: 1.8rem 4rem;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 1.6rem;
+    gap: 1rem;
 }
+#s1-s5 .s1-narrative-block { margin: 0.5rem 0; }
+#s1-s5 .s1-s5-grid { gap: 0 2.5rem; }
 .s1-s5-header {
     display: flex;
     flex-direction: row;
@@ -1708,6 +1718,14 @@
     display: flex;
     flex-direction: column;
     gap: 0.9rem;
+}
+.s1-s6-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--cream);
+    margin: 0;
+    line-height: 1.2;
 }
 .s1-narrative-block { margin: 1.6rem 0; }
 .s1-narrative-title {
@@ -2015,7 +2033,7 @@
             <div class="s1-s6-inner">
               <div class="s1-s6-canvas-col">
                 <span class="s1-eyebrow">SIMULAZIONE</span>
-                <p class="s1-canvas-section-title">La roccia che cede</p>
+                <h3 class="s1-s6-subtitle">La roccia che cede</h3>
                 <div class="s1-canvas-controls">
                   <button id="s1-paganica-btn" class="s1-btn">&#9654; Avvia</button>
                   <span id="s1-paganica-label" class="s1-canvas-label"></span>
@@ -2024,7 +2042,7 @@
               </div>
               <div class="s1-s6-tech-col">
                 <span class="s1-eyebrow">SCHEDA TECNICA</span>
-                <p class="s1-canvas-section-title">Faglia di Paganica</p>
+                <h3 class="s1-s6-subtitle">Faglia di Paganica</h3>
                 <div class="s1-tech-grid">
                   <div class="s1-tech-card"><span class="s1-tech-label">Tipo</span><span class="s1-tech-value">Faglia normale (estensionale)</span></div>
                   <div class="s1-tech-card"><span class="s1-tech-label">Orientazione</span><span class="s1-tech-value">N120°–140° — NW–SE</span></div>
@@ -2043,7 +2061,7 @@
             <div class="s1-transition-wrap">
               <span class="s1-eyebrow">SEZIONE 2 → LE ONDE SISMICHE</span>
               <h2 class="s1-slide-title">Ma come si propaga questa energia?</h2>
-              <p class="s1-slide-sub">Le onde sismiche: tre tipi, tre comportamenti, tre effetti diversi.</p>
+              <p class="s1-slide-sub">Le onde sismiche: quattro tipi — P, S, Love, Rayleigh — quattro comportamenti, quattro effetti diversi.</p>
               <div class="s1-bounce-arrow" aria-hidden="true">&#8595;</div>
             </div>
           </div>
@@ -17198,8 +17216,8 @@ document.addEventListener('keydown', e => {
     ctx.fillStyle = '#1a2030'; ctx.fillRect(0, 0, W, H * 0.13);
     ctx.fillStyle = '#232d3f'; ctx.fillRect(0, H * 0.13, W, H * 0.40);
     ctx.fillStyle = '#1c2535'; ctx.fillRect(0, H * 0.53, W, H * 0.47);
-    ctx.fillStyle = 'rgba(245,237,224,0.2)';
-    ctx.font = '500 9px "JetBrains Mono"';
+    ctx.fillStyle = 'rgba(245,237,224,0.6)';
+    ctx.font = '600 9px "JetBrains Mono"';
     ctx.fillText('0–2 km  ·  sedimenti', 10, H * 0.08);
     ctx.fillText('2–8 km  ·  calcari', 10, H * 0.33);
     ctx.fillText('8–15 km  ·  roccia cristallina', 10, H * 0.75);
@@ -17320,15 +17338,18 @@ document.addEventListener('keydown', e => {
         const ease = 1 - Math.pow(1 - p3, 3);
         leftOffY  = -8  * ease;
         rightOffY =  28 * ease;
-        ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W * 0.5, H); ctx.clip(); ctx.translate(0, leftOffY);
-        drawPagStrati(ctx, W, H); ctx.restore();
-        ctx.save(); ctx.beginPath(); ctx.rect(W * 0.5, 0, W * 0.5, H); ctx.clip(); ctx.translate(0, rightOffY);
-        drawPagStrati(ctx, W, H); ctx.restore();
+        /* clip diagonale che segue la faglia */
+        ctx.save();
+        ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(W*0.65,0); ctx.lineTo(W*0.35,H); ctx.lineTo(0,H); ctx.closePath();
+        ctx.clip(); ctx.translate(0, leftOffY); drawPagStrati(ctx, W, H); ctx.restore();
+        ctx.save();
+        ctx.beginPath(); ctx.moveTo(W*0.65,0); ctx.lineTo(W,0); ctx.lineTo(W,H); ctx.lineTo(W*0.35,H); ctx.closePath();
+        ctx.clip(); ctx.translate(0, rightOffY); drawPagStrati(ctx, W, H); ctx.restore();
         drawPagFault(ctx, W, H, true, false);
         if (p3 > 0.3) {
           const labelAlpha = Math.min((p3 - 0.3) / 0.3, 1);
           drawPagArrow(ctx, W*0.78, H*0.35, W*0.78, H*0.35 + 28*ease, `rgba(196,58,58,${labelAlpha * 0.9})`);
-          ctx.fillStyle = `rgba(245,237,224,${labelAlpha * 0.5})`; ctx.font = '500 9px "JetBrains Mono"';
+          ctx.fillStyle = `rgba(245,237,224,${labelAlpha * 0.85})`; ctx.font = '600 10px "JetBrains Mono"';
           ctx.fillText('~25 cm', W*0.80, H*0.35 + 14*ease);
         }
         cracks.forEach(c => {
@@ -17340,6 +17361,18 @@ document.addEventListener('keydown', e => {
         });
         setLabelPag('Scorrimento completato in < 7 secondi');
       } else {
+        /* FREEZE — disegna il fotogramma finale e si ferma */
+        ctx.save();
+        ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(W*0.65,0); ctx.lineTo(W*0.35,H); ctx.lineTo(0,H); ctx.closePath();
+        ctx.clip(); ctx.translate(0, -8); drawPagStrati(ctx, W, H); ctx.restore();
+        ctx.save();
+        ctx.beginPath(); ctx.moveTo(W*0.65,0); ctx.lineTo(W,0); ctx.lineTo(W,H); ctx.lineTo(W*0.35,H); ctx.closePath();
+        ctx.clip(); ctx.translate(0, 28); drawPagStrati(ctx, W, H); ctx.restore();
+        drawPagFault(ctx, W, H, true, false);
+        drawPagArrow(ctx, W*0.78, H*0.35, W*0.78, H*0.35 + 28, 'rgba(196,58,58,0.9)');
+        ctx.fillStyle = 'rgba(245,237,224,0.85)'; ctx.font = '600 10px "JetBrains Mono"';
+        ctx.fillText('~25 cm', W*0.80, H*0.35 + 14);
+        setLabelPag('Scorrimento completato — 6 aprile 2009');
         const btn = document.getElementById('s1-paganica-btn');
         if (btn) { btn.textContent = '↺ Rivedi'; btn.disabled = false; }
         ctx.restore(); return;
