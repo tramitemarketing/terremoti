@@ -1640,7 +1640,23 @@
 
 /* ═══ SLIDE 5 ═══ */
 #s1-s5 { background: var(--black); }
-#s1-s5 .s1-slide-inner { padding: 3rem 5rem 4rem; max-width: 860px; margin: 0 auto; width: 100%; }
+.s1-s5-wrap {
+    width: 100%;
+    max-width: 1060px;
+    padding: 3rem 5rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+}
+.s1-s5-header { display: flex; flex-direction: column; gap: 0.35rem; }
+.s1-s5-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 3rem;
+    align-items: start;
+}
+.s1-s5-col { display: flex; flex-direction: column; }
 
 /* ═══ SLIDE 6 — 2 colonne ═══ */
 #s1-s6 { background: var(--black); }
@@ -1776,7 +1792,8 @@
     #s1-s3 { grid-template-columns: 1fr; }
     .s1-tool-wrap { grid-template-columns: 1fr; }
     .s1-photos-row { grid-template-columns: 1fr; }
-    #s1-s5 .s1-slide-inner { padding: 2.5rem 1.5rem 4rem; }
+    #s1-s5 .s1-s5-wrap { padding: 2rem 1.5rem; }
+    .s1-s5-grid { grid-template-columns: 1fr; }
     #s1-s4 { padding: 2rem 1rem; }
 }
     </style>
@@ -1925,28 +1942,35 @@
 
           <!-- ─── Slide 5 — Paganica: narrativa ─── -->
           <div class="s1-slide" id="s1-s5">
-            <div class="s1-slide-inner">
-              <span class="s1-eyebrow">6 APRILE 2009 · 03:32:39</span>
-              <h2 class="s1-slide-title">La Faglia di Paganica<br>si è mossa.</h2>
-              <p class="s1-slide-sub" style="font-style:italic;">Per pochi secondi. Dopo secoli di silenzio.</p>
-              <div class="s1-narrative-block">
-                <h4 class="s1-narrative-title">La faglia</h4>
-                <p class="s1-body-text">La Faglia di Paganica è una frattura nella crosta lunga ~12 km sotto la conca aquilana. È una faglia normale: i due blocchi si muovono in opposizione sotto forze estensionali che allungano e assottigliano la crosta.</p>
+            <div class="s1-s5-wrap">
+              <div class="s1-s5-header">
+                <span class="s1-eyebrow">6 APRILE 2009 · 03:32:39</span>
+                <h2 class="s1-slide-title">La Faglia di Paganica<br>si è mossa.</h2>
+                <p class="s1-slide-sub" style="font-style:italic;">Per pochi secondi. Dopo secoli di silenzio.</p>
               </div>
-              <hr class="s1-divider">
-              <div class="s1-narrative-block">
-                <h4 class="s1-narrative-title">L'accumulo</h4>
-                <p class="s1-body-text">Per secoli la faglia era rimasta immobile mentre le forze tettoniche dell'Appennino centrale accumulavano tensione elastica invisibile nelle rocce circostanti.</p>
-              </div>
-              <hr class="s1-divider">
-              <div class="s1-narrative-block">
-                <h4 class="s1-narrative-title">Il movimento</h4>
-                <p class="s1-body-text">Alle 3:32 del 6 aprile 2009 la roccia cedette. Il blocco orientale scese di 20–30 cm in meno di 7 secondi, liberando ~2.000 miliardi di joule di energia sotto forma di onde sismiche.</p>
-              </div>
-              <hr class="s1-divider">
-              <div class="s1-narrative-block">
-                <h4 class="s1-narrative-title">Il contesto</h4>
-                <p class="s1-body-text">L'Aquila era stata colpita nel 1461 e nel 1703. Ma 700 anni di silenzio avevano cancellato dalla memoria collettiva la pericolosità di quel suolo.</p>
+              <div class="s1-s5-grid">
+                <div class="s1-s5-col">
+                  <div class="s1-narrative-block">
+                    <h4 class="s1-narrative-title">La faglia</h4>
+                    <p class="s1-body-text">La Faglia di Paganica è una frattura nella crosta lunga ~12 km sotto la conca aquilana. È una faglia normale: i due blocchi si muovono in opposizione sotto forze estensionali che allungano e assottigliano la crosta.</p>
+                  </div>
+                  <hr class="s1-divider">
+                  <div class="s1-narrative-block">
+                    <h4 class="s1-narrative-title">L'accumulo</h4>
+                    <p class="s1-body-text">Per secoli la faglia era rimasta immobile mentre le forze tettoniche dell'Appennino centrale accumulavano tensione elastica invisibile nelle rocce circostanti.</p>
+                  </div>
+                </div>
+                <div class="s1-s5-col">
+                  <div class="s1-narrative-block">
+                    <h4 class="s1-narrative-title">Il movimento</h4>
+                    <p class="s1-body-text">Alle 3:32 del 6 aprile 2009 la roccia cedette. Il blocco orientale scese di 20–30 cm in meno di 7 secondi, liberando ~2.000 miliardi di joule di energia sotto forma di onde sismiche.</p>
+                  </div>
+                  <hr class="s1-divider">
+                  <div class="s1-narrative-block">
+                    <h4 class="s1-narrative-title">Il contesto</h4>
+                    <p class="s1-body-text">L'Aquila era stata colpita nel 1461 e nel 1703. Ma 700 anni di silenzio avevano cancellato dalla memoria collettiva la pericolosità di quel suolo.</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
