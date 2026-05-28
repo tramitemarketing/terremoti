@@ -1220,6 +1220,21 @@
     overflow: hidden;
     position: relative;
 }
+.s1-map-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.12em;
+    color: rgba(245,237,224,0.25);
+    margin-top: 0.6rem;
+    text-align: center;
+}
+.s1-link {
+    color: var(--terracotta);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(196,97,42,0.4);
+    transition: border-color 0.2s, color 0.2s;
+}
+.s1-link:hover { color: var(--ochre); border-color: var(--ochre); }
 #s1-map { width: 100%; height: 100%; background: #060e18; }
 .s1-popup .leaflet-popup-content-wrapper {
     background: rgba(8,8,8,0.95);
@@ -1696,13 +1711,14 @@
               <h2 class="s1-slide-title">Mentre leggi queste parole, la terra sta tremando.</h2>
               <p class="s1-slide-sub">Nelle ultime 24 ore si sono verificati <span id="s1-quake-count" class="s1-highlight">—</span> terremoti percepibili in Italia.</p>
               <p id="s1-last-event" class="s1-last-event" style="display:none">L'ultimo: <span id="s1-last-loc"></span>, <span id="s1-last-time"></span>, M <span id="s1-last-mag"></span></p>
-              <span class="s1-caption">Fonte: INGV · Rete Sismica Nazionale · soglia M ≥ 1.5</span>
+              <span class="s1-caption">Fonte: <a href="https://www.ingv.it" target="_blank" rel="noopener" class="s1-link">INGV</a> · Rete Sismica Nazionale · soglia M ≥ 1.5</span>
               <div id="s1-api-fallback" class="s1-fallback" style="display:none">I dati in tempo reale non sono disponibili. In Italia si verificano mediamente 10–15 terremoti percepibili ogni giorno.</div>
             </div>
             <div class="s1-slide-col-right">
               <div class="s1-map-wrap">
                 <div id="s1-map"></div>
               </div>
+              <p class="s1-map-hint">&#9432; Passa il mouse sui punti per i dettagli &nbsp;·&nbsp; Scorri per zoomare &nbsp;·&nbsp; Trascina per muoverti</p>
             </div>
           </div>
 
@@ -13765,9 +13781,10 @@ document.addEventListener('keydown', e => {
     if (mapInstance) return;
     if (typeof L === 'undefined') return;
     mapInstance = L.map('s1-map', {
-      scrollWheelZoom: false, zoomControl: false, attributionControl: false,
-      dragging: true, touchZoom: false, doubleClickZoom: false, boxZoom: false,
+      scrollWheelZoom: true, zoomControl: true, attributionControl: false,
+      dragging: true, touchZoom: true, doubleClickZoom: true, boxZoom: false,
     });
+    mapInstance.zoomControl.setPosition('bottomright');
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 18 }).addTo(mapInstance);
     mapInstance.fitBounds([[36.5, 6.6], [47.1, 18.5]], { padding: [8, 8] });
     L.control.attribution({ position: 'bottomleft', prefix: false })
