@@ -1293,6 +1293,13 @@
 }
 .s1-branch-svg-wrap { width: 100%; max-width: 340px; }
 .s1-branch-svg { width: 100%; height: auto; overflow: visible; }
+.s1-branch-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 340px;
+}
 
 /* ═══ SLIDE 3 ═══ */
 #s1-s3 {
@@ -1732,40 +1739,34 @@
               <p class="s1-body-text">Questo meccanismo è identico a quello di un ramo secco piegato fino a spezzarsi: la deformazione è lenta e silenziosa, la rottura è istantanea e violenta.</p>
             </div>
             <div class="s1-def-visual">
-              <svg class="s1-branch-svg" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
-                <style>
-                  .branch-straight { animation: branchStraight 8s infinite; }
-                  @keyframes branchStraight { 0% { opacity: 1; } 24.9% { opacity: 1; } 25% { opacity: 0; } 74.9% { opacity: 0; } 75% { opacity: 1; } 100% { opacity: 1; } }
-                  .branch-bent { animation: branchBent 8s infinite; }
-                  @keyframes branchBent { 0% { opacity: 0; } 25% { opacity: 0; } 25.1% { opacity: 1; } 49.9% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 0; } }
-                  .branch-break { animation: branchBreak 8s infinite; }
-                  @keyframes branchBreak { 0% { opacity: 0; } 50% { opacity: 0; } 50.1% { opacity: 1; } 62% { opacity: 1; } 62.1% { opacity: 0; } 100% { opacity: 0; } }
-                  .branch-rebound { animation: branchRebound 8s infinite; }
-                  @keyframes branchRebound { 0% { opacity: 0; } 62% { opacity: 0; } 62.1% { opacity: 0.5; } 75% { opacity: 0.5; } 75.1% { opacity: 0; } 100% { opacity: 0; } }
-                  .label-integro { animation: labelIntegro 8s infinite; }
-                  @keyframes labelIntegro { 0% { visibility: visible; } 24.9% { visibility: visible; } 25% { visibility: hidden; } 74.9% { visibility: hidden; } 75% { visibility: visible; } 100% { visibility: visible; } }
-                  .label-deformazione { animation: labelDeformazione 8s infinite; }
-                  @keyframes labelDeformazione { 0% { visibility: hidden; } 25% { visibility: hidden; } 25.1% { visibility: visible; } 49.9% { visibility: visible; } 50% { visibility: hidden; } 100% { visibility: hidden; } }
-                  .label-rottura { animation: labelRottura 8s infinite; }
-                  @keyframes labelRottura { 0% { visibility: hidden; } 50% { visibility: hidden; } 50.1% { visibility: visible; } 62% { visibility: visible; } 62.1% { visibility: hidden; } 100% { visibility: hidden; } }
-                  .label-rimbalzo { animation: labelRimbalzo 8s infinite; }
-                  @keyframes labelRimbalzo { 0% { visibility: hidden; } 62% { visibility: hidden; } 62.1% { visibility: visible; } 75% { visibility: visible; } 75.1% { visibility: hidden; } 100% { visibility: hidden; } }
-                </style>
-                <g class="branch-straight"><line x1="20" y1="100" x2="300" y2="100" stroke="#F5EDE0" stroke-width="4" stroke-linecap="round"/></g>
-                <g class="branch-bent"><path d="M20,100 Q160,70 300,100" fill="none" stroke="var(--terracotta, #C4612A)" stroke-width="4" stroke-linecap="round"/></g>
-                <g class="branch-break">
-                  <line x1="20" y1="100" x2="155" y2="95" stroke="var(--blood, #8B1A1A)" stroke-width="4" stroke-linecap="round"/>
-                  <line x1="165" y1="105" x2="300" y2="100" stroke="var(--blood, #8B1A1A)" stroke-width="4" stroke-linecap="round"/>
-                </g>
-                <g class="branch-rebound">
-                  <line x1="20" y1="100" x2="140" y2="90" stroke="var(--blood, #8B1A1A)" stroke-width="4" stroke-linecap="round"/>
-                  <line x1="180" y1="110" x2="300" y2="100" stroke="var(--blood, #8B1A1A)" stroke-width="4" stroke-linecap="round"/>
-                </g>
-                <text class="label-integro" x="160" y="160" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="#F5EDE0" letter-spacing="2">INTEGRO</text>
-                <text class="label-deformazione" x="160" y="160" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="var(--terracotta, #C4612A)" letter-spacing="2">DEFORMAZIONE</text>
-                <text class="label-rottura" x="160" y="160" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="var(--blood, #8B1A1A)" letter-spacing="2">ROTTURA</text>
-                <text class="label-rimbalzo" x="160" y="160" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="var(--blood, #8B1A1A)" opacity="0.5" letter-spacing="2">RIMBALZO</text>
-              </svg>
+              <div class="s1-branch-controls">
+                <button id="s1-branch-btn" class="s1-btn"><span>&#9646;&#9646; Pausa</span></button>
+                <span id="s1-branch-label" class="s1-canvas-label"></span>
+              </div>
+              <div class="s1-branch-svg-wrap">
+                <svg id="s1-branch-svg" viewBox="0 0 340 170" xmlns="http://www.w3.org/2000/svg">
+                  <!-- strati rocciosi di sfondo -->
+                  <line x1="10" y1="57" x2="330" y2="57" stroke="rgba(245,237,224,0.05)" stroke-width="1.5"/>
+                  <line x1="10" y1="72" x2="330" y2="72" stroke="rgba(245,237,224,0.03)" stroke-width="1"/>
+                  <line x1="10" y1="112" x2="330" y2="112" stroke="rgba(245,237,224,0.03)" stroke-width="1"/>
+                  <line x1="10" y1="127" x2="330" y2="127" stroke="rgba(245,237,224,0.05)" stroke-width="1.5"/>
+                  <!-- ramo principale — animato via JS -->
+                  <path id="s1-b-main" d="M20,92 Q170,92 320,92" fill="none" stroke="rgba(245,237,224,0.85)" stroke-width="4.5" stroke-linecap="round"/>
+                  <!-- pezzi rottura — nascosti -->
+                  <line id="s1-b-left"  x1="20"  y1="92" x2="158" y2="87" stroke="#8B1A1A" stroke-width="4.5" stroke-linecap="round" opacity="0"/>
+                  <line id="s1-b-right" x1="168" y1="97" x2="320" y2="92" stroke="#8B1A1A" stroke-width="4.5" stroke-linecap="round" opacity="0"/>
+                  <!-- flash rottura -->
+                  <circle id="s1-b-flash" cx="163" cy="92" r="9" fill="#C4612A" opacity="0"/>
+                  <!-- label fase nel SVG -->
+                  <text id="s1-b-label" x="170" y="153" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" letter-spacing="3" fill="rgba(245,237,224,0.45)">INTEGRO</text>
+                </svg>
+              </div>
+              <ul class="s1-phase-list">
+                <li class="s1-phase-item active" data-phase="1">Integro — posizione di riposo</li>
+                <li class="s1-phase-item" data-phase="2">Deformazione — curvatura progressiva</li>
+                <li class="s1-phase-item" data-phase="3">Rottura — rilascio istantaneo di energia</li>
+                <li class="s1-phase-item" data-phase="4">Rimbalzo — ritorno all'equilibrio</li>
+              </ul>
             </div>
           </div>
 
@@ -13639,6 +13640,7 @@ document.addEventListener('keydown', e => {
     if (triggered.has(idx)) return;
     triggered.add(idx);
     if (idx === 0) { fetchINGV(); initMap(); }
+    if (idx === 1) { initBranchAnim(); }
     if (idx === 2) { startFaultAnim(); }
     if (idx === 3) { initSliders(); }
     if (idx === 5) { initPaganicanCanvas(); }
@@ -13792,6 +13794,128 @@ document.addEventListener('keydown', e => {
       .setPrefix('<span style="font-family:monospace;font-size:0.45rem;letter-spacing:0.08em;color:rgba(245,237,224,0.15)">INGV · CartoDB</span>');
   }
 
+  /* ═══ BRANCH ANIMATION — Slide 2 ═══ */
+
+  function initBranchAnim() {
+    const mainPath  = document.getElementById('s1-b-main');
+    const leftLine  = document.getElementById('s1-b-left');
+    const rightLine = document.getElementById('s1-b-right');
+    const flash     = document.getElementById('s1-b-flash');
+    const svgLabel  = document.getElementById('s1-b-label');
+    const btn       = document.getElementById('s1-branch-btn');
+    const phaseItems = document.querySelectorAll('#s1-s2 .s1-phase-item');
+
+    if (!mainPath) return;
+
+    const CYCLE = 9000; // ms totali
+    const T = { integro: 2000, deform: 5200, rottura: 5700, rimbalzo: 7200, reset: 9000 };
+    const LABEL_COLOR = { 1: 'rgba(245,237,224,0.55)', 2: '#C4612A', 3: '#8B1A1A', 4: '#8B1A1A' };
+    const LABEL_TEXT  = { 1: 'INTEGRO', 2: 'DEFORMAZIONE', 3: 'ROTTURA', 4: 'RIMBALZO' };
+
+    let elapsed = 0, lastTs = null, running = true;
+
+    function ease(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+    function setPhase(n) {
+      phaseItems.forEach(el => el.classList.toggle('active', +el.dataset.phase === n));
+      if (svgLabel) {
+        svgLabel.textContent = LABEL_TEXT[n];
+        svgLabel.setAttribute('fill', LABEL_COLOR[n]);
+      }
+    }
+
+    function frame(ts) {
+      if (!running) return;
+      if (lastTs !== null) elapsed = (elapsed + ts - lastTs) % CYCLE;
+      lastTs = ts;
+      const e = elapsed;
+
+      if (e < T.integro) {
+        /* INTEGRO — ramo dritto, statico */
+        mainPath.setAttribute('d', 'M20,92 Q170,92 320,92');
+        mainPath.setAttribute('stroke', 'rgba(245,237,224,0.85)');
+        mainPath.setAttribute('opacity', '1');
+        leftLine.setAttribute('opacity', '0');
+        rightLine.setAttribute('opacity', '0');
+        flash.setAttribute('opacity', '0');
+        setPhase(1);
+
+      } else if (e < T.deform) {
+        /* DEFORMAZIONE — curvatura fluida del bezier */
+        const raw = (e - T.integro) / (T.deform - T.integro);
+        const t = ease(raw);
+        /* aggiunge una leggera oscillazione sul 70-100% per simulare tensione */
+        const tension = raw > 0.7 ? Math.sin((raw - 0.7) / 0.3 * Math.PI * 4) * 3 * (1 - raw) : 0;
+        const cy = 92 - t * 30 + tension;
+        const r = Math.round(180 + t * 16), g = Math.round(97 - t * 30), b = Math.round(42 - t * 30);
+        mainPath.setAttribute('d', `M20,92 Q170,${cy.toFixed(1)} 320,92`);
+        mainPath.setAttribute('stroke', `rgb(${r},${g},${b})`);
+        mainPath.setAttribute('opacity', '1');
+        leftLine.setAttribute('opacity', '0');
+        rightLine.setAttribute('opacity', '0');
+        flash.setAttribute('opacity', '0');
+        setPhase(2);
+
+      } else if (e < T.rottura) {
+        /* ROTTURA — flash + pezzi appaiono */
+        const ft = (e - T.deform) / (T.rottura - T.deform);
+        mainPath.setAttribute('opacity', '0');
+        leftLine.setAttribute('opacity', '1');
+        rightLine.setAttribute('opacity', '1');
+        leftLine.setAttribute('y1', '92'); leftLine.setAttribute('y2', '87');
+        rightLine.setAttribute('y1', '97'); rightLine.setAttribute('y2', '92');
+        flash.setAttribute('opacity', String(Math.max(0, 1 - ft * 2.5)));
+        setPhase(3);
+
+      } else if (e < T.rimbalzo) {
+        /* RIMBALZO — i pezzi oscillano e si assestano */
+        const rt = (e - T.rottura) / (T.rimbalzo - T.rottura);
+        const bounce = Math.sin(rt * Math.PI * 2.5) * (1 - rt) * 5;
+        leftLine.setAttribute('y1', String(92 - bounce));
+        leftLine.setAttribute('y2', String(87 - bounce));
+        rightLine.setAttribute('y1', String(97 + bounce));
+        rightLine.setAttribute('y2', String(92 + bounce));
+        leftLine.setAttribute('opacity', '1');
+        rightLine.setAttribute('opacity', '1');
+        mainPath.setAttribute('opacity', '0');
+        flash.setAttribute('opacity', '0');
+        setPhase(4);
+
+      } else {
+        /* RESET — pezzi sfumano, ramo ritorna */
+        const p = (e - T.rimbalzo) / (T.reset - T.rimbalzo);
+        leftLine.setAttribute('opacity', String(1 - p));
+        rightLine.setAttribute('opacity', String(1 - p));
+        /* reset posizioni per il prossimo ciclo */
+        leftLine.setAttribute('y1', '92'); leftLine.setAttribute('y2', '87');
+        rightLine.setAttribute('y1', '97'); rightLine.setAttribute('y2', '92');
+        mainPath.setAttribute('d', 'M20,92 Q170,92 320,92');
+        mainPath.setAttribute('stroke', 'rgba(245,237,224,0.85)');
+        mainPath.setAttribute('opacity', String(p));
+        flash.setAttribute('opacity', '0');
+        setPhase(1);
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    requestAnimationFrame(frame);
+
+    if (btn) {
+      btn.addEventListener('click', () => {
+        running = !running;
+        const sp = btn.querySelector('span');
+        if (running) {
+          lastTs = null;
+          sp.innerHTML = '&#9646;&#9646; Pausa';
+          requestAnimationFrame(frame);
+        } else {
+          sp.innerHTML = '&#9654; Riprendi';
+        }
+      });
+    }
+  }
+
   /* ═══ FAULT ANIMATION — Slide 3 ═══ */
 
   /* Stato animazione faglia */
@@ -13802,7 +13926,7 @@ document.addEventListener('keydown', e => {
     const phaseLabel  = document.getElementById('s1-fault-phase-label');
     const yearsEl     = document.getElementById('s1-fault-years');
     const playBtn     = document.getElementById('s1-play-btn');
-    const phaseItems  = document.querySelectorAll('.s1-phase-item');
+    const phaseItems  = document.querySelectorAll('#s1-s3 .s1-phase-item');
 
     if (!canvas) return;
 
