@@ -784,7 +784,9 @@
         @keyframes hPop { to { opacity:1; } }
         /* ══════════════════════════════════════════════════════════════════ */
         /* ══════════════════ SLIDE 7 · FINE ══════════════════ */
-        #s-end { background: #050505; }
+        #s-end { background: #050505; position: relative; overflow: hidden; }
+        #end-smoke { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+        #s-end .end-wrap { position: relative; z-index: 1; }
 
         .end-wrap { text-align: center; max-width: 780px; padding: 2rem; }
         .end-quote { font-size: clamp(1.4rem, 2.8vw, 2.8rem); font-weight: 300; font-style: italic; line-height: 1.55; color: var(--cream); }
@@ -13200,7 +13202,7 @@ function s5_initSlide5() {
               <span class="art-sl-eyebrow">CASO STUDIO - XVIII SEC. - BAROCCO AQUILANO</span>
               <span class="art-sl-counter">06 - 06</span>
               <h3 class="art-sl-title">Chiesa di Santa Maria<br>del <em>Suffragio</em></h3>
-              <p class="art-sl-body">Conosciuta come "delle Anime Sante", e' uno dei gioielli barocchi del centro storico aquilano. Gravemente danneggiata — i meccanismi di ribaltamento hanno compromesso la facciata e parte della struttura interna. Il restauro, ancora in corso, e' parte di un processo che dura da 15 anni.</p>
+              <p class="art-sl-body">Conosciuta come "delle Anime Sante", è uno dei gioielli barocchi del centro storico aquilano. Gravemente danneggiata — i meccanismi di ribaltamento hanno compromesso la facciata e parte della struttura interna. Il restauro, ancora in corso, è parte di un processo che dura da 15 anni.</p>
               <div class="art-sl-dmg-bar-wrap"><div class="art-sl-dmg-bar" data-dmg="60"></div></div>
               <div class="art-sl-dmg-label">60% — Danni significativi</div>
             </div>
@@ -13220,7 +13222,7 @@ function s5_initSlide5() {
                 <!-- finestre tamburo -->
                 <path d="M26,56 L26,68 M43,55 L43,70 M60,56 L60,68"/>
               </svg>
-              <div class="art-sr-quote">Il restauro non e' mai solo tecnico. E' un atto di memoria collettiva.<span class="art-sr-attribution">— Filosofia della ricostruzione aquilana</span></div>
+              <div class="art-sr-quote">Il restauro non è mai solo tecnico. È un atto di memoria collettiva.<span class="art-sr-attribution">— Filosofia della ricostruzione aquilana</span></div>
             </div>
           </div>
           <!-- DOM slide 1 - mostrata quinta: Collemaggio -->
@@ -13229,7 +13231,7 @@ function s5_initSlide5() {
               <span class="art-sl-eyebrow">CASO STUDIO - XIII SEC. - ROMANICO ABRUZZESE</span>
               <span class="art-sl-counter">05 - 06</span>
               <h3 class="art-sl-title">Basilica di Santa Maria<br>di <em>Collemaggio</em></h3>
-              <p class="art-sl-body">Crollo parziale della copertura, danneggiamento delle absidi, lesioni strutturali profonde. Otto anni di restauro meticoloso sotto la supervisione della Soprintendenza e con le metodologie dell'Universita' di Firenze. La riapertura nel 2017 e' diventata il simbolo di una rinascita possibile.</p>
+              <p class="art-sl-body">Crollo parziale della copertura, danneggiamento delle absidi, lesioni strutturali profonde. Otto anni di restauro meticoloso sotto la supervisione della Soprintendenza e con le metodologie dell'Università di Firenze. La riapertura nel 2017 è diventata il simbolo di una rinascita possibile.</p>
               <div class="art-sl-dmg-bar-wrap"><div class="art-sl-dmg-bar" data-dmg="80"></div></div>
               <div class="art-sl-dmg-label">80% — Danni gravi</div>
             </div>
@@ -13269,6 +13271,8 @@ function s5_initSlide5() {
                 <div class="art-sr-stat-row"><div class="art-sr-stat-num" style="font-size:1.1rem;min-width:auto;">Aggregato strutturale</div></div>
                 <div class="art-sr-stat-row"><div class="art-sr-stat-num" style="font-size:1.1rem;min-width:auto;">Univ. Firenze Restauro</div></div>
               </div>
+              <canvas id="cazzuola-canvas" width="230" height="140"
+                style="display:block;width:230px;height:140px;margin:1rem 0 0;"></canvas>
             </div>
           </div>
           <!-- DOM slide 3 - mostrata terza: La scala -->
@@ -13277,7 +13281,7 @@ function s5_initSlide5() {
               <span class="art-sl-eyebrow">MESSA IN SICUREZZA - I NUMERI</span>
               <span class="art-sl-counter">03 - 06</span>
               <h3 class="art-sl-title">Prima ancora di<br>pensare al <em>restauro</em>.</h3>
-              <p class="art-sl-body">Il centro storico dell'Aquila era irriconoscibile. Prima di poter parlare di recupero architettonico, fu necessaria un'operazione monumentale di messa in sicurezza. Puntellamenti in legno e metallo, cerchiature in acciaio, fasciatura dei cantonali. Una citta' tenuta in piedi da strutture provvisorie, per anni.</p>
+              <p class="art-sl-body">Il centro storico dell'Aquila era irriconoscibile. Prima di poter parlare di recupero architettonico, fu necessaria un'operazione monumentale di messa in sicurezza. Puntellamenti in legno e metallo, cerchiature in acciaio, fasciatura dei cantonali. Una città tenuta in piedi da strutture provvisorie, per anni.</p>
             </div>
             <div class="art-sr light">
               <span class="art-sr-bg-num">03</span>
@@ -13320,8 +13324,8 @@ function s5_initSlide5() {
             <div class="art-sl">
               <span class="art-sl-eyebrow">PATRIMONIO CULTURALE - L'AQUILA</span>
               <span class="art-sl-counter">01 - 06</span>
-              <h3 class="art-sl-title">Una delle concentrazioni<br>di arte medievale piu' dense<br>dell'<em>Italia centrale</em>.</h3>
-              <p class="art-sl-body">Fondata nel 1254, L'Aquila costrui' la sua identita' sulla molteplicita': 88 chiese, 88 piazze, 88 fontane — la leggenda dei villaggi fondatori, ciascuno con la propria identita', uniti in una sola citta'. Un corpus artistico sedimentato in sette secoli. Alle 3:32 del 6 aprile 2009, si trovo' sotto attacco.</p>
+              <h3 class="art-sl-title">Una delle concentrazioni<br>di arte medievale più dense<br>dell'<em>Italia centrale</em>.</h3>
+              <p class="art-sl-body">Fondata nel 1254, L'Aquila costruì la sua identità sulla molteplicità: 88 chiese, 88 piazze, 88 fontane — la leggenda dei villaggi fondatori, ciascuno con la propria identità, uniti in una sola città. Un corpus artistico sedimentato in sette secoli. Alle 3:32 del 6 aprile 2009, si trovò sotto attacco.</p>
             </div>
             <div class="art-sr light">
               <span class="art-sr-bg-num">88</span>
@@ -13411,7 +13415,7 @@ function s5_initSlide5() {
             <div class="case-sl">
               <span class="case-sl-eyebrow">UN ANNO DOPO IL SISMA - I NUMERI</span>
               <h2 class="case-sl-title">185 edifici.<br>5-6 mesi<br>per costruirli.</h2>
-              <p class="case-sl-body">Entro un anno dal sisma, il Progetto C.A.S.E. aveva gia' alloggiato quasi 15.000 persone. Non in baracche — in abitazioni con standard qualitativi elevati, tecnologia antisismica di isolamento alla base, sostenibilita' energetica. Un risultato che diverra' caso studio internazionale.</p>
+              <p class="case-sl-body">Entro un anno dal sisma, il Progetto C.A.S.E. aveva già alloggiato quasi 15.000 persone. Non in baracche — in abitazioni con standard qualitativi elevati, tecnologia antisismica di isolamento alla base, sostenibilità energetica. Un risultato che diverrà caso studio internazionale.</p>
             </div>
             <div class="case-sr">
               <span class="case-sr-bg-num">03</span>
@@ -13436,8 +13440,8 @@ function s5_initSlide5() {
           <div class="case-slide">
             <div class="case-sl">
               <span class="case-sl-eyebrow">CRITERI DI LOCALIZZAZIONE - LA TENSIONE</span>
-              <h2 class="case-sl-title">Fare presto.<br>O conservare<br>l'<strong>identita'</strong>.</h2>
-              <p class="case-sl-body">La selezione delle aree avvenne attraverso un processo interattivo tra Protezione Civile e Comune. Due obiettivi in tensione costante: velocita' della risposta emergenziale e preservazione dell'identita' territoriale. Alcune aree furono scartate dopo le prove geotecniche.</p>
+              <h2 class="case-sl-title">Fare presto.<br>O conservare<br>l'<strong>identità</strong>.</h2>
+              <p class="case-sl-body">La selezione delle aree avvenne attraverso un processo interattivo tra Protezione Civile e Comune. Due obiettivi in tensione costante: velocità della risposta emergenziale e preservazione dell'identità territoriale. Alcune aree furono scartate dopo le prove geotecniche.</p>
               <span class="case-sl-accent">Protezione Civile vs Comune - aprile-luglio 2009</span>
             </div>
             <div class="case-sr">
@@ -13455,7 +13459,7 @@ function s5_initSlide5() {
             <div class="case-sl">
               <span class="case-sl-eyebrow">19 APRILE 2024 - AUDITORIUM GSSI - L'AQUILA</span>
               <h2 class="case-sl-title">Il <strong>Modello L'Aquila</strong>.<br>15 anni dopo,<br>ancora in corso.</h2>
-              <p class="case-sl-body">L'Aquila e' diventata un caso studio internazionale per la gestione post-sisma. Il "Modello L'Aquila" e' studiato in tutto il mondo. Ma a 15 anni dal sisma, la ricostruzione non e' ancora terminata. Forse non lo sara' mai del tutto.</p>
+              <p class="case-sl-body">L'Aquila è diventata un caso studio internazionale per la gestione post-sisma. Il "Modello L'Aquila" è studiato in tutto il mondo. Ma a 15 anni dal sisma, la ricostruzione non è ancora terminata. Forse non lo sarà mai del tutto.</p>
             </div>
             <div class="case-sr">
               <span class="case-sr-bg-num">05</span>
@@ -13484,6 +13488,7 @@ function s5_initSlide5() {
 
     <!-- ══ S7 · FINE ══ -->
     <section class="slide" id="s-end">
+        <canvas id="end-smoke"></canvas>
         <div class="end-wrap">
             <p class="end-quote">"Le pietre di una città<br>custodiscono la memoria<br>di chi l'ha vissuta"</p>
             <div class="end-line"></div>
@@ -14980,8 +14985,316 @@ function onSlideEnter(i, el) {
   loop();
 })();
 
+
+// ═══════════════════════════════════════════
+//  CAZZUOLA — restauro conservativo
+// ═══════════════════════════════════════════
+(function() {
+  'use strict';
+  var canvas = document.getElementById('cazzuola-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+
+  var TC = 'rgba(196,97,42,';   // terracotta
+  var MT = 'rgba(210,178,135,'; // malta / mortar
+  var CR = 'rgba(245,237,224,'; // cream / trowel
+
+  // Mattoni
+  var BW = 30, BH = 11, JH = 4, JV = 3;
+  var COLS = 7, ROWS = 4;
+  var padX = 6, padY = 10;
+  var rowStride = BH + JH;
+  var totalW = COLS * (BW + JV);
+
+  // Stato malta: progress 0..1 per ogni giunto orizzontale [0..ROWS-2]
+  var mortarPct = [0, 0, 0];
+
+  var trowelX = -35;
+  var curJoint = 0; // quale giunto sta riempiendo (0 = tra riga 0 e 1, etc.)
+  var paused = 0;
+  var SPEED = 1.3;
+
+  function rowY(r) { return padY + r * rowStride; }
+  function brickX(c, r) { return padX + c*(BW+JV) + (r%2 ? (BW+JV)/2 : 0); }
+
+  /* ── mattoni ── */
+  function drawBricks() {
+    for (var r = 0; r < ROWS; r++) {
+      for (var c = 0; c < COLS; c++) {
+        var bx = brickX(c, r), by = rowY(r);
+        if (bx + BW < 0 || bx > W) continue;
+        ctx.fillStyle   = TC + '0.11)';
+        ctx.strokeStyle = TC + '0.48)';
+        ctx.lineWidth   = 0.8;
+        ctx.fillRect(bx, by, BW, BH);
+        ctx.strokeRect(bx, by, BW, BH);
+      }
+      // mezzi mattoni bordo (sfalsamento)
+      if (r % 2 === 1) {
+        ctx.fillStyle   = TC + '0.11)';
+        ctx.strokeStyle = TC + '0.48)';
+        ctx.lineWidth   = 0.8;
+        var hbw = (BW + JV)/2 - JV;
+        if (hbw > 0) {
+          ctx.fillRect(padX, rowY(r), hbw, BH);
+          ctx.strokeRect(padX, rowY(r), hbw, BH);
+          ctx.fillRect(padX + totalW - hbw, rowY(r), hbw, BH);
+          ctx.strokeRect(padX + totalW - hbw, rowY(r), hbw, BH);
+        }
+      }
+    }
+  }
+
+  /* ── malta nei giunti ── */
+  function drawMortar() {
+    for (var j = 0; j < ROWS - 1; j++) {
+      if (mortarPct[j] <= 0) continue;
+      var jy = rowY(j) + BH;
+      var fw = totalW * mortarPct[j];
+      // gradiente: pieno → sfumato alla punta
+      var g = ctx.createLinearGradient(padX, 0, padX + fw, 0);
+      g.addColorStop(0,    MT + '0.60)');
+      g.addColorStop(0.88, MT + '0.50)');
+      g.addColorStop(1,    MT + '0.00)');
+      ctx.fillStyle = g;
+      ctx.fillRect(padX, jy, fw, JH);
+    }
+  }
+
+  /* ── cazzuola ── */
+  function drawTrowel(x, y) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(-0.32);
+
+    /* lama — forma a punta di diamante piatta */
+    var bL = 40, bHH = 9;
+    ctx.beginPath();
+    ctx.moveTo(-6,       bHH * 0.45);   // tallone sx-basso
+    ctx.lineTo(-6,      -bHH * 0.45);   // tallone sx-alto
+    ctx.lineTo( bL*0.55,-bHH * 0.70);   // spalla dx-alto
+    ctx.lineTo( bL,       0);             // punta
+    ctx.lineTo( bL*0.55, bHH * 0.70);   // spalla dx-basso
+    ctx.closePath();
+    ctx.fillStyle   = CR + '0.13)';
+    ctx.strokeStyle = CR + '0.82)';
+    ctx.lineWidth   = 1.3;
+    ctx.fill();
+    ctx.stroke();
+
+    /* malta sulla lama (blob che si stende) */
+    ctx.save();
+    ctx.clip();
+    ctx.beginPath();
+    ctx.ellipse(bL * 0.40, bHH * 0.05, 13, 4, 0, 0, Math.PI*2);
+    ctx.fillStyle = MT + '0.55)';
+    ctx.fill();
+    ctx.restore();
+
+    /* manico */
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    // asta
+    ctx.beginPath();
+    ctx.moveTo(-6, 0);
+    ctx.lineTo(-46, 6);
+    ctx.strokeStyle = CR + '0.55)';
+    ctx.lineWidth   = 5;
+    ctx.stroke();
+    ctx.strokeStyle = TC + '0.30)';
+    ctx.lineWidth   = 2;
+    ctx.stroke();
+    // impugnatura ovale
+    ctx.beginPath();
+    ctx.ellipse(-46, 6, 5, 3.5, 0.18, 0, Math.PI*2);
+    ctx.fillStyle   = CR + '0.22)';
+    ctx.strokeStyle = CR + '0.60)';
+    ctx.lineWidth   = 1;
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  /* ── loop ── */
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    drawBricks();
+    drawMortar();
+
+    if (paused > 0) {
+      paused--;
+      if (paused === 0) {
+        // reset
+        curJoint = 0;
+        trowelX  = -35;
+        for (var i = 0; i < mortarPct.length; i++) mortarPct[i] = 0;
+      }
+      requestAnimationFrame(loop);
+      return;
+    }
+
+    if (curJoint < ROWS - 1) {
+      trowelX += SPEED;
+
+      // Riempi malta proporzionalmente all'avanzamento della punta
+      var tip = trowelX;
+      mortarPct[curJoint] = Math.min(1, Math.max(0, (tip - padX + 10) / totalW));
+
+      var ty = rowY(curJoint) + BH + JH * 0.5;
+      if (trowelX < W + 55) drawTrowel(trowelX, ty);
+
+      if (trowelX > W + 38) {
+        curJoint++;
+        trowelX = -35;
+        if (curJoint >= ROWS - 1) paused = 95; // ~1.6s pausa prima del reset
+      }
+    }
+
+    requestAnimationFrame(loop);
+  }
+
+  loop();
+})();
+
 /* resizeWave e resizeSeismo rimossi insieme al vecchio carousel scientifico */
 window.addEventListener('resize', () => { resizeHero(); });
+
+
+// ═══════════════════════════════════════════
+//  SMOKE BACKGROUND — #s-end (WebGL2)
+// ═══════════════════════════════════════════
+(function() {
+  'use strict';
+
+  var canvas = document.getElementById('end-smoke');
+  if (!canvas) return;
+  var gl = canvas.getContext('webgl2');
+  if (!gl) return;
+
+  // ── Shaders ──────────────────────────────
+  var vertSrc = [
+    '#version 300 es',
+    'precision highp float;',
+    'in vec4 position;',
+    'void main(){ gl_Position = position; }'
+  ].join('\n');
+
+  var fragSrc = [
+    '#version 300 es',
+    'precision highp float;',
+    'out vec4 O;',
+    'uniform float time;',
+    'uniform vec2 resolution;',
+    'uniform vec3 u_color;',
+    '#define FC gl_FragCoord.xy',
+    '#define R resolution',
+    '#define T (time+660.)',
+    'float rnd(vec2 p){p=fract(p*vec2(12.9898,78.233));p+=dot(p,p+34.56);return fract(p.x*p.y);}',
+    'float noise(vec2 p){vec2 i=floor(p),f=fract(p),u=f*f*(3.-2.*f);return mix(mix(rnd(i),rnd(i+vec2(1,0)),u.x),mix(rnd(i+vec2(0,1)),rnd(i+1.),u.x),u.y);}',
+    'float fbm(vec2 p){float t=.0,a=1.;for(int i=0;i<5;i++){t+=a*noise(p);p*=mat2(1,-1.2,.2,1.2)*2.;a*=.5;}return t;}',
+    'void main(){',
+    '  vec2 uv=(FC-.5*R)/R.y;',
+    '  vec3 col=vec3(1);',
+    '  uv.x+=.25;',
+    '  uv*=vec2(2,1);',
+    '  float n=fbm(uv*.28-vec2(T*.01,0));',
+    '  n=noise(uv*3.+n*2.);',
+    '  col.r-=fbm(uv+vec2(0,T*.015)+n);',
+    '  col.g-=fbm(uv*1.003+vec2(0,T*.015)+n+.003);',
+    '  col.b-=fbm(uv*1.006+vec2(0,T*.015)+n+.006);',
+    '  col=mix(col, u_color, dot(col,vec3(.21,.71,.07)));',
+    '  col=mix(vec3(.08),col,min(time*.1,1.));',
+    '  col=clamp(col,.08,1.);',
+    '  O=vec4(col,1);',
+    '}'
+  ].join('\n');
+
+  // ── Compile helper ────────────────────────
+  function compileShader(type, src) {
+    var sh = gl.createShader(type);
+    gl.shaderSource(sh, src);
+    gl.compileShader(sh);
+    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS))
+      console.error('Shader error:', gl.getShaderInfoLog(sh));
+    return sh;
+  }
+
+  var vs  = compileShader(gl.VERTEX_SHADER,   vertSrc);
+  var fs  = compileShader(gl.FRAGMENT_SHADER, fragSrc);
+  var prog = gl.createProgram();
+  gl.attachShader(prog, vs);
+  gl.attachShader(prog, fs);
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS))
+    console.error('Program link error:', gl.getProgramInfoLog(prog));
+
+  // ── Geometry (full-screen quad) ───────────
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,1,-1,-1,1,1,1,-1]), gl.STATIC_DRAW);
+  var posLoc = gl.getAttribLocation(prog, 'position');
+  gl.enableVertexAttribArray(posLoc);
+  gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+  // ── Uniform locations ─────────────────────
+  var uRes   = gl.getUniformLocation(prog, 'resolution');
+  var uTime  = gl.getUniformLocation(prog, 'time');
+  var uColor = gl.getUniformLocation(prog, 'u_color');
+
+  // Terracotta #C4612A → [0.769, 0.380, 0.165]
+  var smokeColor = new Float32Array([0.769, 0.380, 0.165]);
+
+  // ── Resize ────────────────────────────────
+  function resize() {
+    var dpr = Math.max(1, window.devicePixelRatio || 1);
+    var section = document.getElementById('s-end');
+    var w = section.offsetWidth  || window.innerWidth;
+    var h = section.offsetHeight || window.innerHeight;
+    canvas.width  = w * dpr;
+    canvas.height = h * dpr;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // ── Animation — only runs when slide is visible ──
+  var rafId = null;
+  var startTime = null;
+  var running = false;
+
+  function render(now) {
+    if (!running) return;
+    if (startTime === null) startTime = now;
+    var elapsed = (now - startTime) * 1e-3;
+
+    gl.clearColor(0, 0, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.useProgram(prog);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.uniform1f(uTime, elapsed);
+    gl.uniform3fv(uColor, smokeColor);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+    rafId = requestAnimationFrame(render);
+  }
+
+  // Gated by IntersectionObserver (same pattern as other canvases in this file)
+  var section = document.getElementById('s-end');
+  new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        if (!running) { running = true; rafId = requestAnimationFrame(render); }
+      } else {
+        running = false;
+        if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      }
+    });
+  }, { threshold: 0.1 }).observe(section);
+
+})();
 
 // ═══════════════════════════════════════════
 //  THREE.JS FAULT ANIMATION — rimosso (sostituito da IIFE sezione1)
