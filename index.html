@@ -1235,7 +1235,8 @@
     transition: border-color 0.2s, color 0.2s;
 }
 .s1-link:hover { color: var(--ochre); border-color: var(--ochre); }
-#s1-map { width: 100%; height: 100%; background: #060e18; }
+#s1-map { width: 100%; height: 100%; background: #060e18; touch-action: none; }
+.s1-map-wrap { overscroll-behavior: contain; }
 .s1-popup .leaflet-popup-content-wrapper {
     background: rgba(8,8,8,0.95);
     border: 1px solid rgba(196,97,42,0.35);
@@ -1299,6 +1300,67 @@
     gap: 1rem;
     width: 100%;
     max-width: 340px;
+}
+
+/* ── Reid popup ── */
+.s1-reid-trigger {
+    cursor: pointer;
+    border-bottom: 1px dashed rgba(196,97,42,0.5);
+    transition: color 0.2s;
+}
+.s1-reid-trigger:hover { color: var(--terracotta); }
+.s1-reid-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 980;
+    display: none;
+}
+.s1-reid-overlay.open { display: block; }
+.s1-reid-popup {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 981;
+    background: #0c0e14;
+    border: 1px solid rgba(196,97,42,0.4);
+    border-radius: 3px;
+    padding: 2rem 2.2rem;
+    max-width: 420px;
+    width: calc(100vw - 4rem);
+    box-shadow: 0 12px 48px rgba(0,0,0,0.8);
+    display: none;
+}
+.s1-reid-popup.open { display: block; }
+.s1-reid-popup-close {
+    position: absolute; top: 0.8rem; right: 0.9rem;
+    background: none; border: none; color: rgba(245,237,224,0.35);
+    font-size: 1rem; cursor: pointer; padding: 0.2rem 0.4rem;
+    transition: color 0.2s;
+}
+.s1-reid-popup-close:hover { color: var(--cream); }
+.s1-reid-popup-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.35rem; font-weight: 600;
+    color: var(--cream); margin: 0 0 0.2rem;
+}
+.s1-reid-popup-dates {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; letter-spacing: 0.15em;
+    color: var(--terracotta); margin: 0 0 1rem;
+    text-transform: uppercase;
+}
+.s1-reid-popup-body {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.95rem; line-height: 1.6;
+    color: rgba(245,237,224,0.75); margin: 0 0 1.1rem;
+}
+.s1-reid-popup-geo {
+    display: flex; flex-direction: column; gap: 0.25rem;
+    border-top: 1px solid rgba(245,237,224,0.07);
+    padding-top: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.52rem; letter-spacing: 0.1em;
+    color: rgba(245,237,224,0.3);
 }
 
 /* ═══ SLIDE 3 ═══ */
@@ -1773,7 +1835,7 @@
           <!-- ─── Slide 3 ─── -->
           <div class="s1-slide" id="s1-s3">
             <div class="s1-slide-col-left" style="display:flex;flex-direction:column;justify-content:center;gap:1.1rem;padding:3.5rem 3rem 3.5rem 4rem;border-right:1px solid rgba(245,237,224,0.055);overflow-y:auto;">
-              <span class="s1-eyebrow">H.F. REID · 1910</span>
+              <span class="s1-eyebrow s1-reid-trigger" id="s1-reid-trigger">H.F. REID · 1910 &#8599;</span>
               <h2 class="s1-slide-title">La teoria del rimbalzo elastico.</h2>
               <p class="s1-body-text">Dopo il terremoto di San Francisco del 1906, il geologo Harry Fielding Reid studiò le deformazioni del terreno lungo la faglia di San Andreas. Scoprì che i blocchi rocciosi su entrambi i lati si erano spostati elasticamente per decenni prima della rottura, per poi &ldquo;rimbalzare&rdquo; nella posizione di minima energia dopo il sisma.</p>
               <ul class="s1-phase-list">
@@ -13792,6 +13854,15 @@ document.addEventListener('keydown', e => {
     L.control.attribution({ position: 'bottomleft', prefix: false })
       .addTo(mapInstance)
       .setPrefix('<span style="font-family:monospace;font-size:0.45rem;letter-spacing:0.08em;color:rgba(245,237,224,0.15)">INGV · CartoDB</span>');
+    /* blocca propagazione eventi di interazione verso carosello/pagina */
+    const mapEl = document.getElementById('s1-map');
+    if (mapEl) {
+      mapEl.addEventListener('wheel',       e => e.stopPropagation(), { passive: false });
+      mapEl.addEventListener('touchstart',  e => e.stopPropagation(), { passive: true });
+      mapEl.addEventListener('touchmove',   e => e.stopPropagation(), { passive: false });
+      mapEl.addEventListener('pointerdown', e => e.stopPropagation());
+      mapEl.addEventListener('pointermove', e => e.stopPropagation());
+    }
   }
 
   /* ═══ BRANCH ANIMATION — Slide 2 ═══ */
@@ -14115,6 +14186,7 @@ document.addEventListener('keydown', e => {
 
     function loop(ora) {
       if (!FAULT_ANIM.running) return;
+      FAULT_ANIM.t = ora; // tempo assoluto per effetti come il pulse
       const elapsoPase = ora - FAULT_ANIM.phaseStart;
       const fase       = FAULT_ANIM.phase;
       const durata     = PHASE_DUR[fase];
@@ -14127,7 +14199,11 @@ document.addEventListener('keydown', e => {
         return;
       }
 
-      if (fase === 1) { shearAmt = 0; leftOffY = 0; rightOffY = 0; flashAlpha = 0; }
+      if (fase === 1) {
+        shearAmt = 0; leftOffY = 0; rightOffY = 0; flashAlpha = 0;
+        /* frecce di accumulo piccole e crescenti (fino a 30% della forza massima) */
+        disegnaFrecce(progresso * 0.3);
+      }
       if (fase === 2) {
         shearAmt = progresso * 18;
         const anni = Math.round(progresso * YEARS_MAX);
@@ -14164,10 +14240,30 @@ document.addEventListener('keydown', e => {
       disegnaBlocco(0, leftOffY, faultX - 15, H, 'sinistro');
       disegnaBlocco(faultX + 15, rightOffY, W - (faultX + 15), H, 'destro');
       disegnaLineeRiferimento(shearAmt, fase);
+      /* glow sulla faglia in fase 1 che pulsa lentamente */
+      if (fase === 1) {
+        const pulse = 0.5 + 0.5 * Math.sin(FAULT_ANIM.t / 400);
+        ctx.save();
+        ctx.strokeStyle = `rgba(196,97,42,${0.12 + pulse * 0.1})`;
+        ctx.lineWidth = 6; ctx.shadowColor = '#C4612A'; ctx.shadowBlur = 18 * pulse;
+        ctx.beginPath(); ctx.moveTo(faultX, 0); ctx.lineTo(faultX, H); ctx.stroke();
+        ctx.restore();
+      }
       disegnaFaglia(fase, flashAlpha);
+      if (fase === 1) { disegnaFrecce(progresso * 0.3); }
       if (fase === 2) { disegnaFrecce(progresso); }
       if (fase === 3) { disegnaFlash(flashAlpha); }
       disegnaOnde();
+      /* etichette blocchi e faglia */
+      ctx.save();
+      ctx.font = '700 9px \'JetBrains Mono\', monospace';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(245,237,224,0.18)';
+      ctx.fillText('BLOCCO A', faultX / 2, 14);
+      ctx.fillText('BLOCCO B', faultX + (W - faultX) / 2, 14);
+      ctx.fillStyle = 'rgba(196,97,42,0.25)';
+      ctx.save(); ctx.translate(faultX, H / 2); ctx.rotate(-Math.PI / 2);
+      ctx.fillText('FAGLIA', 0, -6); ctx.restore();
       ctx.restore();
 
       FAULT_ANIM.animId = requestAnimationFrame(loop);
@@ -15441,6 +15537,36 @@ window.addEventListener('resize', () => { resizeHero(); });
 //  THREE.JS FAULT ANIMATION — rimosso (sostituito da IIFE sezione1)
 // ═══════════════════════════════════════════
 
+</script>
+
+<!-- ── Reid popup ── -->
+<div class="s1-reid-overlay" id="s1-reid-overlay"></div>
+<div class="s1-reid-popup" id="s1-reid-popup" role="dialog" aria-modal="true">
+  <button class="s1-reid-popup-close" id="s1-reid-close" aria-label="chiudi">&#10005;</button>
+  <p class="s1-reid-popup-name">Harry Fielding Reid</p>
+  <p class="s1-reid-popup-dates">1859 – 1944 · Johns Hopkins University, Baltimore</p>
+  <p class="s1-reid-popup-body">Geologo e glaciologo americano. Dopo il terremoto di San Francisco del 18 aprile 1906 (M&nbsp;7.9), Reid analizzò le deformazioni del terreno lungo la Faglia di San Andreas in California, misurando gli spostamenti accumulati nei decenni precedenti. Nel 1910 formulò la <em>teoria del rimbalzo elastico</em>: le rocce si deformano accumulando energia elastica, poi si fratturano e &ldquo;rimbalzano&rdquo; alla posizione di minima energia — prima spiegazione meccanica coerente del ciclo sismico.</p>
+  <div class="s1-reid-popup-geo">
+    <span>&#9679; Faglia di San Andreas, California, USA</span>
+    <span>37.7° N &nbsp;122.4° W &nbsp;·&nbsp; lunghezza ~1.300 km &nbsp;·&nbsp; spostamento storico ~6 cm/anno</span>
+    <span>Pubblicazione: &ldquo;The mechanics of the earthquake&rdquo;, Report of the State Earthquake Investigation Commission, 1910</span>
+  </div>
+</div>
+
+<script>
+(function() {
+  const trigger  = document.getElementById('s1-reid-trigger');
+  const popup    = document.getElementById('s1-reid-popup');
+  const overlay  = document.getElementById('s1-reid-overlay');
+  const closeBtn = document.getElementById('s1-reid-close');
+  if (!trigger || !popup) return;
+  function open()  { popup.classList.add('open');  overlay.classList.add('open');  }
+  function close() { popup.classList.remove('open'); overlay.classList.remove('open'); }
+  trigger.addEventListener('click', open);
+  closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', close);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+})();
 </script>
 </body>
 </html>
