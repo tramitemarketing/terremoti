@@ -106,7 +106,7 @@
 /* ──────────────────────────────────────────────
    SLIDE 1 — Mappa tre colonne
    ────────────────────────────────────────────── */
-#s2-s1 { align-items: stretch; flex-direction: column; }
+#s2-s1 { align-items: stretch; flex-direction: column; padding-bottom: 3rem; }
 
 .s2-cols {
     display: flex;
@@ -118,13 +118,13 @@
 
 /* Colonna sinistra — lista */
 .s2-col-left {
-    width: 30%;
-    min-width: 220px;
+    width: 25%;
+    min-width: 190px;
     display: flex;
     flex-direction: column;
     border-right: 1px solid rgba(245,237,224,0.07);
     background: rgba(8,8,8,0.5);
-    padding: 1.2rem 0 0;
+    padding: 1.2rem 0 0 3.5rem;
 }
 .s2-list-header {
     font-family: 'JetBrains Mono', monospace;
@@ -226,14 +226,14 @@
 
 /* Colonna destra — panel L'Aquila */
 .s2-col-right {
-    width: 30%;
-    min-width: 220px;
+    width: 25%;
+    min-width: 190px;
     border-left: 1px solid rgba(245,237,224,0.07);
     background: rgba(8,8,8,0.5);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 1.5rem 1.2rem;
+    padding: 1.5rem 3.5rem 1.5rem 1.2rem;
     overflow-y: auto;
 }
 #s2-aquila-panel {
@@ -366,7 +366,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 3.5rem 3rem 3.5rem 4rem;
+    padding: 3.5rem 3rem 3.5rem 5rem;
     border-right: 1px solid rgba(245,237,224,0.055);
     gap: 1.2rem;
     overflow-y: auto;
@@ -1264,7 +1264,9 @@
       const trail = []; /* scie */
       function tick() {
         drawLayers(); drawHypo(false);
-        /* Scia: cerchi precedenti in dissolvenza */
+        /* Scia + onda corrente — clippate alla superficie */
+        ctx.save();
+        ctx.beginPath(); ctx.rect(0, SURF_Y, W, H - SURF_Y); ctx.clip();
         trail.forEach((tr, i) => {
           const age = trail.length - i;
           const alpha = Math.max(0, 0.35 - age * 0.03);
@@ -1272,14 +1274,11 @@
           ctx.globalAlpha = alpha;
           ctx.strokeStyle = '#C4612A';
           ctx.lineWidth = 1.5;
-          /* Solo metà superiore */
           ctx.beginPath();
           ctx.arc(hypoCX, hypoCY, tr, Math.PI, 0);
           ctx.stroke();
           ctx.restore();
         });
-        /* Onda corrente */
-        ctx.save();
         ctx.strokeStyle = '#C4612A';
         ctx.lineWidth = 2;
         ctx.globalAlpha = 0.7;
@@ -1299,31 +1298,26 @@
 
     /* ── Fase 4: freeze epicentro ── */
     function runPhase4(finalR) {
+      finalR = Math.min(finalR, hypoCY - SURF_Y); /* non superare la superficie */
       phase = 4; setPhase(4);
       label.textContent = 'Epicentro raggiunto — partenza onde superficiali';
-      /* Disegna frame congelato */
-      drawLayers(); drawHypo(false);
-      ctx.save();
-      ctx.strokeStyle = '#C4612A';
-      ctx.lineWidth = 2;
-      ctx.globalAlpha = 0.5;
-      ctx.beginPath();
-      ctx.arc(hypoCX, hypoCY, finalR, Math.PI, 0);
-      ctx.stroke();
-      ctx.restore();
-      /* Punto epicentro pulsante */
+
+      function drawFrozenFrame() {
+        drawLayers(); drawHypo(false);
+        ctx.save();
+        ctx.beginPath(); ctx.rect(0, SURF_Y, W, H - SURF_Y); ctx.clip();
+        ctx.strokeStyle = '#C4612A'; ctx.lineWidth = 2; ctx.globalAlpha = 0.5;
+        ctx.beginPath(); ctx.arc(hypoCX, hypoCY, finalR, Math.PI, 0); ctx.stroke();
+        ctx.restore();
+      }
+
+      drawFrozenFrame();
+
       let epicPhase = 0;
       let epicId;
       function pulseEpic() {
-        /* Ridisegna solo la zona superficie per non disturbare il canvas */
-        ctx.clearRect(hypoCX - 30, SURF_Y - 20, 60, 50);
-        drawLayers();
-        /* Ridisegna strati sopra */
-        ctx.strokeStyle = '#F5EDE0'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(0, SURF_Y); ctx.lineTo(W, SURF_Y); ctx.stroke();
-        ctx.fillStyle = 'rgba(245,237,224,0.4)'; ctx.font = '10px "JetBrains Mono", monospace';
-        ctx.fillText('SUPERFICIE', 8, SURF_Y - 6);
-        /* Punto epicentro */
+        drawFrozenFrame();
+        /* Punto epicentro pulsante */
         const ep = 8 + 4 * Math.abs(Math.sin(epicPhase));
         ctx.save();
         const eGrad = ctx.createRadialGradient(hypoCX, SURF_Y, 0, hypoCX, SURF_Y, ep * 2.5);
