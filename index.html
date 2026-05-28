@@ -1502,6 +1502,14 @@
     align-items: start;
     margin-top: 0.4rem;
 }
+.s1-slider-hint {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem; line-height: 1.55; font-style: italic;
+    color: rgba(245,237,224,0.45);
+    border-left: 2px solid rgba(196,97,42,0.35);
+    padding-left: 0.9rem;
+    margin-bottom: 1.4rem;
+}
 .s1-sliders-col { display: flex; flex-direction: column; gap: 2rem; }
 .s1-slider-group { display: flex; flex-direction: column; gap: 0.55rem; }
 .s1-slider-label {
@@ -1875,10 +1883,11 @@
           <div class="s1-slide" id="s1-s4">
             <div class="s1-slide-inner">
               <header>
-                <span class="s1-eyebrow">Legge di Gutenberg-Richter</span>
+                <span class="s1-eyebrow">4.3 · SISMICITÀ STATISTICA</span>
                 <h2 class="s1-slide-title">Più raro è il terremoto,<br>più è devastante.</h2>
-                <p class="s1-body-text">Una volta liberata l'energia, nelle rocce inizia ad accumularsi nuova energia elastica. I terremoti sono fenomeni ciclici. Il periodo di ritorno di un sisma è il tempo medio che intercorre tra due eventi sismici nella stessa area. Esiste una legge precisa: periodi di ritorno più lunghi corrispondono a sismi di magnitudo molto più elevata.</p>
+                <p class="s1-body-text">I terremoti non sono eventi casuali: obbediscono a una distribuzione statistica precisa. Nelle rocce l'energia elastica si accumula e si libera ciclicamente; il <em>periodo di ritorno</em> è il tempo medio tra due sismi nella stessa area. La <button class="s1-reid-trigger" id="s1-gr-trigger">legge di Gutenberg-Richter</button> stabilisce che a ogni unità di magnitudo in più corrisponde circa dieci volte il periodo di ritorno — una costante quasi universale della crosta terrestre.</p>
               </header>
+              <p class="s1-slider-hint">I due cursori sono collegati dalla legge: sposta uno e osserva l'altro adeguarsi — più la magnitudo sale, più il sisma diventa un evento raro. Trova dove si posiziona il terremoto de L'Aquila del 2009.</p>
               <div class="s1-tool-wrap">
                 <div class="s1-sliders-col">
                   <div class="s1-slider-group">
@@ -18309,19 +18318,38 @@ window.addEventListener('resize', () => { resizeHero(); });
   </div>
 </div>
 
+<!-- ── Gutenberg-Richter popup ── -->
+<div class="s1-reid-popup" id="s1-gr-popup" role="dialog" aria-modal="true">
+  <button class="s1-reid-popup-close" id="s1-gr-close" aria-label="chiudi">&#10005;</button>
+  <p class="s1-reid-popup-name">Legge di Gutenberg-Richter</p>
+  <p class="s1-reid-popup-dates">Beno Gutenberg &amp; Charles F. Richter · Caltech, 1944</p>
+  <p class="s1-reid-popup-body">Formulata dai sismologi <strong>Beno Gutenberg</strong> (1889–1960) e <strong>Charles Francis Richter</strong> (1900–1985) al California Institute of Technology, la legge descrive la distribuzione statistica dei terremoti in funzione della magnitudo:<br><br><span style="font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--terracotta);letter-spacing:0.05em">log₁₀(N) = a &minus; b &middot; M</span><br><br>dove <em>N</em> è il numero di terremoti con magnitudo ≥ M in un dato periodo e area, <em>a</em> è una costante di attività sismica regionale, e <em>b</em> ≈ 1 è il <em>b-value</em> — quasi universale sulla crosta terrestre. Con b = 1, ogni unità di magnitudo in più riduce la frequenza di un fattore 10: i terremoti M 5 sono ~10× più rari degli M 4, gli M 6 ~100× più rari.</p>
+  <div class="s1-reid-popup-geo">
+    <span>&#9679; Valida per qualsiasi area sismica del mondo</span>
+    <span>b-value Italia peninsulare: 0.9 – 1.1 &nbsp;·&nbsp; zona L'Aquila: ~0.95</span>
+    <span>Fonte: Gutenberg B. &amp; Richter C.F., "Frequency of earthquakes in California", Bull. Seismol. Soc. Am., 34(4), 1944</span>
+  </div>
+</div>
+
 <script>
 (function() {
-  const trigger  = document.getElementById('s1-reid-trigger');
-  const popup    = document.getElementById('s1-reid-popup');
-  const overlay  = document.getElementById('s1-reid-overlay');
-  const closeBtn = document.getElementById('s1-reid-close');
-  if (!trigger || !popup) return;
-  function open()  { popup.classList.add('open');  overlay.classList.add('open');  }
-  function close() { popup.classList.remove('open'); overlay.classList.remove('open'); }
-  trigger.addEventListener('click', open);
-  closeBtn.addEventListener('click', close);
-  overlay.addEventListener('click', close);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  const overlay = document.getElementById('s1-reid-overlay');
+
+  function makePopup(triggerId, popupId, closeId) {
+    const trigger  = document.getElementById(triggerId);
+    const popup    = document.getElementById(popupId);
+    const closeBtn = document.getElementById(closeId);
+    if (!trigger || !popup) return;
+    function open()  { popup.classList.add('open');  overlay.classList.add('open');  }
+    function close() { popup.classList.remove('open'); overlay.classList.remove('open'); }
+    trigger.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
+    overlay.addEventListener('click', close);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  }
+
+  makePopup('s1-reid-trigger', 's1-reid-popup', 's1-reid-close');
+  makePopup('s1-gr-trigger',   's1-gr-popup',   's1-gr-close');
 })();
 </script>
 </body>
