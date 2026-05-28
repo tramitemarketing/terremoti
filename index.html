@@ -615,52 +615,113 @@
         .damage-label { font-size: 1.1rem; color: var(--cream); margin-top: 0.5rem; }
         .damage-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: rgba(245,237,224,0.3); letter-spacing: 0.12em; margin-top: 0.3rem; }
 
-        /* ══════════════════ SLIDE 5 · OPERE D'ARTE ══════════════════ */
-        #s-art { background: #f5ede0; }
+        /* ══════════════════ SLIDE · PATRIMONIO — CAROSELLO <- SINISTRA ══════════════════ */
+        #s-art { background: #0a0604; overflow: hidden; padding: 0; }
+        #art-carousel-wrap { width: 100%; height: 100%; position: relative; overflow: hidden; }
+        #art-track { display: flex; flex-direction: row; width: calc(6 * 100vw); height: 100%; transition: transform 0.65s cubic-bezier(0.4,0,0.2,1); will-change: transform; }
+        .art-slide { width: 100vw; min-width: 100vw; max-width: 100vw; height: 100%; flex-shrink: 0; overflow: hidden; display: grid; grid-template-columns: 1.15fr 1fr; }
+        .art-sl { background: #0d0804; display: flex; flex-direction: column; justify-content: flex-end; padding: 4rem 3.5rem; position: relative; overflow: hidden; }
+        .art-sl::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 52px, rgba(196,97,42,0.02) 52px, rgba(196,97,42,0.02) 53px); pointer-events: none; }
+        .art-sl-eyebrow { position: absolute; top: 3.5rem; left: 3.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.32em; text-transform: uppercase; color: rgba(245,237,224,0.22); }
+        .art-sl-counter { position: absolute; top: 3.5rem; right: 3.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.2em; color: rgba(245,237,224,0.18); }
+        .art-sl-title { font-size: clamp(1.5rem, 2.6vw, 2.8rem); font-weight: 600; line-height: 1.15; color: var(--cream); margin-bottom: 1.1rem; position: relative; z-index: 2; }
+        .art-sl-title em { font-style: italic; color: var(--terracotta); }
+        .art-sl-body { font-size: clamp(0.85rem, 1.1vw, 1rem); line-height: 1.85; color: rgba(245,237,224,0.55); position: relative; z-index: 2; max-width: 52ch; }
+        .art-sl-dmg-bar-wrap { margin-top: 1.6rem; height: 2px; background: rgba(245,237,224,0.06); position: relative; z-index: 2; }
+        .art-sl-dmg-bar { position: absolute; top: 0; left: 0; height: 100%; background: var(--terracotta); width: 0%; transition: width 1s cubic-bezier(0.4,0,0.2,1) 0.2s; }
+        .art-sl-dmg-label { font-family: 'JetBrains Mono', monospace; font-size: 0.56rem; color: rgba(245,237,224,0.28); letter-spacing: 0.12em; margin-top: 0.5rem; position: relative; z-index: 2; }
+        .art-sr { display: flex; flex-direction: column; justify-content: center; padding: 4rem; position: relative; overflow: hidden; }
+        .art-sr-bg-num { position: absolute; bottom: -0.08em; right: -0.04em; font-family: 'JetBrains Mono', monospace; font-size: clamp(8rem,18vw,20rem); font-weight: 700; line-height: 1; pointer-events: none; user-select: none; color: transparent; }
+        .art-sr-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.28em; text-transform: uppercase; margin-bottom: 1.8rem; position: relative; z-index: 2; }
+        .art-sr-big { font-size: clamp(3rem,6vw,7rem); font-weight: 300; line-height: 1; letter-spacing: -0.02em; margin-bottom: 0.4rem; position: relative; z-index: 2; }
+        .art-sr-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; position: relative; z-index: 2; }
+        .art-sr-stats { display: flex; flex-direction: column; gap: 1.6rem; position: relative; z-index: 2; }
+        .art-sr-stat-row { display: flex; align-items: baseline; gap: 1rem; padding-bottom: 1.4rem; border-bottom: 1px solid rgba(245,237,224,0.05); }
+        .art-sr-stat-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .art-sr-stat-num { font-family: 'JetBrains Mono', monospace; font-size: clamp(1.8rem,3vw,3rem); font-weight: 300; line-height: 1; min-width: 6rem; }
+        .art-sr-stat-desc { font-size: 0.88rem; line-height: 1.5; }
+        .art-sr-quote { font-size: clamp(0.95rem,1.4vw,1.2rem); font-style: italic; line-height: 1.75; position: relative; z-index: 2; }
+        .art-sr-quote::before { content: '\201C'; display: block; font-size: 3rem; line-height: 1; margin-bottom: 0.3rem; font-style: normal; }
+        .art-sr-attribution { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.15em; margin-top: 1rem; position: relative; z-index: 2; }
+        .art-sr.light { background: #f0e8da; }
+        .art-sr.light .art-sr-tag,.art-sr.light .art-sr-quote::before { color: var(--terracotta); }
+        .art-sr.light .art-sr-big { color: #0d0804; }
+        .art-sr.light .art-sr-sub,.art-sr.light .art-sr-attribution { color: rgba(8,8,8,0.4); }
+        .art-sr.light .art-sr-bg-num { -webkit-text-stroke: 1px rgba(8,8,8,0.06); }
+        .art-sr.light .art-sr-stat-num { color: var(--terracotta); }
+        .art-sr.light .art-sr-stat-desc { color: rgba(8,8,8,0.6); }
+        .art-sr.light .art-sr-quote { color: rgba(8,8,8,0.72); }
+        .art-sr.dark { background: #0f0704; }
+        .art-sr.dark .art-sr-tag { color: rgba(245,237,224,0.3); }
+        .art-sr.dark .art-sr-quote::before { color: var(--terracotta); }
+        .art-sr.dark .art-sr-big { color: var(--cream); }
+        .art-sr.dark .art-sr-sub,.art-sr.dark .art-sr-attribution { color: rgba(245,237,224,0.3); }
+        .art-sr.dark .art-sr-bg-num { -webkit-text-stroke: 1px rgba(196,97,42,0.06); }
+        .art-sr.dark .art-sr-stat-num { color: var(--terracotta); }
+        .art-sr.dark .art-sr-stat-desc { color: rgba(245,237,224,0.5); }
+        .art-sr.dark .art-sr-quote { color: rgba(245,237,224,0.68); }
+        .art-nav { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 1.2rem; z-index: 20; }
+        .art-nav-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(245,237,224,0.18); cursor: pointer; transition: all 0.3s; }
+        .art-nav-dot.active { background: var(--terracotta); transform: scale(1.7); }
+        .art-arrow-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 46px; height: 46px; background: rgba(8,8,8,0.5); border: 1px solid rgba(245,237,224,0.12); color: var(--cream); font-size: 1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; transition: background 0.3s, border-color 0.3s, opacity 0.3s; }
+        .art-arrow-btn:hover { background: rgba(196,97,42,0.4); border-color: var(--terracotta); }
+        .art-arrow-btn:disabled { opacity: 0.2; pointer-events: none; }
+        .art-arrow-btn.left-btn { left: 1.2rem; } .art-arrow-btn.right-btn { right: 1.2rem; }
+        @media (hover:hover) and (pointer:fine) { .art-arrow-btn { display:none; } }
+        .art-swipe-hint { position: absolute; bottom: 4.2rem; left: 50%; transform: translateX(-50%); font-family: 'JetBrains Mono', monospace; font-size: 0.52rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(245,237,224,0.25); white-space: nowrap; display: none; z-index: 20; animation: hintPulse 2.2s ease-in-out infinite; }
+        @keyframes hintPulse { 0%,100%{opacity:0.25;} 50%{opacity:0.6;} }
+        @media (hover:none) and (pointer:coarse) { .art-swipe-hint { display:block; } }
+        @media (max-width:768px) { .art-slide { grid-template-columns:1fr; } .art-sr { display:none; } }
 
-        .art-grid { display: grid; grid-template-columns: 1.2fr 1fr; width: 100%; height: 100%; }
-
-        .art-panel-left {
-            background: #100a04;
-            position: relative; overflow: hidden;
-            display: flex; flex-direction: column; justify-content: flex-end;
-            padding: 3.5rem;
-        }
-        .art-lines {
-            position: absolute; inset: 0;
-            background: repeating-linear-gradient(0deg, transparent, transparent 45px, rgba(196,97,42,0.025) 45px, rgba(196,97,42,0.025) 46px);
-        }
-        .art-panel-label { position: absolute; top: 3.5rem; left: 3.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(245,237,224,0.25); }
-        #art-name { font-size: clamp(1.3rem, 2.2vw, 2.2rem); font-weight: 600; color: var(--cream); margin-bottom: 0.4rem; position: relative; z-index: 2; transition: opacity 0.3s; }
-        #art-year { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.18em; color: rgba(245,237,224,0.35); position: relative; z-index: 2; }
-        .damage-bar-wrap { margin-top: 1.2rem; height: 2px; background: rgba(245,237,224,0.07); position: relative; z-index: 2; }
-        #art-damage-fill { position: absolute; top: 0; left: 0; height: 100%; background: var(--terracotta); transition: width 0.7s cubic-bezier(0.4,0,0.2,1); }
-        #art-damage-pct { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: rgba(245,237,224,0.3); letter-spacing: 0.12em; margin-top: 0.4rem; position: relative; z-index: 2; }
-
-        .art-panel-right { background: #f5ede0; display: flex; flex-direction: column; justify-content: center; padding: 4rem; }
-        .art-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--terracotta); margin-bottom: 1.2rem; }
-        .art-title { font-size: clamp(1.8rem, 3vw, 3rem); font-weight: 600; line-height: 1.1; color: #080808; margin-bottom: 2rem; }
-        .art-list { list-style: none; }
-        .art-item { display: flex; align-items: center; gap: 0.9rem; padding: 0.85rem 0; border-bottom: 1px solid rgba(8,8,8,0.07); font-size: 0.95rem; color: rgba(8,8,8,0.65); cursor: pointer; transition: color 0.2s; }
-        .art-item:last-child { border-bottom: none; }
-        .art-item:hover, .art-item.active { color: var(--terracotta); }
-        .art-item::before { content: ''; width: 5px; height: 5px; background: currentColor; border-radius: 50%; flex-shrink: 0; transition: background 0.2s; }
-
-        /* ══════════════════ SLIDE 6 · RICOSTRUZIONE ══════════════════ */
-        #s-rebuild { background: var(--black); }
-
-        .rebuild-wrap { width: 100%; height: 100%; padding: 4rem 5rem; display: flex; flex-direction: column; justify-content: center; }
-        .rebuild-head { margin-bottom: 3rem; }
-        .rebuild-title { font-size: clamp(2rem, 3.5vw, 3.8rem); font-weight: 300; line-height: 1.15; }
-
-        .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-        .card { border: 1px solid rgba(245,237,224,0.07); padding: 2rem; position: relative; overflow: hidden; transition: border-color 0.3s; }
-        .card:hover { border-color: rgba(196,97,42,0.5); }
-        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 0%; background: var(--terracotta); transition: height 0.4s ease; }
-        .card:hover::before { height: 100%; }
-        .card-num { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--terracotta); letter-spacing: 0.25em; margin-bottom: 1.3rem; }
-        .card-title { font-size: 1.35rem; font-weight: 600; color: var(--cream); margin-bottom: 0.9rem; }
-        .card-text { font-size: 0.88rem; line-height: 1.75; color: rgba(245,237,224,0.5); }
+        /* ══════════════════ SLIDE · C.A.S.E. — CAROSELLO -> ══════════════════ */
+        #s-rebuild { background: #050505; overflow: hidden; padding: 0; }
+        #case-carousel-wrap { width: 100%; height: 100%; position: relative; overflow: hidden; }
+        #case-track { display: flex; width: calc(5 * 100vw); height: 100%; transition: transform 0.65s cubic-bezier(0.4,0,0.2,1); will-change: transform; }
+        .case-slide { width: 100vw; min-width: 100vw; max-width: 100vw; height: 100%; flex-shrink: 0; overflow: hidden; display: grid; grid-template-columns: 1fr 1.1fr; }
+        .case-sl { display: flex; flex-direction: column; justify-content: center; padding: 4rem 3.5rem; position: relative; overflow: hidden; }
+        .case-sl-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--terracotta); margin-bottom: 1.2rem; }
+        .case-sl-title { font-size: clamp(1.6rem,2.8vw,3.2rem); font-weight: 300; line-height: 1.12; color: var(--cream); margin-bottom: 1.4rem; }
+        .case-sl-title strong { font-weight: 600; }
+        .case-sl-body { font-size: clamp(0.85rem,1.05vw,0.98rem); line-height: 1.85; color: rgba(245,237,224,0.5); }
+        .case-sl-accent { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: rgba(245,237,224,0.28); margin-top: 1.5rem; text-transform: uppercase; }
+        .case-sr { display: flex; flex-direction: column; justify-content: center; padding: 4rem; position: relative; overflow: hidden; border-left: 1px solid rgba(245,237,224,0.04); }
+        .case-sr-bg-num { position: absolute; bottom: -0.08em; right: -0.04em; font-family: 'JetBrains Mono', monospace; font-size: clamp(9rem,20vw,22rem); font-weight: 700; line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(196,97,42,0.05); pointer-events: none; user-select: none; }
+        .case-stat-block { display: flex; flex-direction: column; gap: 1.8rem; position: relative; z-index: 2; }
+        .case-stat-row { display: flex; align-items: baseline; gap: 1.2rem; padding-bottom: 1.4rem; border-bottom: 1px solid rgba(245,237,224,0.05); }
+        .case-stat-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .case-stat-num { font-family: 'JetBrains Mono', monospace; font-size: clamp(2rem,3.5vw,3.8rem); font-weight: 300; color: var(--terracotta); line-height: 1; min-width: 7rem; letter-spacing: -0.02em; }
+        .case-stat-desc { font-size: 0.9rem; line-height: 1.5; color: rgba(245,237,224,0.55); }
+        .case-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; position: relative; z-index: 2; height: 62%; }
+        .case-compare-col { display: flex; flex-direction: column; justify-content: center; padding: 1.8rem; gap: 0.8rem; }
+        .case-compare-col.old { background: rgba(245,237,224,0.02); }
+        .case-compare-col.new { background: rgba(196,97,42,0.07); border: 1px solid rgba(196,97,42,0.15); }
+        .case-compare-head { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .case-compare-col.old .case-compare-head { color: rgba(245,237,224,0.3); }
+        .case-compare-col.new .case-compare-head { color: var(--terracotta); }
+        .case-compare-step { font-size: 0.88rem; line-height: 1.6; color: rgba(245,237,224,0.4); padding-left: 0.8rem; border-left: 2px solid rgba(245,237,224,0.07); }
+        .case-compare-col.new .case-compare-step { color: rgba(245,237,224,0.75); border-left-color: var(--terracotta); }
+        .case-timeline { display: flex; flex-direction: column; gap: 0; position: relative; z-index: 2; }
+        .case-tl-item { display: flex; gap: 1.2rem; padding: 1rem 0; border-bottom: 1px solid rgba(245,237,224,0.04); }
+        .case-tl-item:last-child { border-bottom: none; }
+        .case-tl-date { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.1em; color: var(--terracotta); min-width: 6.5rem; padding-top: 0.15rem; }
+        .case-tl-text { font-size: 0.88rem; line-height: 1.5; color: rgba(245,237,224,0.55); }
+        .case-criteria { display: flex; flex-direction: column; gap: 0.7rem; position: relative; z-index: 2; }
+        .case-criterion { display: flex; gap: 1rem; padding: 0.9rem 1.2rem; border: 1px solid rgba(245,237,224,0.05); transition: border-color 0.3s; }
+        .case-criterion:hover { border-color: rgba(196,97,42,0.3); }
+        .case-crit-num { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: var(--terracotta); letter-spacing: 0.12em; min-width: 2rem; padding-top: 0.1rem; }
+        .case-crit-text { font-size: 0.88rem; line-height: 1.5; color: rgba(245,237,224,0.5); }
+        .case-crit-text strong { color: var(--cream); font-weight: 600; }
+        .case-nav { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 1.2rem; z-index: 20; }
+        .case-nav-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(245,237,224,0.18); cursor: pointer; transition: all 0.3s; }
+        .case-nav-dot.active { background: var(--terracotta); transform: scale(1.7); }
+        .case-arrow-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 46px; height: 46px; background: rgba(8,8,8,0.5); border: 1px solid rgba(245,237,224,0.12); color: var(--cream); font-size: 1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; transition: background 0.3s, border-color 0.3s, opacity 0.3s; }
+        .case-arrow-btn:hover { background: rgba(196,97,42,0.4); border-color: var(--terracotta); }
+        .case-arrow-btn:disabled { opacity: 0.2; pointer-events: none; }
+        .case-arrow-btn.prev { left: 1.2rem; } .case-arrow-btn.next { right: 1.2rem; }
+        @media (hover:hover) and (pointer:fine) { .case-arrow-btn { display:none; } }
+        .case-swipe-hint { position: absolute; bottom: 4.2rem; left: 50%; transform: translateX(-50%); font-family: 'JetBrains Mono', monospace; font-size: 0.52rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(245,237,224,0.25); white-space: nowrap; display: none; z-index: 20; animation: hintPulse 2.2s ease-in-out infinite; }
+        @media (hover:none) and (pointer:coarse) { .case-swipe-hint { display:block; } }
+        @media (max-width:768px) { .case-slide { grid-template-columns:1fr; } .case-sr { display:none; } }
 
         /* ══════════════════ SLIDE 7 · FINE ══════════════════ */
         #s-end { background: #050505; }
@@ -13069,59 +13130,257 @@ function s5_initSlide5() {
         </div>
     </section>
 
-    <!-- ══ S5 · OPERE D'ARTE ══ -->
+    <!-- ++ S5 . PATRIMONIO CULTURALE - CAROSELLO SINISTRA ++ -->
     <section class="slide" id="s-art">
-        <div class="art-grid">
-            <div class="art-panel-left">
-                <div class="art-lines"></div>
-                <div class="art-panel-label">Patrimonio culturale danneggiato</div>
-                <div>
-                    <h3 id="art-name">Basilica di S.M. di Collemaggio</h3>
-                    <div id="art-year">XIII sec. — Romanico abruzzese</div>
-                    <div class="damage-bar-wrap"><div id="art-damage-fill" style="width:80%"></div></div>
-                    <div id="art-damage-pct">80% — Danni gravi</div>
+      <div id="art-carousel-wrap">
+        <div id="art-track">
+          <!-- DOM slide 0 - mostrata ULTIMA: Anime Sante -->
+          <div class="art-slide">
+            <div class="art-sl">
+              <span class="art-sl-eyebrow">CASO STUDIO - XVIII SEC. - BAROCCO AQUILANO</span>
+              <span class="art-sl-counter">06 - 06</span>
+              <h3 class="art-sl-title">Chiesa di Santa Maria<br>del <em>Suffragio</em></h3>
+              <p class="art-sl-body">Conosciuta come "delle Anime Sante", e' uno dei gioielli barocchi del centro storico aquilano. Gravemente danneggiata — i meccanismi di ribaltamento hanno compromesso la facciata e parte della struttura interna. Il restauro, ancora in corso, e' parte di un processo che dura da 15 anni.</p>
+              <div class="art-sl-dmg-bar-wrap"><div class="art-sl-dmg-bar" data-dmg="60"></div></div>
+              <div class="art-sl-dmg-label">60% — Danni significativi</div>
+            </div>
+            <div class="art-sr dark">
+              <span class="art-sr-bg-num">06</span>
+              <span class="art-sr-tag">Restauro in corso</span>
+              <div class="art-sr-quote">Il restauro non e' mai solo tecnico. E' un atto di memoria collettiva.<span class="art-sr-attribution">— Filosofia della ricostruzione aquilana</span></div>
+            </div>
+          </div>
+          <!-- DOM slide 1 - mostrata quinta: Collemaggio -->
+          <div class="art-slide">
+            <div class="art-sl">
+              <span class="art-sl-eyebrow">CASO STUDIO - XIII SEC. - ROMANICO ABRUZZESE</span>
+              <span class="art-sl-counter">05 - 06</span>
+              <h3 class="art-sl-title">Basilica di Santa Maria<br>di <em>Collemaggio</em></h3>
+              <p class="art-sl-body">Crollo parziale della copertura, danneggiamento delle absidi, lesioni strutturali profonde. Otto anni di restauro meticoloso sotto la supervisione della Soprintendenza e con le metodologie dell'Universita' di Firenze. La riapertura nel 2017 e' diventata il simbolo di una rinascita possibile.</p>
+              <div class="art-sl-dmg-bar-wrap"><div class="art-sl-dmg-bar" data-dmg="80"></div></div>
+              <div class="art-sl-dmg-label">80% — Danni gravi</div>
+            </div>
+            <div class="art-sr light">
+              <span class="art-sr-bg-num">8</span>
+              <span class="art-sr-tag">Anni di restauro</span>
+              <div class="art-sr-big">2017</div>
+              <div class="art-sr-sub">Anno della riapertura</div>
+            </div>
+          </div>
+          <!-- DOM slide 2 - mostrata quarta: Filosofia -->
+          <div class="art-slide">
+            <div class="art-sl">
+              <span class="art-sl-eyebrow">APPROCCIO - FILOSOFIA</span>
+              <span class="art-sl-counter">04 - 06</span>
+              <h3 class="art-sl-title">Restauro <em>conservativo</em>.<br>Non sostituzione.</h3>
+              <p class="art-sl-body">La scelta ufficiale del Comune e della Soprintendenza BAP Abruzzo: recuperare, non demolire e ricostruire. Il concetto di aggregato strutturale — edifici contigui trattati come un'unica unita' — rispecchia la logica del restauro urbano italiano.</p>
+              <p class="art-sl-body" style="margin-top:0.8rem;font-style:italic;color:rgba(245,237,224,0.38);font-size:0.88rem;">"La stragrande maggioranza delle proposte evidenzia la possibilita' di rientro immediato nelle abitazioni con interventi che prediligono il restauro conservativo." — Comune di L'Aquila, 2011</p>
+            </div>
+            <div class="art-sr dark">
+              <span class="art-sr-bg-num">04</span>
+              <span class="art-sr-tag">Metodologia</span>
+              <div class="art-sr-stats">
+                <div class="art-sr-stat-row"><div class="art-sr-stat-num" style="font-size:1.1rem;min-width:auto;">Soprintendenza BAP</div></div>
+                <div class="art-sr-stat-row"><div class="art-sr-stat-num" style="font-size:1.1rem;min-width:auto;">Aggregato strutturale</div></div>
+                <div class="art-sr-stat-row"><div class="art-sr-stat-num" style="font-size:1.1rem;min-width:auto;">Univ. Firenze Restauro</div></div>
+              </div>
+            </div>
+          </div>
+          <!-- DOM slide 3 - mostrata terza: La scala -->
+          <div class="art-slide">
+            <div class="art-sl">
+              <span class="art-sl-eyebrow">MESSA IN SICUREZZA - I NUMERI</span>
+              <span class="art-sl-counter">03 - 06</span>
+              <h3 class="art-sl-title">Prima ancora di<br>pensare al <em>restauro</em>.</h3>
+              <p class="art-sl-body">Il centro storico dell'Aquila era irriconoscibile. Prima di poter parlare di recupero architettonico, fu necessaria un'operazione monumentale di messa in sicurezza. Puntellamenti in legno e metallo, cerchiature in acciaio, fasciatura dei cantonali. Una citta' tenuta in piedi da strutture provvisorie, per anni.</p>
+            </div>
+            <div class="art-sr light">
+              <span class="art-sr-bg-num">03</span>
+              <span class="art-sr-tag">Solo nel centro storico</span>
+              <div class="art-sr-stats">
+                <div class="art-sr-stat-row">
+                  <div class="art-sr-stat-num">1.550</div>
+                  <div class="art-sr-stat-desc">puntellamenti provvisori</div>
                 </div>
+                <div class="art-sr-stat-row">
+                  <div class="art-sr-stat-num">480</div>
+                  <div class="art-sr-stat-desc">demolizioni parziali</div>
+                </div>
+                <div class="art-sr-stat-row">
+                  <div class="art-sr-stat-num">136M</div>
+                  <div class="art-sr-stat-desc">euro di messa in sicurezza</div>
+                </div>
+              </div>
             </div>
-            <div class="art-panel-right">
-                <span class="art-tag">Arte e memoria</span>
-                <h2 class="art-title">Monumenti<br>e opere<br>colpiti</h2>
-                <ul class="art-list" id="art-list">
-                    <li class="art-item active" data-name="Basilica di S.M. di Collemaggio" data-year="XIII sec. — Romanico abruzzese" data-dmg="80" data-label="Danni gravi">Basilica di S.M. di Collemaggio</li>
-                    <li class="art-item" data-name="Castello Cinquecentesco" data-year="XVI sec. — Architettura militare" data-dmg="45" data-label="Danni moderati">Castello Cinquecentesco</li>
-                    <li class="art-item" data-name="Duomo di San Massimo" data-year="XV–XVII sec. — Stile barocco" data-dmg="70" data-label="Danni gravi">Duomo di San Massimo</li>
-                    <li class="art-item" data-name="Fontana delle 99 Cannelle" data-year="XIII sec. — Scultura medievale" data-dmg="30" data-label="Danni lievi">Fontana delle 99 Cannelle</li>
-                    <li class="art-item" data-name="Palazzo Ardinghelli" data-year="XVIII sec. — Barocco civile" data-dmg="60" data-label="Danni significativi">Palazzo Ardinghelli</li>
-                    <li class="art-item" data-name="Chiesa di Santa Giusta" data-year="XIII sec. — Romanico" data-dmg="55" data-label="Danni moderati">Chiesa di Santa Giusta</li>
-                </ul>
+          </div>
+          <!-- DOM slide 4 - mostrata seconda: Il meccanismo -->
+          <div class="art-slide">
+            <div class="art-sl">
+              <span class="art-sl-eyebrow">MECCANISMO STRUTTURALE</span>
+              <span class="art-sl-counter">02 - 06</span>
+              <h3 class="art-sl-title">Non crolli casuali.<br>Il <em>ribaltamento</em><br>fuori dal piano.</h3>
+              <p class="art-sl-body">Nelle strutture in muratura, archi, volte e tetti esercitano spinte orizzontali sulle pareti. Quando il sisma supera la resistenza, le pareti non crollano verso l'interno: si aprono verso l'esterno. Questo cinematismo spiega la caratteristica distruzione del centro storico aquilano.</p>
+              <p class="art-sl-body" style="margin-top:0.8rem;">Lo si vede nel Castello Cinquecentesco, nella Chiesa delle Anime Sante e nella Basilica di Collemaggio: edifici che si sono "aperti", non spezzati.</p>
             </div>
+            <div class="art-sr dark">
+              <span class="art-sr-bg-num">02</span>
+              <span class="art-sr-tag">Cinematismo prevalente</span>
+              <div class="art-sr-quote">Le pareti non cedono verso l'interno. Si aprono verso l'esterno.<span class="art-sr-attribution">— Tecnici del Comune di L'Aquila</span></div>
+            </div>
+          </div>
+          <!-- DOM slide 5 - mostrata PRIMA: Intro -->
+          <div class="art-slide">
+            <div class="art-sl">
+              <span class="art-sl-eyebrow">PATRIMONIO CULTURALE - L'AQUILA</span>
+              <span class="art-sl-counter">01 - 06</span>
+              <h3 class="art-sl-title">Una delle concentrazioni<br>di arte medievale piu' dense<br>dell'<em>Italia centrale</em>.</h3>
+              <p class="art-sl-body">Fondata nel 1254, L'Aquila costrui' la sua identita' sulla molteplicita': 88 chiese, 88 piazze, 88 fontane — la leggenda dei villaggi fondatori, ciascuno con la propria identita', uniti in una sola citta'. Un corpus artistico sedimentato in sette secoli. Alle 3:32 del 6 aprile 2009, si trovo' sotto attacco.</p>
+            </div>
+            <div class="art-sr light">
+              <span class="art-sr-bg-num">88</span>
+              <span class="art-sr-tag">La leggenda dei fondatori</span>
+              <div class="art-sr-big">88</div>
+              <div class="art-sr-sub">Chiese nel centro storico</div>
+            </div>
+          </div>
+        </div><!-- /art-track -->
+        <button class="art-arrow-btn left-btn" id="art-prev" disabled>&#8592;</button>
+        <button class="art-arrow-btn right-btn" id="art-next">&#8594;</button>
+        <div class="art-nav" id="art-nav">
+          <span class="art-nav-dot active" data-ai="0"></span>
+          <span class="art-nav-dot" data-ai="1"></span>
+          <span class="art-nav-dot" data-ai="2"></span>
+          <span class="art-nav-dot" data-ai="3"></span>
+          <span class="art-nav-dot" data-ai="4"></span>
+          <span class="art-nav-dot" data-ai="5"></span>
         </div>
+        <span class="art-swipe-hint">&#8592;&nbsp; scorri &nbsp;&#8594;</span>
+      </div>
     </section>
 
-    <!-- ══ S6 · RICOSTRUZIONE ══ -->
+    <!-- ++ S6 . C.A.S.E. - CAROSELLO ++ -->
     <section class="slide" id="s-rebuild">
-        <div class="rebuild-wrap">
-            <div class="rebuild-head">
-                <span class="section-tag" style="color:var(--terracotta);">La rinascita</span>
-                <h2 class="rebuild-title">Ricostruire<br>la memoria</h2>
+      <div id="case-carousel-wrap">
+        <div id="case-track">
+          <!-- Slide 0: L'emergenza -->
+          <div class="case-slide">
+            <div class="case-sl">
+              <span class="case-sl-eyebrow">7 APRILE 2009 - IL GIORNO DOPO</span>
+              <h2 class="case-sl-title">Il Sindaco dichiarò<br>inagibile <strong>tutto</strong><br>il patrimonio edilizio.</h2>
+              <p class="case-sl-body">Un atto senza precedenti in Italia. Non edifici singoli, non quartieri: l'intero patrimonio edilizio del Comune. L'accelerazione registrata era stata superiore a 0.70g — il doppio di quanto previsto dalle norme sismiche per quella zona. 65.000 persone si ritrovarono senza casa in una notte.</p>
+              <span class="case-sl-accent">Fonte: Ord. sindacale 7 aprile 2009 - D.L. n.39/2009</span>
             </div>
-            <div class="cards-grid">
-                <div class="card">
-                    <div class="card-num">01</div>
-                    <h3 class="card-title">Progetto C.A.S.E.</h3>
-                    <p class="card-text">Complessi Antisismici Sostenibili ed Ecocompatibili. 185 edifici costruiti in 18 mesi su isolatori sismici per ospitare 15.000 sfollati.</p>
+            <div class="case-sr">
+              <span class="case-sr-bg-num">01</span>
+              <div class="case-stat-block">
+                <div class="case-stat-row">
+                  <div class="case-stat-num">0.70g</div>
+                  <div class="case-stat-desc">accelerazione reale<br><span style="font-size:0.78rem;opacity:0.6;">vs 0.35g prevista dalle norme</span></div>
                 </div>
-                <div class="card">
-                    <div class="card-num">02</div>
-                    <h3 class="card-title">Centro storico</h3>
-                    <p class="card-text">Oltre 10 miliardi di euro stanziati per il recupero del patrimonio storico e architettonico. Un processo lungo, ancora in corso dopo 15 anni.</p>
+                <div class="case-stat-row">
+                  <div class="case-stat-num">65.000</div>
+                  <div class="case-stat-desc">sfollati in una notte</div>
                 </div>
-                <div class="card">
-                    <div class="card-num">03</div>
-                    <h3 class="card-title">Restauro monumenti</h3>
-                    <p class="card-text">La Basilica di Collemaggio ha riaperto nel 2017 dopo 8 anni di restauri. Il Castello dal 2016. Un lavoro meticoloso di recupero dell'identità culturale.</p>
-                </div>
+              </div>
             </div>
+          </div>
+          <!-- Slide 1: La scelta radicale -->
+          <div class="case-slide">
+            <div class="case-sl">
+              <span class="case-sl-eyebrow">D.L. N.39 - 28 APRILE 2009 - 3 SETTIMANE DOPO</span>
+              <h2 class="case-sl-title"><strong>C.A.S.E.</strong><br>Complessi Antisismici<br>Sostenibili ed Ecocompatibili</h2>
+              <p class="case-sl-body">La strategia tradizionale post-sisma: tende, baracche, ricostruzione definitiva. L'Aquila scelse diversamente: eliminare la fase delle baracche e passare direttamente ad abitazioni di qualita', disponibili in 5-6 mesi, costruite su isolatori sismici.</p>
+            </div>
+            <div class="case-sr">
+              <span class="case-sr-bg-num">02</span>
+              <div class="case-compare">
+                <div class="case-compare-col old">
+                  <div class="case-compare-head">Strategia tradizionale</div>
+                  <div class="case-compare-step">Tende</div>
+                  <div class="case-compare-step">Baracche prefabbricate</div>
+                  <div class="case-compare-step">Ricostruzione definitiva</div>
+                </div>
+                <div class="case-compare-col new">
+                  <div class="case-compare-head">Strategia C.A.S.E.</div>
+                  <div class="case-compare-step">Tende</div>
+                  <div class="case-compare-step">Abitazioni di qualita' su isolatori sismici</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Slide 2: I numeri -->
+          <div class="case-slide">
+            <div class="case-sl">
+              <span class="case-sl-eyebrow">UN ANNO DOPO IL SISMA - I NUMERI</span>
+              <h2 class="case-sl-title">185 edifici.<br>5-6 mesi<br>per costruirli.</h2>
+              <p class="case-sl-body">Entro un anno dal sisma, il Progetto C.A.S.E. aveva gia' alloggiato quasi 15.000 persone. Non in baracche — in abitazioni con standard qualitativi elevati, tecnologia antisismica di isolamento alla base, sostenibilita' energetica. Un risultato che diverra' caso studio internazionale.</p>
+            </div>
+            <div class="case-sr">
+              <span class="case-sr-bg-num">03</span>
+              <div class="case-stat-block">
+                <div class="case-stat-row">
+                  <div class="case-stat-num">185</div>
+                  <div class="case-stat-desc">edifici costruiti su isolatori sismici</div>
+                </div>
+                <div class="case-stat-row">
+                  <div class="case-stat-num">14.583</div>
+                  <div class="case-stat-desc">persone alloggiate entro un anno</div>
+                </div>
+                <div class="case-stat-row">
+                  <div class="case-stat-num">19.182</div>
+                  <div class="case-stat-desc">abitanti insediabili nel piano finale</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Slide 3: Il processo -->
+          <div class="case-slide">
+            <div class="case-sl">
+              <span class="case-sl-eyebrow">CRITERI DI LOCALIZZAZIONE - LA TENSIONE</span>
+              <h2 class="case-sl-title">Fare presto.<br>O conservare<br>l'<strong>identita'</strong>.</h2>
+              <p class="case-sl-body">La selezione delle aree avvenne attraverso un processo interattivo tra Protezione Civile e Comune. Due obiettivi in tensione costante: velocita' della risposta emergenziale e preservazione dell'identita' territoriale. Alcune aree furono scartate dopo le prove geotecniche.</p>
+              <span class="case-sl-accent">Protezione Civile vs Comune - aprile-luglio 2009</span>
+            </div>
+            <div class="case-sr">
+              <span class="case-sr-bg-num">04</span>
+              <div class="case-criteria">
+                <div class="case-criterion"><span class="case-crit-num">01</span><span class="case-crit-text"><strong>Prossimita'</strong> — mantenere le relazioni sociali e i percorsi abituali</span></div>
+                <div class="case-criterion"><span class="case-crit-num">02</span><span class="case-crit-text"><strong>Continuita'</strong> — integrazione con i centri esistenti, spazi pubblici come cucitura</span></div>
+                <div class="case-criterion"><span class="case-crit-num">03</span><span class="case-crit-text"><strong>Compatibilita' PRG</strong> — limitare il consumo di suolo agricolo</span></div>
+                <div class="case-criterion"><span class="case-crit-num">04</span><span class="case-crit-text"><strong>Sicurezza</strong> — indagini idrogeologiche e sismiche preventive</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Slide 4: 15 anni dopo -->
+          <div class="case-slide">
+            <div class="case-sl">
+              <span class="case-sl-eyebrow">19 APRILE 2024 - AUDITORIUM GSSI - L'AQUILA</span>
+              <h2 class="case-sl-title">Il <strong>Modello L'Aquila</strong>.<br>15 anni dopo,<br>ancora in corso.</h2>
+              <p class="case-sl-body">L'Aquila e' diventata un caso studio internazionale per la gestione post-sisma. Il "Modello L'Aquila" e' studiato in tutto il mondo. Ma a 15 anni dal sisma, la ricostruzione non e' ancora terminata. Forse non lo sara' mai del tutto.</p>
+            </div>
+            <div class="case-sr">
+              <span class="case-sr-bg-num">05</span>
+              <div class="case-timeline">
+                <div class="case-tl-item"><span class="case-tl-date">Apr 2009</span><span class="case-tl-text">Sisma - Stato di emergenza - Protezione Civile</span></div>
+                <div class="case-tl-item"><span class="case-tl-date">Feb 2010</span><span class="case-tl-text">Commissario Delegato per la Ricostruzione</span></div>
+                <div class="case-tl-item"><span class="case-tl-date">Ago 2012</span><span class="case-tl-text">Cessazione stato di emergenza</span></div>
+                <div class="case-tl-item"><span class="case-tl-date">2017</span><span class="case-tl-text">Riapertura Basilica di Collemaggio</span></div>
+                <div class="case-tl-item"><span class="case-tl-date">Apr 2024</span><span class="case-tl-text">Ricostruzione ancora in corso — 15 anni dopo</span></div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /case-track -->
+        <button class="case-arrow-btn prev" id="case-prev" disabled>&#8592;</button>
+        <button class="case-arrow-btn next" id="case-next">&#8594;</button>
+        <div class="case-nav" id="case-nav">
+          <span class="case-nav-dot active" data-ci="0"></span>
+          <span class="case-nav-dot" data-ci="1"></span>
+          <span class="case-nav-dot" data-ci="2"></span>
+          <span class="case-nav-dot" data-ci="3"></span>
+          <span class="case-nav-dot" data-ci="4"></span>
         </div>
+        <span class="case-swipe-hint">&#8592;&nbsp; scorri &nbsp;&#8594;</span>
+      </div>
     </section>
 
     <!-- ══ S7 · FINE ══ -->
@@ -14276,26 +14535,146 @@ function onSlideEnter(i, el) {
 }
 
 // ═══════════════════════════════════════════
-//  ART PANEL
+//  CAROSELLO ARTE - scorre a sinistra (row-reverse)
 // ═══════════════════════════════════════════
-const artName = document.getElementById('art-name');
-const artYear = document.getElementById('art-year');
-const artFill = document.getElementById('art-damage-fill');
-const artPct  = document.getElementById('art-damage-pct');
+(function() {
+  'use strict';
+  var ART_TOTAL  = 6;
+  var artTrack   = document.getElementById('art-track');
+  var artDots    = document.querySelectorAll('.art-nav-dot');
+  var artPrevBtn = document.getElementById('art-prev');
+  var artNextBtn = document.getElementById('art-next');
+  var curArt = 0;
+  var artAnimating = false;
 
-document.getElementById('art-list').querySelectorAll('.art-item').forEach(item => {
-    item.addEventListener('click', () => {
-        document.querySelectorAll('.art-item').forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-        artName.textContent = item.dataset.name;
-        artYear.textContent = item.dataset.year;
-        artFill.style.width = '0%';
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-            artFill.style.width = item.dataset.dmg + '%';
-        }));
-        artPct.textContent = item.dataset.dmg + '% — ' + item.dataset.label;
-    });
-});
+  function artTranslate(visual, animate) {
+    var pos = ART_TOTAL - 1 - visual;
+    if (!animate) { artTrack.style.transition = 'none'; }
+    artTrack.style.transform = 'translateX(calc(' + pos + ' * -100vw))';
+    if (!animate) { requestAnimationFrame(function(){ artTrack.style.transition = ''; }); }
+  }
+
+  function goArt(visual, animate) {
+    if (visual < 0 || visual >= ART_TOTAL || artAnimating) return;
+    artAnimating = true;
+    curArt = visual;
+    artTranslate(visual, animate !== false);
+    artTrack.addEventListener('transitionend', function(){ artAnimating = false; }, { once: true });
+    setTimeout(function(){ artAnimating = false; }, 800);
+    artDots.forEach(function(d, i){ d.classList.toggle('active', i === visual); });
+    if (artPrevBtn) artPrevBtn.disabled = visual === 0;
+    if (artNextBtn) artNextBtn.disabled = visual === ART_TOTAL - 1;
+    var artSlides = artTrack.querySelectorAll('.art-slide');
+    var bar = artSlides[visual] ? artSlides[visual].querySelector('.art-sl-dmg-bar') : null;
+    if (bar) {
+      bar.style.width = '0%';
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){
+        bar.style.width = (bar.dataset.dmg || '0') + '%';
+      }); });
+    }
+  }
+
+  artTranslate(0, false);
+  artAnimating = false;
+
+  var artSection = document.getElementById('s-art');
+  artSection.addEventListener('wheel', function(e) {
+    var goingDown = e.deltaY > 0;
+    if (goingDown && curArt === ART_TOTAL - 1) return;
+    if (!goingDown && curArt === 0) return;
+    e.preventDefault(); e.stopPropagation();
+    if (artAnimating) return;
+    goArt(goingDown ? curArt + 1 : curArt - 1);
+  }, { passive: false });
+
+  var artTouchX = 0, artTouchY = 0;
+  artSection.addEventListener('touchstart', function(e){ artTouchX = e.touches[0].clientX; artTouchY = e.touches[0].clientY; }, { passive: true });
+  artSection.addEventListener('touchend', function(e) {
+    if (artAnimating) return;
+    var dx = e.changedTouches[0].clientX - artTouchX;
+    var dy = e.changedTouches[0].clientY - artTouchY;
+    if (Math.abs(dx) > Math.abs(dy) * 1.2 && Math.abs(dx) > 35) {
+      goArt(dx < 0 ? curArt + 1 : curArt - 1);
+    }
+  }, { passive: true });
+
+  if (artPrevBtn) artPrevBtn.addEventListener('click', function(){ goArt(curArt - 1); });
+  if (artNextBtn) artNextBtn.addEventListener('click', function(){ goArt(curArt + 1); });
+  artDots.forEach(function(d){ d.addEventListener('click', function(){ goArt(+d.dataset.ai); }); });
+
+  document.addEventListener('keydown', function(e) {
+    var rect = artSection.getBoundingClientRect();
+    if (Math.abs(rect.top) > 50) return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); goArt(curArt + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goArt(curArt - 1); }
+  });
+})();
+
+// ═══════════════════════════════════════════
+//  CAROSELLO C.A.S.E.
+// ═══════════════════════════════════════════
+(function() {
+  'use strict';
+  var CASE_TOTAL  = 5;
+  var caseTrack   = document.getElementById('case-track');
+  var caseDots    = document.querySelectorAll('.case-nav-dot');
+  var casePrevBtn = document.getElementById('case-prev');
+  var caseNextBtn = document.getElementById('case-next');
+  var curCase = 0;
+  var caseAnimating = false;
+
+  function goCase(idx, animate) {
+    if (idx < 0 || idx >= CASE_TOTAL || caseAnimating) return;
+    caseAnimating = true;
+    curCase = idx;
+    if (animate === false) {
+      caseTrack.style.transition = 'none';
+      caseTrack.style.transform = 'translateX(calc(' + idx + ' * -100vw))';
+      requestAnimationFrame(function(){ caseTrack.style.transition = ''; caseAnimating = false; });
+    } else {
+      caseTrack.style.transform = 'translateX(calc(' + idx + ' * -100vw))';
+      caseTrack.addEventListener('transitionend', function(){ caseAnimating = false; }, { once: true });
+      setTimeout(function(){ caseAnimating = false; }, 800);
+    }
+    caseDots.forEach(function(d, i){ d.classList.toggle('active', i === idx); });
+    if (casePrevBtn) casePrevBtn.disabled = idx === 0;
+    if (caseNextBtn) caseNextBtn.disabled = idx === CASE_TOTAL - 1;
+  }
+
+  goCase(0, false);
+
+  var caseSection = document.getElementById('s-rebuild');
+  caseSection.addEventListener('wheel', function(e) {
+    var goingDown = e.deltaY > 0;
+    if (goingDown && curCase === CASE_TOTAL - 1) return;  // ultima card → slide successiva
+    if (!goingDown && curCase === 0) return;               // prima card → slide precedente
+    e.preventDefault(); e.stopPropagation();
+    if (caseAnimating) return;
+    goCase(goingDown ? curCase + 1 : curCase - 1);
+  }, { passive: false });
+
+  var caseTouchX = 0, caseTouchY = 0;
+  caseSection.addEventListener('touchstart', function(e){ caseTouchX = e.touches[0].clientX; caseTouchY = e.touches[0].clientY; }, { passive: true });
+  caseSection.addEventListener('touchend', function(e) {
+    if (caseAnimating) return;
+    var dx = e.changedTouches[0].clientX - caseTouchX;
+    var dy = e.changedTouches[0].clientY - caseTouchY;
+    if (Math.abs(dx) > Math.abs(dy) * 1.2 && Math.abs(dx) > 35) {
+      goCase(dx < 0 ? curCase + 1 : curCase - 1);
+    }
+  }, { passive: true });
+
+  if (casePrevBtn) casePrevBtn.addEventListener('click', function(){ goCase(curCase - 1); });
+  if (caseNextBtn) caseNextBtn.addEventListener('click', function(){ goCase(curCase + 1); });
+  caseDots.forEach(function(d){ d.addEventListener('click', function(){ goCase(+d.dataset.ci); }); });
+
+  document.addEventListener('keydown', function(e) {
+    var rect = caseSection.getBoundingClientRect();
+    if (Math.abs(rect.top) > 50) return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); goCase(curCase + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goCase(curCase - 1); }
+  });
+})();
 
 /* resizeWave e resizeSeismo rimossi insieme al vecchio carousel scientifico */
 window.addEventListener('resize', () => { resizeHero(); });
