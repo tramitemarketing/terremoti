@@ -4496,11 +4496,15 @@
             ctxR.strokeStyle = 'rgba(245,237,224,0.6)';
             ctxR.lineWidth = 2; ctxR.stroke();
 
+            ctxR.save();
+            ctxR.beginPath();
+            ctxR.rect(0, SY, W, H - SY);
+            ctxR.clip();
             wavesR.forEach(w => {
               if (w.r <= 0) return;
               const alpha = Math.max(0, 1 - w.r / (IY - SY + 80));
               ctxR.beginPath();
-              ctxR.arc(HX, IY, w.r, Math.PI, Math.PI*2);
+              ctxR.arc(HX, IY, w.r, 0, Math.PI*2);
               ctxR.strokeStyle = w.col + Math.round(alpha*200).toString(16).padStart(2,'0');
               ctxR.lineWidth = w.lw;
               ctxR.stroke();
@@ -4509,6 +4513,7 @@
                 surfAlpha = 1;
               }
             });
+            ctxR.restore();
 
             if (surfAlpha > 0) {
               surfOffset += 1;
