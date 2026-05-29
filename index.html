@@ -5303,7 +5303,7 @@
             if (anim) { cancelAnimationFrame(anim); anim = null; }
             drawCore();
             const color = type === 'P' ? '#C4612A' : '#3A7EC4';
-            const mantleR = layers[1].rFrac * MAX_R;
+            const mantleR = layers[2].rFrac * MAX_R; // nucleo esterno liquido (blu)
             let prog = 0;
             const STEPS = 180;
 
