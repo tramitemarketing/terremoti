@@ -896,7 +896,7 @@
         <div class="dot" data-i="10"></div>
         <div class="dot" data-i="11"></div>
     </nav>
-    <div id="slide-counter">01 / 08</div>
+    <div id="slide-counter">01 / 12</div>
     <button id="fullscreen-btn" title="Schermo intero (F)">
         <svg viewBox="0 0 24 24"><path d="M3 3h6M3 3v6M21 3h-6M21 3v6M3 21h6M3 21v-6M21 21h-6M21 21v-6"/></svg>
     </button>
@@ -3938,7 +3938,7 @@
       display:flex; flex-direction:column; align-items:center;
       justify-content:center; padding:3rem 5rem; gap:2rem; width:100%; height:100%;
     }
-    .s3-cards-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.5rem; width:100%; }
+    .s3-cards-row { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:1.2rem; width:100%; }
     .s3-card {
       padding:1.5rem; border:1px solid rgba(245,237,224,0.1);
       background:rgba(255,255,255,0.02);
@@ -3947,9 +3947,10 @@
       font-family:'JetBrains Mono',monospace; font-size:0.58rem;
       letter-spacing:0.3em; text-transform:uppercase; margin-bottom:0.8rem;
     }
-    .s3-card--volume .s3-card-head { color:var(--terracotta); }
-    .s3-card--surf .s3-card-head { color:var(--ochre); }
-    .s3-card--aquila .s3-card-head { color:var(--blood); border-top:1px solid var(--blood); padding-top:0.8rem; }
+    .s3-card--p    .s3-card-head { color:var(--terracotta); }
+    .s3-card--s    .s3-card-head { color:var(--blue); }
+    .s3-card--love .s3-card-head { color:var(--ochre); }
+    .s3-card--ray  .s3-card-head { color:#A87EC4; }
     .s3-card-text { font-size:0.88rem; line-height:1.75; color:rgba(245,237,224,0.5); }
     .s3-schema-svg { width:100%; max-width:700px; }
 
@@ -4154,17 +4155,21 @@
                 <h2 class="s3-title-lg">Non tutta l'energia si propaga<br>nello stesso modo.</h2>
               </div>
               <div class="s3-cards-row">
-                <div class="s3-card s3-card--volume">
-                  <div class="s3-card-head">Onde di volume</div>
-                  <p class="s3-card-text">Le onde P e S nascono dall'ipocentro e viaggiano attraverso il volume delle rocce in tutte le direzioni. P sta per &#8216;prime&#8217;: arrivano per prime. S sta per &#8216;seconde&#8217;: arrivano dopo.</p>
+                <div class="s3-card s3-card--p">
+                  <div class="s3-card-head">Onda P &middot; Primaria</div>
+                  <p class="s3-card-text">Longitudinale: le particelle oscillano nella direzione di propagazione. Circa 6 km/s. Si propaga in solidi e liquidi. Arriva per prima agli sismografi.</p>
                 </div>
-                <div class="s3-card s3-card--surf">
-                  <div class="s3-card-head">Onde superficiali</div>
-                  <p class="s3-card-text">Le onde Love e Rayleigh nascono dall'epicentro e si propagano solo lungo la superficie terrestre. Sono le piÃ¹ lente ma trasportano la maggior parte dell'energia distruttiva.</p>
+                <div class="s3-card s3-card--s">
+                  <div class="s3-card-head">Onda S &middot; Secondaria</div>
+                  <p class="s3-card-text">Trasversale: le particelle oscillano perpendicolarmente. Circa 3,6 km/s. Solo nei solidi &mdash; non attraversa i fluidi. Arriva per seconda.</p>
                 </div>
-                <div class="s3-card s3-card--aquila">
-                  <div class="s3-card-head">L'Aquila</div>
-                  <p class="s3-card-text">Il centro storico de L'Aquila Ã¨ stato abbattuto dalle onde superficiali. Le onde P erano giÃ  passate quasi innocue. Le onde S avevano scosso. Le superficiali hanno abbattuto.</p>
+                <div class="s3-card s3-card--love">
+                  <div class="s3-card-head">Onda Love</div>
+                  <p class="s3-card-text">Superficiale con moto orizzontale laterale. Circa 3,2 km/s. Molto distruttiva: sposta le fondazioni lateralmente mentre la struttura sopra resta ferma per inerzia.</p>
+                </div>
+                <div class="s3-card s3-card--ray">
+                  <div class="s3-card-head">Onda Rayleigh</div>
+                  <p class="s3-card-text">Superficiale con moto ellittico retrogrado &mdash; come le onde del mare. Circa 2,9 km/s. Combina spostamento verticale e orizzontale: la pi&ugrave; devastante per gli edifici.</p>
                 </div>
               </div>
               <svg class="s3-schema-svg" viewBox="0 0 700 90" xmlns="http://www.w3.org/2000/svg">
@@ -9256,256 +9261,7 @@ function s4_initSlide4() {
 }
 
 /* â”€â”€â”€â”€ FINE s4_initSlide4 â”€â”€â”€â”€ */
-function _s4_dummy_unused() {
-  // Disegna sfondo vuoto (quando src immagine Ã¨ assente) â€” vecchio codice rimosso
-  function s4DrawEmptyBg() {
-    const w = canvas.width;
-    const h = canvas.height;
 
-    ctx.fillStyle = '#050505';
-    ctx.fillRect(0, 0, w, h);
-
-    // Griglia orizzontale
-    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-    ctx.lineWidth = 1;
-    const gridRows = 8;
-    for (let i = 0; i <= gridRows; i++) {
-      const y = (i / gridRows) * h;
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-      ctx.stroke();
-    }
-
-    // Griglia verticale (ogni 10s = TOTAL_SECONDS/18 colonne)
-    const gridCols = 18;
-    for (let i = 0; i <= gridCols; i++) {
-      const x = (i / gridCols) * w;
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, h);
-      ctx.stroke();
-    }
-
-    // Linea zero centrale tratteggiata
-    ctx.strokeStyle = 'rgba(255,255,255,0.10)';
-    ctx.setLineDash([6, 4]);
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(0, h / 2);
-    ctx.lineTo(w, h / 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Testo guida centrato
-    ctx.fillStyle = 'rgba(245, 237, 224, 0.2)';
-    ctx.font = '13px JetBrains Mono, monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('[ Sostituire con il percorso del sismogramma ]', w / 2, h / 2 - 16);
-    ctx.font = '11px JetBrains Mono, monospace';
-    ctx.fillStyle = 'rgba(245, 237, 224, 0.1)';
-    ctx.fillText('Imposta src="" in <img id="s4-seismo-img"> con il tuo file', w / 2, h / 2 + 8);
-  }
-
-  // Disegna i tre marker verticali con handle triangolare e label
-  function s4DrawMarkers() {
-    const w = canvas.width;
-    const h = canvas.height;
-
-    markers.forEach((m) => {
-      const xPx = m.x * w;
-
-      // Linea verticale
-      ctx.strokeStyle = m.color;
-      ctx.lineWidth = 2;
-      ctx.globalAlpha = 0.9;
-      ctx.beginPath();
-      ctx.moveTo(xPx, 0);
-      ctx.lineTo(xPx, h);
-      ctx.stroke();
-      ctx.globalAlpha = 1;
-
-      // Handle triangolare in cima (triangolo puntato verso il basso)
-      const TRI_W = 14;
-      const TRI_H = 10;
-      ctx.fillStyle = m.color;
-      ctx.beginPath();
-      ctx.moveTo(xPx - TRI_W / 2, 0);
-      ctx.lineTo(xPx + TRI_W / 2, 0);
-      ctx.lineTo(xPx, TRI_H);
-      ctx.closePath();
-      ctx.fill();
-
-      // Label sopra l'handle
-      ctx.fillStyle = m.color;
-      ctx.font = 'bold 11px JetBrains Mono, monospace';
-      ctx.textAlign = 'center';
-      // Posiziona la label appena sopra il bordo superiore (negativo â†’ non visibile)
-      // ma Ã¨ visibile nella zona handle: la mettiamo sotto il triangolo
-      ctx.fillText(m.label, xPx, TRI_H + 14);
-    });
-
-    ctx.textAlign = 'left'; // ripristina
-  }
-
-  // Disegno completo del canvas
-  function s4DrawCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Se l'immagine non Ã¨ caricata, disegna lo sfondo vuoto
-    const imgLoaded = imgEl.src && imgEl.src !== window.location.href && imgEl.naturalWidth > 0;
-    if (!imgLoaded) {
-      s4DrawEmptyBg();
-    }
-    // I marker sono sempre visibili sopra l'immagine o lo sfondo
-    s4DrawMarkers();
-  }
-
-  // Aggiorna i valori nel pannello risultati in tempo reale
-  function s4UpdateResults() {
-    const tP   = markerToSeconds(markers[0].x);
-    const tS   = markerToSeconds(markers[1].x);
-    const tSup = markerToSeconds(markers[2].x);
-
-    const dtPS  = Math.abs(tS - tP);
-    const dtPSup = Math.abs(tSup - tP);
-    const distKm = dtPS * 8.4;
-
-    // Aggiorna colonna 1
-    elDeltaT.textContent = dtPS.toFixed(1) + ' s';
-    elDist.textContent   = distKm.toFixed(0);
-
-    // Aggiorna interpretazione (colonna 3)
-    const sSup = dtPSup.toFixed(1);
-    elInterp.innerHTML =
-      `Con questo gap puoi stimare che l'epicentro era a circa <em>${distKm.toFixed(0)} km</em> da L'Aquila. ` +
-      `Le superficiali sono arrivate <em>${sSup} s</em> dopo le P.`;
-
-    // Se la verifica Ã¨ giÃ  visibile, ricalcola il giudizio in tempo reale
-    if (verifyShown) {
-      s4ShowVerify();
-    }
-  }
-
-  // Mostra il pannello di confronto (colonna 2)
-  function s4ShowVerify() {
-    const tP = markerToSeconds(markers[0].x);
-    const tS = markerToSeconds(markers[1].x);
-    const dtPS = Math.abs(tS - tP);
-
-    // Valore reale del gap P-S alla stazione AQU
-    const REAL_GAP = 8;
-    const diff = Math.abs(dtPS - REAL_GAP);
-
-    elUserEst.textContent = dtPS.toFixed(1) + ' s';
-    resultPnl.style.display = 'block';
-
-    // Giudizio
-    elJudge.className = 's4-compare-judge';
-    if (diff < 1) {
-      elJudge.textContent = 'Precisione da sismologo âœ“';
-      elJudge.classList.add('s4-judge-ok');
-    } else if (diff <= 3) {
-      elJudge.textContent = 'Buona approssimazione';
-      elJudge.classList.add('s4-judge-good');
-    } else {
-      elJudge.textContent = 'Riprova â€” guarda dove l\'ampiezza cambia bruscamente';
-      elJudge.classList.add('s4-judge-retry');
-    }
-  }
-
-  // â”€â”€ Hit-test: verifica se il click Ã¨ entro Â±10px da un marker â”€â”€
-  function s4FindMarker(clientX) {
-    const rect = canvas.getBoundingClientRect();
-    const xPx  = clientX - rect.left;
-    const w    = canvas.width;
-
-    for (let i = 0; i < markers.length; i++) {
-      const markerPx = markers[i].x * w;
-      if (Math.abs(xPx - markerPx) <= 10) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
-  // Clamp [0,1]
-  function clamp01(v) {
-    return Math.max(0, Math.min(1, v));
-  }
-
-  // â”€â”€ Drag mouse â”€â”€
-  canvas.addEventListener('mousedown', (e) => {
-    const idx = s4FindMarker(e.clientX);
-    if (idx !== -1) {
-      activeMarker = idx;
-      canvas.style.cursor = 'ew-resize';
-      e.preventDefault();
-    }
-  });
-
-  document.addEventListener('mousemove', (e) => {
-    if (activeMarker === null) return;
-    const rect = canvas.getBoundingClientRect();
-    const xNorm = clamp01((e.clientX - rect.left) / canvas.width);
-    markers[activeMarker].x = xNorm;
-    s4DrawCanvas();
-    s4UpdateResults();
-  });
-
-  document.addEventListener('mouseup', () => {
-    if (activeMarker !== null) {
-      activeMarker = null;
-      canvas.style.cursor = 'crosshair';
-    }
-  });
-
-  // â”€â”€ Drag touch â”€â”€
-  canvas.addEventListener('touchstart', (e) => {
-    const touch = e.touches[0];
-    const idx   = s4FindMarker(touch.clientX);
-    if (idx !== -1) {
-      activeMarker = idx;
-      e.preventDefault();
-    }
-  }, { passive: false });
-
-  canvas.addEventListener('touchmove', (e) => {
-    if (activeMarker === null) return;
-    const touch = e.touches[0];
-    const rect  = canvas.getBoundingClientRect();
-    const xNorm = clamp01((touch.clientX - rect.left) / canvas.width);
-    markers[activeMarker].x = xNorm;
-    s4DrawCanvas();
-    s4UpdateResults();
-    e.preventDefault();
-  }, { passive: false });
-
-  canvas.addEventListener('touchend', () => {
-    activeMarker = null;
-  });
-
-  // â”€â”€ Pulsante verifica â”€â”€
-  btnVerify.addEventListener('click', () => {
-    verifyShown = true;
-    s4ShowVerify();
-    btnVerify.disabled = true;
-    btnVerify.style.opacity = '0.4';
-  });
-
-  // â”€â”€ Gestione immagine sismogramma â”€â”€
-  // Se l'immagine viene caricata successivamente, ridisegna
-  imgEl.addEventListener('load', () => {
-    s4DrawCanvas();
-  });
-
-  imgEl.addEventListener('error', () => {
-    // Immagine non trovata: ridisegna con sfondo vuoto
-    s4DrawCanvas();
-  });
-
-  // fine dummy
-}
 
   /* ─── JS Slide 1-2 (Parte A) ─── */
 // Funzioni standalone (saranno inserite in un IIFE esterno)
@@ -15915,7 +15671,8 @@ function s6InitETASCanvas() {
       rates.push({ t: t_, r: Math.min(etasRate(t_, evBefore), 50) });
     }
 
-    let maxRate = Math.max(...rates.map(r => r.r), 5);
+    // maxRate fisso a 50 per evitare rescaling continuo (bug visivo "su e giù")
+    const maxRate = 50;
 
     function rToY(r) { return H - 50 - (r / maxRate) * (H - 70); }
 
@@ -15940,7 +15697,7 @@ function s6InitETASCanvas() {
     ctx.setLineDash([]);
     ctx.font = '9px JetBrains Mono';
     ctx.fillStyle = 'rgba(58,126,196,0.7)';
-    ctx.fillText('Î¼ background', tToX(2), rToY(MU) - 4);
+    ctx.fillText('μ background', tToX(2), rToY(MU) - 4);
 
     // Asse Y
     ctx.strokeStyle = 'rgba(245,237,224,0.2)';
@@ -15949,7 +15706,7 @@ function s6InitETASCanvas() {
     ctx.font = '9px JetBrains Mono';
     ctx.fillStyle = 'rgba(245,237,224,0.4)';
     ctx.textAlign = 'right';
-    ctx.fillText('Î»(t)', 26, 28);
+    ctx.fillText('λ(t)', 26, 28);
 
     // Asse X
     ctx.strokeStyle = 'rgba(245,237,224,0.2)';
