@@ -5159,15 +5159,15 @@
                 }
 
               } else {
-                /* Onda S — clip evenodd: scompare dentro la falda, si vede intorno */
+                /* Onda S — clippata al bordo inferiore della falda: non risbuca sopra */
                 ctx.save();
                 if (S8.faldaOn) {
+                  /* Mostra solo la zona SOTTO la base della falda */
+                  const stopY = fy + fh;
                   ctx.beginPath();
-                  ctx.rect(0, 0, W, H);   // canvas intero
-                  ctx.rect(0, fy, W, fh); // "buco" = falda
-                  ctx.clip('evenodd');
-                  /* Messaggio quando tocca il bordo inferiore della falda */
-                  if (!w.faldaHit && w.r >= Math.abs(hy - (fy + fh))) {
+                  ctx.rect(0, stopY, W, H - stopY);
+                  ctx.clip();
+                  if (!w.faldaHit && w.r >= Math.abs(hy - stopY)) {
                     w.faldaHit = true;
                     sFaldaMsg = 220;
                   }
@@ -5951,28 +5951,30 @@
   margin-bottom: 0.7rem;
 }
 
-/* Illustrazione SVG */
+/* Illustrazione SVG — compatta nella griglia 3×2 */
 .s4-hist-card-svg {
   width: 100%;
-  height: 120px;
+  height: 80px;
   flex-shrink: 0;
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .s4-hist-card-svg svg {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   height: 100%;
 }
 
 /* Testo descrittivo card */
 .s4-hist-card-text {
-  font-size: 0.82rem;
-  line-height: 1.55;
-  color: rgba(245, 237, 224, 0.82);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: rgba(245, 237, 224, 0.78);
   flex: 1;
+  overflow: hidden;
 }
 
 /* Frecce e dots: nascosti — la griglia 3×2 mostra tutto senza navigazione */
@@ -8844,8 +8846,13 @@ function s4_initSlide3() {
     s4HistDragEnd();
   });
 
-  // Stato iniziale
-  s4HistGoto(0);
+  // Griglia 3×2: non serve navigare — trigger reveal staggered delle card
+  // Il JS di navigazione resta ma è no-op grazie al CSS `transform: none !important`
+  requestAnimationFrame(() => {
+    track.querySelectorAll('.s4-hist-card').forEach(card => {
+      card.classList.add('s4-hist-revealed');
+    });
+  });
 }
 
 
