@@ -2247,7 +2247,7 @@
     flex-direction: column;
     border-right: 1px solid rgba(245,237,224,0.07);
     background: rgba(8,8,8,0.5);
-    padding: 1.2rem 0 0 4rem;
+    padding: 1.2rem 0 0 2rem;
 }
 .s2-list-header {
     font-family: 'JetBrains Mono', monospace;
@@ -3535,14 +3535,11 @@
         ctx.fillStyle = '#3A7EC4';
         ctx.beginPath(); ctx.arc(hypoCX, SURF_Y, ep, 0, Math.PI * 2); ctx.fill();
         ctx.restore();
-        /* Label EPICENTRO fade-in */
-        ctx.globalAlpha = Math.min(1, epicPhase / 30);
+        /* Label EPICENTRO — appare subito, leggero fade-in */
+        ctx.globalAlpha = Math.min(1, 0.25 + epicPhase / 8);
         ctx.fillStyle = '#3A7EC4';
         ctx.font = 'bold 18px "Cormorant Garamond", serif';
-        ctx.fillText('EPICENTRO', hypoCX + 14, SURF_Y - 10);
-        ctx.font = '9px "JetBrains Mono", monospace';
-        ctx.fillStyle = 'rgba(58,126,196,0.7)';
-        ctx.fillText('Da qui partono le onde superficiali', hypoCX + 14, SURF_Y - 22);
+        ctx.fillText('EPICENTRO', hypoCX + 14, SURF_Y - 8);
         ctx.globalAlpha = 1;
         epicPhase += 0.05;
         epicId = requestAnimationFrame(pulseEpic);
