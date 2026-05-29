@@ -3841,18 +3841,21 @@
     /* ── Frecce ── */
     .s3-arrow {
       position:absolute; top:50%; transform:translateY(-50%); z-index:50;
-      width:52px; height:52px;
-      background:rgba(5,5,13,0.85); border:1px solid rgba(245,237,224,0.12);
-      color:rgba(245,237,224,0.7); cursor:pointer;
+      width:44px; height:44px;
+      background:rgba(5,5,13,0.7); border:1px solid rgba(245,237,224,0.1);
+      color:rgba(245,237,224,0.8); cursor:pointer;
       display:flex; align-items:center; justify-content:center;
-      transition:border-color 0.3s,background 0.3s,color 0.3s,opacity 0.3s;
-      backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
-      font-size:1.1rem;
+      opacity:0; /* nascosta di default */
+      transition:border-color 0.25s,background 0.25s,color 0.25s,opacity 0.25s;
+      backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      font-size:1rem;
     }
-    .s3-arrow:hover { border-color:var(--terracotta); background:rgba(196,97,42,0.14); color:var(--terracotta); }
-    .s3-arrow[disabled] { opacity:0.1; pointer-events:none; }
-    .s3-prev { left:1.2rem; }
-    .s3-next { right:1.2rem; }
+    /* Appaiono quando si passa il mouse sul carosello */
+    #s3-carousel:hover .s3-arrow { opacity:1; }
+    .s3-arrow:hover { border-color:var(--terracotta); background:rgba(196,97,42,0.18); color:var(--terracotta); opacity:1; }
+    .s3-arrow[disabled] { opacity:0 !important; pointer-events:none; }
+    .s3-prev { left:0.8rem; }
+    .s3-next { right:0.8rem; }
 
     /* ── Nav bottom ── */
     .s3-nav {
@@ -5945,18 +5948,19 @@
 /* Anno in cima alla card */
 .s4-hist-card-year {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: var(--ochre);
   letter-spacing: 0.1em;
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.4rem;
+  flex-shrink: 0;
 }
 
-/* Illustrazione SVG — compatta nella griglia 3×2 */
+/* Illustrazione SVG — cresce proporzionalmente alla cella disponibile */
 .s4-hist-card-svg {
   width: 100%;
-  height: 80px;
-  flex-shrink: 0;
-  margin-bottom: 0.5rem;
+  flex: 0 0 22%;        /* occupa il 22% dell'altezza della card */
+  min-height: 50px;
+  margin-bottom: 0.4rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5968,13 +5972,12 @@
   height: 100%;
 }
 
-/* Testo descrittivo card */
+/* Testo descrittivo: occupa TUTTO lo spazio rimanente, font scalato */
 .s4-hist-card-text {
-  font-size: 0.75rem;
-  line-height: 1.5;
-  color: rgba(245, 237, 224, 0.78);
-  flex: 1;
-  overflow: hidden;
+  font-size: clamp(0.72rem, 1.15vh, 0.88rem);
+  line-height: 1.55;
+  color: rgba(245, 237, 224, 0.82);
+  flex: 1;              /* espande fino a riempire tutta l'area residua */
 }
 
 /* Frecce e dots: nascosti — la griglia 3×2 mostra tutto senza navigazione */
@@ -9270,44 +9273,71 @@ function s4_initSlide1() {
         return Math.sqrt(variance);
     }
 
-    /* ── Fetch dati live da IRIS FDSN ── */
+    /* ── Fetch dati live da IRIS FDSN ──
+       Prova prima loc=00 (codice più comune INGV), poi loc=--.
+       Se entrambi falliscono → passa automaticamente al sismogramma
+       storico del 6 aprile 2009.
+       Quando il fetch torna a funzionare, ritorna in live.              ── */
     function fetchLiveData() {
+        if (_st.mode !== 'live') return; // in modalità storica non fare fetch
+
         const now   = new Date();
-        const start = new Date(now.getTime() - 5 * 60 * 1000); // 5 minuti fa
-
-        // Formato ISO senza millisecondi
+        const start = new Date(now.getTime() - 5 * 60 * 1000);
         const fmt = d => d.toISOString().replace(/\.\d{3}Z$/, '');
-        const url = `https://service.iris.edu/irisws/timeseries/1/query?net=IV&sta=AQU&loc=--&cha=HHZ&output=ascii&demean=true&starttime=${fmt(start)}&endtime=${fmt(now)}`;
 
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 5000);
+        // Prova la stazione con loc=00 (comune per INGV) e cha=HHZ
+        const urls = [
+            `https://service.iris.edu/irisws/timeseries/1/query?net=IV&sta=AQU&loc=00&cha=HHZ&output=ascii&demean=true&starttime=${fmt(start)}&endtime=${fmt(now)}`,
+            `https://service.iris.edu/irisws/timeseries/1/query?net=IV&sta=AQU&loc=--&cha=HHZ&output=ascii&demean=true&starttime=${fmt(start)}&endtime=${fmt(now)}`,
+            `https://service.iris.edu/irisws/timeseries/1/query?net=IV&sta=AQU&loc=00&cha=BHZ&output=ascii&demean=true&starttime=${fmt(start)}&endtime=${fmt(now)}`,
+        ];
 
-        fetch(url, { signal: controller.signal })
-            .then(r => {
-                clearTimeout(timeout);
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                return r.text();
-            })
-            .then(text => {
-                const amps = parseIRISAscii(text);
-                if (!amps.length) throw new Error('empty');
-                applyLiveSamples(amps);
-                // Aggiorna timestamp
-                const ts = new Date().toLocaleString('it-IT', {
-                    hour: '2-digit', minute: '2-digit', second: '2-digit',
-                    day: '2-digit', month: '2-digit'
+        function tryUrl(i) {
+            if (i >= urls.length) {
+                // Tutti gli URL falliti → mostra sismogramma storico L'Aquila
+                if (_st.mode === 'live') {
+                    _st.irisDown = true;
+                    activateHistoricMode();
+                    if (statusEl) statusEl.textContent = '⚠ IRIS non raggiungibile · Sismogramma 6 aprile 2009';
+                    if (panelStato) { panelStato.textContent = '6 APR 2009'; panelStato.style.color = 'var(--ochre)'; }
+                    if (updateEl) updateEl.innerHTML = 'IRIS DMC non disponibile.<br>Riprovo ogni 30 s…';
+                }
+                return;
+            }
+
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 8000);
+
+            fetch(urls[i], { signal: controller.signal })
+                .then(r => {
+                    clearTimeout(timeout);
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return r.text();
+                })
+                .then(text => {
+                    const amps = parseIRISAscii(text);
+                    if (!amps.length) throw new Error('empty');
+                    // Connessione riuscita: torna in live se eravamo in storico
+                    _st.irisDown = false;
+                    if (_st.mode !== 'live') {
+                        activateLiveMode();
+                    }
+                    applyLiveSamples(amps);
+                    const ts = new Date().toLocaleString('it-IT', {
+                        hour: '2-digit', minute: '2-digit', second: '2-digit',
+                        day: '2-digit', month: '2-digit'
+                    });
+                    if (updateEl) updateEl.innerHTML = `Ultimo agg.:<br>${ts}`;
+                    if (panelStato) { panelStato.textContent = 'OPERATIVA'; panelStato.style.color = 'var(--terracotta)'; }
+                    if (statusEl)   statusEl.textContent = '● Stazione AQU · dati in tempo reale';
+                })
+                .catch(() => {
+                    clearTimeout(timeout);
+                    tryUrl(i + 1); // prova URL alternativo
                 });
-                if (updateEl) updateEl.innerHTML = `Ultimo aggiornamento:<br>${ts}`;
-                if (panelStato) panelStato.textContent = 'OPERATIVA';
-            })
-            .catch(() => {
-                clearTimeout(timeout);
-                // Usa rumore sintetico come fallback
-                applyLiveSamples(syntheticNoise(300));
-                // Fallback silenzioso: il tracciato sintetico scorre già —
-                // nessun messaggio d'errore visivo nella presentazione
-                if (panelStato) { panelStato.textContent = 'LIVE'; panelStato.style.color = ''; }
-            });
+        }
+
+        tryUrl(0);
     }
 
     /* ── Parsing formato ASCII IRIS
