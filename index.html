@@ -4752,11 +4752,11 @@
           function resizeAll() {
             cvs.forEach(cv => {
               if (!cv) return;
-              const p = cv.parentElement;
-              const w = p.clientWidth || p.offsetWidth;
-              const h = p.clientHeight || p.offsetHeight;
-              if (w > 0) cv.width = w;
-              if (h > 0) cv.height = h;
+              const r = cv.getBoundingClientRect();
+              const w = Math.round(r.width)  || cv.offsetWidth;
+              const h = Math.round(r.height) || cv.offsetHeight;
+              if (w > 0 && cv.width  !== w) cv.width  = w;
+              if (h > 0 && cv.height !== h) cv.height = h;
             });
           }
           window.addEventListener('resize', resizeAll);
@@ -4835,7 +4835,6 @@
           function tick() {
             if (!playing) return;
             rafId = requestAnimationFrame(tick);
-            resizeAll(); // lazy resize: no-op se dimensioni già corrette
             t++;
             if (cvs[0]) drawLane(ctxs[0], cvs[0], drawP);
             if (cvs[1]) drawLane(ctxs[1], cvs[1], drawS);
@@ -4843,7 +4842,8 @@
             if (cvs[3]) drawLane(ctxs[3], cvs[3], drawRayleigh);
           }
 
-          requestAnimationFrame(() => requestAnimationFrame(tick));
+          /* Aspetta 2 frame perché il layout CSS abbia calcolato le dimensioni */
+          requestAnimationFrame(() => { resizeAll(); requestAnimationFrame(tick); });
 
           const playBtn = document.getElementById('s3-s3-playbtn');
           if (playBtn) playBtn.addEventListener('click', () => {
