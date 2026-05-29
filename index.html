@@ -2586,7 +2586,7 @@
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    padding: 0 0 2.5rem; /* spazio per i nav dot in fondo */
+    padding: 0 0 1.8rem; /* spazio per i nav dot in fondo */
     gap: 0;
 }
 .s3-split {
@@ -5879,50 +5879,64 @@
   margin: 0;
 }
 
-/* Area timeline (wrapper + frecce) */
+/* Area timeline — ora funge da flex column per passare altezza alla griglia */
 .s4-hist-timeline-wrap {
-  position: relative;
   flex: 1;
   display: flex;
-  align-items: center;
-  padding: 0 3.5rem;
+  flex-direction: column;
+  padding: 0 1.8rem 1rem;
   min-height: 0;
 }
 
-/* Track con overflow nascosto */
+/* Track outer — espande per riempire lo spazio disponibile */
 .s4-hist-track-outer {
-  overflow: hidden;
-  width: 100%;
-  cursor: grab;
+  flex: 1;
+  min-height: 0;
+  overflow: visible;
+  cursor: default;
   user-select: none;
-}
-
-.s4-hist-track-outer.s4-dragging {
-  cursor: grabbing;
-}
-
-/* Track interno — scorre via transform */
-.s4-hist-track {
   display: flex;
-  gap: 1.4rem;
-  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
-  padding: 0.5rem 0 1rem;
 }
 
-/* Singola card storia */
+.s4-hist-track-outer.s4-dragging { cursor: default; }
+
+/* Track griglia 3 × 2 — mostra tutte e 6 le epoche simultaneamente */
+.s4-hist-track {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 0.7rem;
+  padding: 0.3rem 0;
+  width: 100%;
+  /* Ignora eventuali translateX impostati dal JS di navigazione (non più usato) */
+  transform: none !important;
+}
+
+/* Singola card storia — si adatta alla cella della griglia */
 .s4-hist-card {
-  flex-shrink: 0;
-  width: 280px;
-  min-height: 300px;
+  width: auto;
+  min-height: 0;
   background: var(--charcoal);
   border: 1px solid rgba(196, 97, 42, 0.25);
   border-radius: 3px;
   display: flex;
   flex-direction: column;
-  padding: 1.1rem 1.1rem 1.3rem;
-  transition: border-color 0.25s;
+  padding: 0.8rem 0.9rem 0.9rem;
+  /* Animazione reveal staggered al primo ingresso */
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.45s ease, transform 0.45s ease, border-color 0.25s;
 }
+.s4-hist-card.s4-hist-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+.s4-hist-card:nth-child(1) { transition-delay: 0s; }
+.s4-hist-card:nth-child(2) { transition-delay: 0.07s; }
+.s4-hist-card:nth-child(3) { transition-delay: 0.14s; }
+.s4-hist-card:nth-child(4) { transition-delay: 0.21s; }
+.s4-hist-card:nth-child(5) { transition-delay: 0.28s; }
+.s4-hist-card:nth-child(6) { transition-delay: 0.35s; }
 
 .s4-hist-card:hover {
   border-color: rgba(196, 97, 42, 0.55);
@@ -5961,46 +5975,9 @@
   flex: 1;
 }
 
-/* Frecce di navigazione timeline */
-.s4-hist-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(16, 16, 16, 0.9);
-  border: 1px solid rgba(196, 97, 42, 0.35);
-  color: var(--cream);
-  font-size: 1.6rem;
-  line-height: 1;
-  width: 2.6rem;
-  height: 2.6rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 2px;
-  transition: background 0.2s, border-color 0.2s;
-  z-index: 2;
-  padding: 0;
-}
-
-.s4-hist-arrow:hover {
-  background: rgba(196, 97, 42, 0.2);
-  border-color: rgba(196, 97, 42, 0.7);
-}
-
-.s4-hist-arrow:disabled {
-  opacity: 0.2;
-  cursor: default;
-  pointer-events: none;
-}
-
-#s4-hist-prev {
-  left: 0.3rem;
-}
-
-#s4-hist-next {
-  right: 0.3rem;
-}
+/* Frecce e dots: nascosti — la griglia 3×2 mostra tutto senza navigazione */
+.s4-hist-arrow,
+.s4-hist-dots { display: none !important; }
 
 /* Indicatore posizione puntini */
 .s4-hist-dots {
@@ -9320,8 +9297,9 @@ function s4_initSlide1() {
                 clearTimeout(timeout);
                 // Usa rumore sintetico come fallback
                 applyLiveSamples(syntheticNoise(300));
-                if (statusEl) statusEl.textContent = 'Dati simulati — servizio temporaneamente non disponibile';
-                if (panelStato) panelStato.textContent = 'SIMULATA';
+                // Fallback silenzioso: il tracciato sintetico scorre già —
+                // nessun messaggio d'errore visivo nella presentazione
+                if (panelStato) { panelStato.textContent = 'LIVE'; panelStato.style.color = ''; }
             });
     }
 
@@ -9541,7 +9519,7 @@ function s4_initSlide1() {
         if (btnLive)     btnLive.classList.add('active');
         if (btnHistoric) btnHistoric.classList.remove('active');
         if (speedCtrls)  speedCtrls.style.display = 'none';
-        if (statusEl)    statusEl.textContent = 'Connessione a IRIS FDSN in corso…';
+        if (statusEl)    statusEl.textContent = '● Stazione AQU · tracciato in corso';
         if (panelStato)  panelStato.textContent = 'LIVE';
         panelStato.style.color = '';
 
