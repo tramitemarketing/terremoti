@@ -2203,7 +2203,7 @@
 /* ──────────────────────────────────────────────
    SLIDE 1 — Mappa tre colonne
    ────────────────────────────────────────────── */
-#s2-s1 { align-items: stretch; flex-direction: column; padding-bottom: 2rem; }
+#s2-s1 { align-items: stretch; flex-direction: column; }
 
 /* Barra superiore (cornice come il panel info sotto) */
 #s2-s1-header {
@@ -3017,6 +3017,7 @@
 
   /* ── Wheel intercept ── */
   s2Section.addEventListener('wheel', function onWheel(e) {
+    s2EnsureSlide0Init(); /* garantisce init anche se IntersectionObserver non scatta */
     const goDown = e.deltaY > 0;
     const goUp   = e.deltaY < 0;
     if (goDown && s2CurrentIdx === TOTAL_SLIDES - 1) return; /* rilascia scroll verticale */
@@ -3062,13 +3063,17 @@
   if (s2Counter) s2Counter.textContent = '01 · 04';
   if (s2Prev) s2Prev.disabled = true;
 
-  /* Carica dati slide 0 quando sezione entra in vista (Leaflet caricato) */
+  /* Carica dati slide 0 quando sezione entra in vista (Leaflet caricato).
+     Threshold 0.1 è sufficiente: con scroll-snap la sezione diventa 100% visibile.
+     Belt-and-suspenders: anche il primo evento wheel/touch/key forza l'init. */
   new IntersectionObserver(function(entries, obs) {
     if (entries[0].isIntersecting) {
       obs.disconnect();
       s2OnSlideEnter(0);
     }
-  }, { threshold: 0.5 }).observe(s2Section);
+  }, { threshold: 0.1 }).observe(s2Section);
+
+  function s2EnsureSlide0Init() { if (!s2Triggered.has(0)) s2OnSlideEnter(0); }
 
   /* ════════════════════════════════════════════
      MAPPA LEAFLET
