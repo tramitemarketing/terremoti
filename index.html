@@ -4336,6 +4336,10 @@
                   <div class="s3-vel-display" id="s3-vel-disp">
                     Vp: 5.0 km/s · Vs: 2.8 km/s<br>Love: ~2.8 km/s · Rayleigh: ~2.6 km/s
                   </div>
+                  <p style="font-size:0.72rem;line-height:1.65;color:rgba(245,237,224,0.3);margin-top:0.6rem;font-family:'JetBrains Mono',monospace;letter-spacing:0.03em;">
+                    Roccia compatta → onde veloci.<br>
+                    Argilla/alluvionale → onde lente e più distruttive (amplificazione sismica).
+                  </p>
                 </div>
                 <div>
                   <span class="s3-calc-section-label">STEP 2 · LANCIA ONDE</span>
@@ -4352,6 +4356,9 @@
                     <button class="s3-toggle" id="s3-falda-toggle" role="switch" aria-checked="false"></button>
                     <span class="s3-toggle-label" id="s3-falda-label">Terreno omogeneo</span>
                   </div>
+                  <p style="font-size:0.68rem;line-height:1.6;color:rgba(245,237,224,0.28);margin-top:0.5rem;font-family:'JetBrains Mono',monospace;">
+                    Attiva per vedere come l'onda S<br>viene bloccata dall'acqua.
+                  </p>
                 </div>
               </div>
               <div class="s3-calc-canvas-wrap">
@@ -5039,9 +5046,9 @@
             const speedP = S8.vp * 0.25;
             const speedS = S8.vs * 0.25;
             if (type === 'P' || type === 'both')
-              S8.waves.push({ r:0, type:'P', sp:speedP, blocked:false, surfaced:false, surfOff:0 });
+              S8.waves.push({ r:0, type:'P', sp:speedP, surfaced:false, surfOff:0 });
             if (type === 'S' || type === 'both')
-              S8.waves.push({ r:0, type:'S', sp:speedS, blocked:false, surfaced:false, surfOff:0 });
+              S8.waves.push({ r:0, type:'S', sp:speedS, faldaHit:false });
             if (!S8.running) { S8.running = true; animLoop(); }
           }
 
@@ -5089,87 +5096,110 @@
             ctx.beginPath(); ctx.moveTo(0, sy); ctx.lineTo(W, sy);
             ctx.strokeStyle = 'rgba(245,237,224,0.5)'; ctx.lineWidth = 2; ctx.stroke();
             if (!S8.ipocentro) {
-              ctx.fillStyle = 'rgba(245,237,224,0.15)';
-              ctx.font = '300 14px "Cormorant Garamond",serif';
+              ctx.fillStyle = 'rgba(245,237,224,0.18)';
+              ctx.font = '300 15px "Cormorant Garamond",serif';
               ctx.textAlign = 'center';
-              ctx.fillText('Clicca nel canvas per posizionare l\'ipocentro', W/2, H/2);
+              ctx.fillText('Clicca qui per posizionare l\'ipocentro', W/2, H * 0.55);
+              ctx.font = '300 11px "JetBrains Mono",monospace';
+              ctx.fillStyle = 'rgba(245,237,224,0.08)';
+              ctx.fillText('poi scegli il tipo di onda e lancia', W/2, H * 0.55 + 22);
               ctx.textAlign = 'left';
             }
           }
 
-          let sWaveBlockedMsg = 0;
+          let sFaldaMsg = 0;
 
           function drawAll() {
             drawStatic();
             if (!S8.ipocentro) return;
+            const W = cv.width, H = cv.height;
             const { x: hx, y: hy } = S8.ipocentro;
-            const sy = getSurfY(), fy = getFaldaY();
+            const sy = getSurfY();
+            const fy = getFaldaY(), fh = getFaldaH();
 
             S8.waves.forEach(w => {
+              const al = Math.max(0, 1 - w.r / (W * 0.95));
+              if (al <= 0) return;
+
               if (w.type === 'P') {
-                const al = Math.max(0, 1 - w.r / (cv.width * 0.9));
+                /* Onda P — clippata alla superficie */
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(0, sy, W, H - sy);
+                ctx.clip();
                 ctx.beginPath();
                 ctx.arc(hx, hy, w.r, 0, Math.PI*2);
                 ctx.strokeStyle = `rgba(196,97,42,${al * 0.85})`;
                 ctx.lineWidth = 1.5; ctx.stroke();
+                ctx.restore();
+
+                /* Attiva onde superficiali alla prima intersezione */
+                if (!w.surfaced && w.r >= Math.abs(hy - sy)) {
+                  w.surfaced = true;
+                  w.surfOff = 0;
+                }
+
               } else {
-                if (S8.faldaOn && !w.blocked) {
-                  const distFalda = hy - fy;
-                  if (w.r >= Math.abs(distFalda)) { w.blocked = true; sWaveBlockedMsg = 120; }
-                }
-                if (!w.blocked) {
-                  const al = Math.max(0, 1 - w.r / (cv.width * 0.9));
+                /* Onda S — clip evenodd: scompare dentro la falda, si vede intorno */
+                ctx.save();
+                if (S8.faldaOn) {
                   ctx.beginPath();
-                  ctx.arc(hx, hy, w.r, 0, Math.PI*2);
-                  ctx.strokeStyle = `rgba(58,126,196,${al * 0.85})`;
-                  ctx.lineWidth = 2.5; ctx.stroke();
-                } else {
-                  ctx.beginPath();
-                  ctx.arc(hx, hy, w.r, 0, Math.PI*2);
-                  ctx.strokeStyle = 'rgba(58,126,196,0.15)';
-                  ctx.lineWidth = 2; ctx.setLineDash([4,4]); ctx.stroke();
-                  ctx.setLineDash([]);
+                  ctx.rect(0, 0, W, H);   // canvas intero
+                  ctx.rect(0, fy, W, fh); // "buco" = falda
+                  ctx.clip('evenodd');
+                  /* Messaggio quando tocca il bordo inferiore della falda */
+                  if (!w.faldaHit && w.r >= Math.abs(hy - (fy + fh))) {
+                    w.faldaHit = true;
+                    sFaldaMsg = 220;
+                  }
                 }
+                ctx.beginPath();
+                ctx.arc(hx, hy, w.r, 0, Math.PI*2);
+                ctx.strokeStyle = `rgba(58,126,196,${al * 0.85})`;
+                ctx.lineWidth = 2.5; ctx.stroke();
+                ctx.restore();
               }
 
-              if (w.type === 'P' && !w.surfaced) {
-                const distSurf = hy - sy;
-                if (w.r >= Math.abs(distSurf)) { w.surfaced = true; }
-              }
+              /* Onde superficiali da ogni onda P che tocca superficie */
               if (w.surfaced && w.type === 'P') {
-                w.surfOff++;
+                w.surfOff = (w.surfOff || 0) + 1;
                 const sof = w.surfOff;
-                for (let dir = -1; dir <= 1; dir += 2) {
-                  const ox = hx + dir * sof;
-                  const al = Math.max(0, 1 - sof / (cv.width * 0.6));
-                  ctx.beginPath();
-                  for (let xi = 0; xi <= 30; xi++) {
-                    const px = ox + dir*xi;
-                    const py = sy + Math.sin(xi * 0.4 - sof * 0.1) * 5 * al;
-                    xi === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+                const surfAl = Math.max(0, 1 - sof / (W * 0.75));
+                if (surfAl > 0) {
+                  const STEPS = 80;
+                  for (let dir = -1; dir <= 1; dir += 2) {
+                    ctx.beginPath();
+                    for (let xi = 0; xi <= STEPS; xi++) {
+                      const px = hx + dir * (sof + xi * 2.5);
+                      const py = sy + Math.sin(xi * 0.45 - sof * 0.07) * 9 * surfAl;
+                      xi === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+                    }
+                    ctx.strokeStyle = `rgba(212,137,58,${surfAl * 0.8})`;
+                    ctx.lineWidth = 2; ctx.stroke();
                   }
-                  ctx.strokeStyle = `rgba(212,137,58,${al * 0.7})`;
-                  ctx.lineWidth = 2; ctx.stroke();
-                }
-                if (sof < 60) {
-                  ctx.fillStyle = 'rgba(212,137,58,0.6)';
-                  ctx.font = '400 8px "JetBrains Mono",monospace';
-                  ctx.fillText('Love', hx + sof + 5, sy - 5);
-                  ctx.fillText('Rayleigh', hx - sof - 55, sy - 5);
+                  if (sof < 90) {
+                    ctx.fillStyle = `rgba(212,137,58,${surfAl * 0.9})`;
+                    ctx.font = '400 8px "JetBrains Mono",monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('← Love · Rayleigh →', hx, sy - 6);
+                    ctx.textAlign = 'left';
+                  }
                 }
               }
             });
 
-            if (sWaveBlockedMsg > 0) {
-              sWaveBlockedMsg--;
-              const alpha = Math.min(1, sWaveBlockedMsg / 30);
-              ctx.fillStyle = `rgba(139,26,26,${alpha})`;
-              ctx.font = '400 10px "JetBrains Mono",monospace';
+            /* Messaggio blocco onda S */
+            if (sFaldaMsg > 0) {
+              sFaldaMsg--;
+              const a = Math.min(1, sFaldaMsg / 50);
+              ctx.fillStyle = `rgba(58,126,196,${a})`;
+              ctx.font = '500 10px "JetBrains Mono",monospace';
               ctx.textAlign = 'center';
-              ctx.fillText("Le onde S non si propagano nell'acqua", cv.width/2, getFaldaY() - 10);
+              ctx.fillText("Onda S bloccata — i fluidi non trasmettono onde di taglio", W/2, fy + fh + 20);
               ctx.textAlign = 'left';
             }
 
+            /* Ipocentro */
             ctx.beginPath(); ctx.arc(hx, hy, 7, 0, Math.PI*2);
             ctx.fillStyle = 'rgba(196,97,42,0.3)'; ctx.fill();
             ctx.beginPath(); ctx.arc(hx, hy, 5, 0, Math.PI*2);
@@ -5182,11 +5212,9 @@
           function animLoop() {
             if (!S8.running) return;
             requestAnimationFrame(animLoop);
-            S8.waves.forEach(w => {
-              if (!w.blocked) w.r += w.sp;
-            });
+            S8.waves.forEach(w => { w.r += w.sp; });
             drawAll();
-            if (S8.waves.every(w => w.r > cv.width * 1.2 || w.blocked)) {
+            if (S8.waves.every(w => w.r > cv.width * 1.5)) {
               S8.running = false;
             }
           }
