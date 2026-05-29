@@ -2586,7 +2586,7 @@
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    padding: 0;
+    padding: 0 0 2.5rem; /* spazio per i nav dot in fondo */
     gap: 0;
 }
 .s3-split {
@@ -3714,7 +3714,7 @@
       /* Griglia */
       dctx.strokeStyle = 'rgba(245,237,224,0.07)';
       dctx.lineWidth = 0.5;
-      const nLines = Math.ceil(Math.max(DW, DH) / gridPx) + 2;
+      const nLines = Math.min(14, Math.ceil(Math.max(DW, DH) / gridPx) + 2);
       for (let i = -nLines; i <= nLines; i++) {
         const xv = cx + i * gridPx, yv = cy + i * gridPx;
         dctx.beginPath(); dctx.moveTo(xv, 0); dctx.lineTo(xv, DH); dctx.stroke();
@@ -3778,7 +3778,15 @@
       presets.forEach(p => p.classList.toggle('s2-preset-btn--active', Math.abs(parseFloat(p.dataset.depth) - depth) < 0.01));
     }
 
-    slider.addEventListener('input', () => updateAll(parseFloat(slider.value)));
+    /* Throttle via rAF: al massimo un ridisegno per frame (60fps) */
+    let s3RafId = null;
+    let s3Pending = NaN;
+    function s3Schedule(depth) {
+      s3Pending = depth;
+      if (s3RafId) return;
+      s3RafId = requestAnimationFrame(() => { s3RafId = null; updateAll(s3Pending); });
+    }
+    slider.addEventListener('input', () => s3Schedule(parseFloat(slider.value)));
 
     let presetRafId = null;
     presets.forEach(btn => {
