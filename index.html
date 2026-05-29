@@ -4555,20 +4555,19 @@
           let wavesR = [];
           let frame  = 0;
           let paused = false;
-          let surfAlpha = 0;
-          let surfOffset = 0;
 
           const SPAWN = 110;
           const MAX_R = 420;
 
           function spawnPair() {
             waves.push(
-              { r:0, sp:1.8,  col:'#C4612A', lw:1.5, type:'P' },
-              { r:0, sp:1.08, col:'#3A7EC4', lw:2.5, type:'S' }
+              { r:0, sp:1.8,  col:'#C4612A', lw:1.5, type:'P'    },
+              { r:0, sp:1.08, col:'#3A7EC4', lw:2.5, type:'S'    },
+              { r:0, sp:0.84, col:'#D4893A', lw:1.5, type:'surf' }
             );
             wavesR.push(
-              { r:0, sp:1.8,  col:'#C4612A', lw:1.5, type:'P', surfaced:false },
-              { r:0, sp:1.08, col:'#3A7EC4', lw:2.5, type:'S', surfaced:false }
+              { r:0, sp:1.8,  col:'#C4612A', lw:1.5, type:'P', surfaced:false, surfOff:0 },
+              { r:0, sp:1.08, col:'#3A7EC4', lw:2.5, type:'S' }
             );
           }
 
@@ -4597,19 +4596,22 @@
               ctxL.stroke();
             });
 
-            const head = { P: null, S: null };
+            const head = { P: null, S: null, surf: null };
             waves.forEach(w => {
-              if (!head[w.type] || w.r > head[w.type].r) head[w.type] = w;
+              if (w.type in head && (!head[w.type] || w.r > head[w.type].r)) head[w.type] = w;
             });
-            ctxL.font = '400 9px "JetBrains Mono", monospace';
-            ['P','S'].forEach(t => {
+            ctxL.font = '400 8px "JetBrains Mono", monospace';
+            [
+              { t:'P',    ang:-Math.PI*0.35, label:'P · 6 km/s'       },
+              { t:'S',    ang:-Math.PI*0.27, label:'S · 3,6 km/s'      },
+              { t:'surf', ang:-Math.PI*0.18, label:'Superficiali'       },
+            ].forEach(({ t, ang, label }) => {
               const w = head[t];
               if (!w || w.r <= 10) return;
-              const ang = -Math.PI * 0.35;
-              const lx = ex + Math.cos(ang)*w.r + 6, ly = ey + Math.sin(ang)*w.r;
+              const lx = ex + Math.cos(ang)*w.r + 5, ly = ey + Math.sin(ang)*w.r;
               const alpha = Math.max(0, 1 - w.r/MAX_R);
-              ctxL.fillStyle = w.col + Math.round(alpha*200).toString(16).padStart(2,'0');
-              ctxL.fillText(t === 'P' ? 'P · 6 km/s' : 'S · 3,6 km/s', lx, ly);
+              ctxL.fillStyle = w.col + Math.round(alpha*190).toString(16).padStart(2,'0');
+              ctxL.fillText(label, lx, ly);
             });
 
             cities.forEach(c => {
@@ -4678,34 +4680,38 @@
               ctxR.strokeStyle = w.col + Math.round(alpha*200).toString(16).padStart(2,'0');
               ctxR.lineWidth = w.lw;
               ctxR.stroke();
-              if (!w.surfaced && w.r >= IY - SY) {
+              if (w.type === 'P' && !w.surfaced && w.r >= IY - SY) {
                 w.surfaced = true;
-                surfAlpha = 1;
               }
             });
             ctxR.restore();
 
-            if (surfAlpha > 0) {
-              surfOffset += 1;
-              surfAlpha = Math.max(0, surfAlpha - 0.003);
-              const lw = 1.5;
+            /* Onde superficiali — una generazione per ogni onda P che tocca la superficie */
+            wavesR.forEach(w => {
+              if (!w.surfaced || w.type !== 'P') return;
+              w.surfOff++;
+              const sof = w.surfOff;
+              const surfAl = Math.max(0, 1 - sof / W);
+              if (surfAl <= 0) return;
+              const STEPS = 80;
               for (let dir = -1; dir <= 1; dir += 2) {
-                for (let i = 0; i < 4; i++) {
-                  const ox = dir * (surfOffset + i * 22);
-                  const amp = 8 * surfAlpha;
-                  ctxR.beginPath();
-                  ctxR.moveTo(HX + ox, SY);
-                  for (let x = 0; x < 22; x++) {
-                    ctxR.lineTo(HX + ox + dir*x, SY + Math.sin(x * 0.28) * amp);
-                  }
-                  ctxR.strokeStyle = `rgba(212,137,58,${surfAlpha * 0.7})`;
-                  ctxR.lineWidth = lw; ctxR.stroke();
+                ctxR.beginPath();
+                for (let xi = 0; xi <= STEPS; xi++) {
+                  const px = HX + dir * (sof + xi * 2.5);
+                  const py = SY + Math.sin(xi * 0.45 - sof * 0.07) * 9 * surfAl;
+                  xi === 0 ? ctxR.moveTo(px, py) : ctxR.lineTo(px, py);
                 }
+                ctxR.strokeStyle = `rgba(212,137,58,${surfAl * 0.8})`;
+                ctxR.lineWidth = 2; ctxR.stroke();
               }
-              ctxR.fillStyle = `rgba(212,137,58,${surfAlpha})`;
-              ctxR.font = '400 8px "JetBrains Mono", monospace';
-              ctxR.fillText('Onde superficiali', HX - 45, SY - 8);
-            }
+              if (sof < 90) {
+                ctxR.fillStyle = `rgba(212,137,58,${surfAl})`;
+                ctxR.font = '400 8px "JetBrains Mono", monospace';
+                ctxR.textAlign = 'center';
+                ctxR.fillText('← Love · Rayleigh →', HX, SY - 8);
+                ctxR.textAlign = 'left';
+              }
+            });
 
             const pulse = Math.sin(frame * 0.07) * 0.3 + 0.7;
             ctxR.beginPath();
@@ -9314,15 +9320,19 @@ function s4_initSlide1() {
             });
     }
 
-    /* ── Parsing formato ASCII IRIS (righe "TIMESTAMP  AMPLITUDE") ── */
+    /* ── Parsing formato ASCII IRIS
+       Supporta sia SLIST (1 colonna: solo amplitudine) sia ascii2 (2 colonne: timestamp + ampiezza).
+       La riga header IRIS inizia con "TIMESERIES" — va saltata.            ── */
     function parseIRISAscii(text) {
         const lines = text.split('\n');
         const amps = [];
         for (const line of lines) {
             const trim = line.trim();
-            if (!trim || trim.startsWith('#')) continue;
+            // Salta righe vuote, commenti '#' e header 'TIMESERIES ...'
+            if (!trim || trim.startsWith('#') || /^TIMESERIES/i.test(trim)) continue;
             const parts = trim.split(/\s+/);
-            if (parts.length < 2) continue;
+            // Prende l'ultimo campo: funziona sia per formato 1-colonna (valore solo)
+            // che per 2-colonne (timestamp  valore)
             const v = parseFloat(parts[parts.length - 1]);
             if (!isNaN(v)) amps.push(v);
         }
@@ -9456,7 +9466,12 @@ function s4_initSlide1() {
         drawGrid(W, H);
 
         if (_st.mode === 'live') {
-            // Disegna il buffer live
+            // Genera 1 campione sintetico per frame: effetto ECG scrolling continuo.
+            // Quando arrivano dati reali da IRIS, applyLiveSamples() sovrascrive il buffer.
+            _st.liveV = (_st.liveV || 0) * 0.97 + (Math.random() - 0.5) * 0.05;
+            if (Math.random() < 0.001) _st.liveV += (Math.random() - 0.5) * 0.4;
+            _st.samples.push(_st.liveV);
+            if (_st.samples.length > _st.bufferMax) _st.samples.shift();
             drawTrace(_st.samples, W, H);
         } else {
             // Modalità storica: legge campioni incrementalmente
