@@ -2173,7 +2173,7 @@
 /* ── Nav dots + counter ── */
 .s2-nav {
     position: absolute;
-    bottom: 1.6rem;
+    bottom: 0.5rem;
     left: 50%;
     transform: translateX(-50%);
     z-index: 50;
@@ -3818,6 +3818,9 @@
     slider.value = 8.8;
     updateAll(parseFloat(slider.value));
   }
+
+  /* Esponi init slide 0 al scope globale per onSlideEnter verticale */
+  window._s2InitSlide0 = function() { if (!s2Triggered.has(0)) s2OnSlideEnter(0); };
 
 })();
 </script>
@@ -17999,6 +18002,7 @@ function onSlideEnter(i, el) {
             setTimeout(() => countUp(n), j * 180));
     }
     // sezione 1 (SCIENCE_IDX): gestita dal proprio IIFE
+    if (i === 3 && window._s2InitSlide0) window._s2InitSlide0(); // sezione 2 — mappa INGV
     if (i === 7) { // città (s-city ora all'indice 7, dopo l'aggiunta di s-section5)
         el.querySelectorAll('.damage-num[data-val]').forEach((n, j) =>
             setTimeout(() => countUp(n), 300 + j * 200));

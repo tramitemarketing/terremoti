@@ -76,7 +76,7 @@
 /* ── Nav dots + counter ── */
 .s2-nav {
     position: absolute;
-    bottom: 1.6rem;
+    bottom: 0.5rem;
     left: 50%;
     transform: translateX(-50%);
     z-index: 50;
@@ -1721,6 +1721,9 @@
     slider.value = 8.8;
     updateAll(parseFloat(slider.value));
   }
+
+  /* Esponi init slide 0 al scope globale per onSlideEnter verticale */
+  window._s2InitSlide0 = function() { if (!s2Triggered.has(0)) s2OnSlideEnter(0); };
 
 })();
 </script>
