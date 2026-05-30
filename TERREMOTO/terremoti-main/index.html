@@ -619,15 +619,7 @@
         .city-tl-item { display: flex; gap: 1.2rem; align-items: baseline; }
         .city-tl-time { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--terracotta); letter-spacing: 0.1em; min-width: 4.5rem; opacity: 0.8; }
         .city-tl-text { font-size: 0.82rem; color: rgba(245,237,224,0.38); line-height: 1.4; }
-        img.art-photo {
-          width: 100%;
-          max-height: 200px;
-          object-fit: cover;
-          filter: grayscale(0.35) sepia(0.15) contrast(1.05);
-          border: 1px solid rgba(196,97,42,0.25);
-          margin: 0.9rem 0 0.4rem;
-          display: block;
-        }
+        img.art-photo { width: 100%; max-height: 200px; object-fit: cover; filter: grayscale(0.35) sepia(0.15) contrast(1.05); border: 1px solid rgba(196,97,42,0.25); margin: 0.9rem 0 0.4rem; display: block; }
 
         /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• SLIDE · PATRIMONIO — CAROSELLO <- SINISTRA â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
         #s-art { background: #0a0604; overflow: hidden; padding: 0; }
@@ -1465,9 +1457,11 @@
 }
 .s1-years-counter {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.58rem;
-    letter-spacing: 0.18em;
-    color: rgba(58, 126, 196, 0.6);
+    font-size: 1.4rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--blue);
+    text-shadow: 0 0 18px rgba(58, 126, 196, 0.6);
     position: absolute;
     top: 2.5rem;
     right: 2.5rem;
@@ -2030,12 +2024,12 @@
                 <div class="s1-s5-col">
                   <div class="s1-narrative-block">
                     <h4 class="s1-narrative-title">Il movimento</h4>
-                    <p class="s1-body-text">Alle 3:32 del 6 aprile 2009 la roccia cedette. Il blocco orientale scese di 20–30 cm in meno di 7 secondi, liberando ~2.000 miliardi di joule di energia sotto forma di onde sismiche.</p>
+                    <p class="s1-body-text">Alle 3:32 del 6 aprile 2009 la roccia ha ceduto. Il blocco orientale è sceso di 20–30 cm in meno di 7 secondi, liberando ~2.000 miliardi di joule di energia sotto forma di onde sismiche.</p>
                   </div>
                   <hr class="s1-divider">
                   <div class="s1-narrative-block">
                     <h4 class="s1-narrative-title">Il contesto</h4>
-                    <p class="s1-body-text">L'Aquila era stata colpita nel 1461 e nel 1703. Ma 700 anni di silenzio avevano cancellato dalla memoria collettiva la pericolosità di quel suolo.</p>
+                    <p class="s1-body-text">L'Aquila era stata colpita nel 1461 e nel 1703. Ma 300 anni di silenzio avevano cancellato dalla memoria collettiva la pericolosità di quel suolo.</p>
                   </div>
                 </div>
               </div>
@@ -2951,7 +2945,7 @@
       <div class="s2-slide" id="s2-s4">
         <span class="s2-transition-eyebrow">SEZIONE 3 → LE ONDE SISMICHE</span>
         <h2 class="s2-transition-title">Ma come si propaga questa energia attraverso la roccia?</h2>
-        <p class="s2-transition-sub">Esistono tre tipi di onde sismiche. Tre comportamenti diversi. Tre effetti diversi.</p>
+        <p class="s2-transition-sub">Esistono quattro tipi di onde sismiche. Quattro comportamenti diversi. Quattro effetti diversi.</p>
         <span class="s2-bounce-arrow" aria-hidden="true">↓</span>
       </div>
 
@@ -11293,10 +11287,14 @@ function s4_initSlide2() {
 /* Header area mappa con titolo e eyebrow */
 .s5-s5-map-header {
     position: absolute;
-    top: 1.5rem;
+    bottom: 2rem;
     left: 2rem;
     z-index: 10;
     pointer-events: none;
+    background: rgba(8,8,8,0.72);
+    padding: 0.6rem 1rem 0.7rem;
+    border-left: 2px solid var(--terracotta);
+    backdrop-filter: blur(4px);
 }
 
 .s5-s5-eyebrow {
@@ -11366,7 +11364,7 @@ function s4_initSlide2() {
 .s5-anno-high {
     fill: none;
     stroke: #8B1A1A;
-    stroke-width: 1;
+    stroke-width: 0.1;
 }
 
 .s5-anno-high-dot {
@@ -11374,17 +11372,17 @@ function s4_initSlide2() {
 }
 
 .s5-anno-high-text {
-    fill: rgba(245, 237, 224, 0.85);
+    fill: rgba(245, 237, 224, 0.92);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.58rem;
-    letter-spacing: 0.06em;
+    font-size: 1.05px;
+    letter-spacing: 0em;
 }
 
 /* Stili annotazioni bassa pericolosità */
 .s5-anno-low {
     fill: none;
     stroke: #3A7EC4;
-    stroke-width: 1;
+    stroke-width: 0.1;
 }
 
 .s5-anno-low-dot {
@@ -11392,10 +11390,10 @@ function s4_initSlide2() {
 }
 
 .s5-anno-low-text {
-    fill: rgba(245, 237, 224, 0.6);
+    fill: rgba(245, 237, 224, 0.7);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 0.04em;
+    font-size: 0.95px;
+    letter-spacing: 0em;
 }
 
 /* Marker L'Aquila nell'overlay */
@@ -11419,8 +11417,8 @@ function s4_initSlide2() {
 .s5-aquila-svg-label {
     fill: var(--cream);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.58rem;
-    letter-spacing: 0.06em;
+    font-size: 1.1px;
+    letter-spacing: 0em;
     font-weight: 500;
     text-shadow: 0 1px 4px rgba(0,0,0,0.9);
 }
@@ -12243,7 +12241,7 @@ function s4_initSlide2() {
 
         <!-- Immagine mappa pericolosità -->
         <img
-            src="/assets/mappa-pericolosita-ingv.png"
+            src="https://zonesismiche.mi.ingv.it/mappa_ps_apr04/images/mappa_opcm3519.gif"
             id="s5-hazard-img"
             alt="Mappa pericolosità sismica INGV"
             onerror="this.style.display='none'; document.getElementById('s5-img-fallback').style.display='flex';"
@@ -12260,7 +12258,7 @@ function s4_initSlide2() {
             </p>
         </div>
 
-        <!-- Overlay SVG con annotazioni (usa coordinate percentuali) -->
+        <!-- Marker L'Aquila pulsante (solo il punto, senza etichette) -->
         <svg
             class="s5-hazard-svg-overlay"
             id="s5-hazard-overlay"
@@ -12268,63 +12266,8 @@ function s4_initSlide2() {
             viewBox="0 0 100 100"
             preserveAspectRatio="none"
         >
-            <!-- ── ANNOTAZIONI ALTA PERICOLOSITÀ (colore --blood #8B1A1A) ── -->
-
-            <!-- Friuli orientale -->
-            <circle class="s5-anno-high-dot" cx="76" cy="13" r="0.8"/>
-            <line class="s5-anno-high" x1="76" y1="13" x2="82" y2="10"/>
-            <text class="s5-anno-high-text" x="83" y="10.5" font-size="2.2">Friuli orientale</text>
-
-            <!-- Appennino umbro-marchigiano -->
-            <circle class="s5-anno-high-dot" cx="56" cy="44" r="0.8"/>
-            <line class="s5-anno-high" x1="56" y1="44" x2="62" y2="40"/>
-            <text class="s5-anno-high-text" x="63" y="40.5" font-size="2.2">App. umbro-marchigiano</text>
-
-            <!-- Campania-Basilicata -->
-            <circle class="s5-anno-high-dot" cx="54" cy="61" r="0.8"/>
-            <line class="s5-anno-high" x1="54" y1="61" x2="60" y2="57"/>
-            <text class="s5-anno-high-text" x="61" y="57.5" font-size="2.2">Campania–Basilicata</text>
-
-            <!-- Calabria -->
-            <circle class="s5-anno-high-dot" cx="50" cy="78" r="0.8"/>
-            <line class="s5-anno-high" x1="50" y1="78" x2="57" y2="75"/>
-            <text class="s5-anno-high-text" x="58" y="75.5" font-size="2.2">Calabria</text>
-
-            <!-- Sicilia orientale -->
-            <circle class="s5-anno-high-dot" cx="50" cy="89" r="0.8"/>
-            <line class="s5-anno-high" x1="50" y1="89" x2="57" y2="87"/>
-            <text class="s5-anno-high-text" x="58" y="87.5" font-size="2.2">Sicilia orientale</text>
-
-            <!-- ── ANNOTAZIONI BASSA PERICOLOSITÀ (colore --blue #3A7EC4) ── -->
-
-            <!-- Alpi occidentali -->
-            <circle class="s5-anno-low-dot" cx="25" cy="13" r="0.8"/>
-            <line class="s5-anno-low" x1="25" y1="13" x2="15" y2="10"/>
-            <text class="s5-anno-low-text" x="5" y="10.5" font-size="2.2">Alpi occidentali</text>
-
-            <!-- Pianura Padana -->
-            <circle class="s5-anno-low-dot" cx="38" cy="24" r="0.8"/>
-            <line class="s5-anno-low" x1="38" y1="24" x2="28" y2="20"/>
-            <text class="s5-anno-low-text" x="10" y="20.5" font-size="2.2">Pianura Padana</text>
-
-            <!-- Puglia -->
-            <circle class="s5-anno-low-dot" cx="69" cy="67" r="0.8"/>
-            <line class="s5-anno-low" x1="69" y1="67" x2="78" y2="64"/>
-            <text class="s5-anno-low-text" x="79" y="64.5" font-size="2.2">Puglia</text>
-
-            <!-- Sardegna -->
-            <circle class="s5-anno-low-dot" cx="22" cy="65" r="0.8"/>
-            <line class="s5-anno-low" x1="22" y1="65" x2="12" y2="62"/>
-            <text class="s5-anno-low-text" x="3" y="62.5" font-size="2.2">Sardegna</text>
-
-            <!-- ── MARKER L'AQUILA — pulsante ── -->
-            <!-- Posizione approssimativa L'Aquila sulla mappa INGV standard -->
-            <circle class="s5-aquila-svg-ring" cx="58" cy="47" r="1.8"/>
-            <circle class="s5-aquila-svg-core" cx="58" cy="47" r="0.9"/>
-            <!-- Linea guida verso etichetta -->
-            <line x1="58" y1="47" x2="65" y2="44" stroke="#8B1A1A" stroke-width="0.5"/>
-            <text class="s5-aquila-svg-label" x="65.5" y="43.5" font-size="2">L'Aquila · Zona 1</text>
-            <text class="s5-aquila-svg-label" x="65.5" y="46" font-size="1.8" fill="rgba(245,237,224,0.55)">Massima pericolosità</text>
+            <circle class="s5-aquila-svg-ring" cx="44.5" cy="53" r="1.0"/>
+            <circle class="s5-aquila-svg-core" cx="44.5" cy="53" r="0.5"/>
         </svg>
 
     </div><!-- fine #s5-map-area -->
@@ -14491,11 +14434,9 @@ function s5_initSlide5() {
       <!-- Nodi generati da s6InitTimeline() -->
     </div>
 
-    <blockquote style="margin-top:40px;padding:24px;border-left:3px solid var(--terracotta);font-style:italic;font-size:18px;color:rgba(245,237,224,0.85);line-height:1.7">
+    <blockquote class="s6-blockquote" style="margin-top:40px">
       "La lezione dell'Aquila non riguarda solo gli edifici. Riguarda come la scienza comunica l'incertezza al pubblico."
-      <cite style="display:block;margin-top:12px;font-style:normal;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(245,237,224,0.4);letter-spacing:1px">
-        — dibattito ancora aperto, IASPEI · IAEE · INGV · 2009–2025
-      </cite>
+      <cite class="s6-cite">— dibattito ancora aperto, IASPEI · IAEE · INGV · 2009–2025</cite>
     </blockquote>
   </div>
 </div>
@@ -15175,7 +15116,7 @@ function s6InitGRCanvas() {
     ctx.translate(12, H / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = 'center';
-    ctx.fillText('logâ‚₀(N/anno)', 0, 0);
+    ctx.fillText('log₁₀(N/anno)', 0, 0);
     ctx.restore();
 
     // Linea G-R
@@ -16475,12 +16416,6 @@ function s6InitOpenQuake() {
                 <span class="section-tag city-tag">Impatto urbano</span>
                 <h2 class="city-title">L'Aquila,<br>la città<br>spezzata</h2>
                 <p class="city-body">Alle 3:32 del mattino del 6 aprile 2009, una scossa di magnitudo 6.3 sveglia brutalmente L'Aquila. La città medievale, fondata nel 1254, subisce danni catastrofici. Il centro storico è devastato. Migliaia di edifici crollano o risultano gravemente inagibili. L'intera provincia è sconvolta.</p>
-                <div class="city-timeline">
-                    <div class="city-tl-item"><span class="city-tl-time">03:32:39</span><span class="city-tl-text">Scossa principale Mw 6.3 — epicentro Paganica</span></div>
-                    <div class="city-tl-item"><span class="city-tl-time">03:33</span><span class="city-tl-text">Prime chiamate ai soccorsi — centralini saturi</span></div>
-                    <div class="city-tl-item"><span class="city-tl-time">07:00</span><span class="city-tl-text">Stato di emergenza nazionale dichiarato</span></div>
-                    <div class="city-tl-item"><span class="city-tl-time">09 APR</span><span class="city-tl-text">Centro storico evacuato e transennato</span></div>
-                </div>
             </div>
             <div class="city-right">
                 <div class="damage-block" style="background:#0c0300;">
@@ -18821,7 +18756,7 @@ window.addEventListener('resize', () => { resizeHero(); });
   <button class="s1-reid-popup-close" id="s1-gr-close" aria-label="chiudi">&#10005;</button>
   <p class="s1-reid-popup-name">Legge di Gutenberg-Richter</p>
   <p class="s1-reid-popup-dates">Beno Gutenberg &amp; Charles F. Richter · Caltech, 1944</p>
-  <p class="s1-reid-popup-body">Formulata dai sismologi <strong>Beno Gutenberg</strong> (1889–1960) e <strong>Charles Francis Richter</strong> (1900–1985) al California Institute of Technology, la legge descrive la distribuzione statistica dei terremoti in funzione della magnitudo:<br><br><span style="font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--terracotta);letter-spacing:0.05em">logâ‚₀(N) = a &minus; b &middot; M</span><br><br>dove <em>N</em> è il numero di terremoti con magnitudo ≥ M in un dato periodo e area, <em>a</em> è una costante di attività sismica regionale, e <em>b</em> ≈ 1 è il <em>b-value</em> — quasi universale sulla crosta terrestre. Con b = 1, ogni unità di magnitudo in più riduce la frequenza di un fattore 10: i terremoti M 5 sono ~10× più rari degli M 4, gli M 6 ~100× più rari.</p>
+  <p class="s1-reid-popup-body">Formulata dai sismologi <strong>Beno Gutenberg</strong> (1889–1960) e <strong>Charles Francis Richter</strong> (1900–1985) al California Institute of Technology, la legge descrive la distribuzione statistica dei terremoti in funzione della magnitudo:<br><br><span style="font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--terracotta);letter-spacing:0.05em">log₁₀(N) = a &minus; b &middot; M</span><br><br>dove <em>N</em> è il numero di terremoti con magnitudo ≥ M in un dato periodo e area, <em>a</em> è una costante di attività sismica regionale, e <em>b</em> ≈ 1 è il <em>b-value</em> — quasi universale sulla crosta terrestre. Con b = 1, ogni unità di magnitudo in più riduce la frequenza di un fattore 10: i terremoti M 5 sono ~10× più rari degli M 4, gli M 6 ~100× più rari.</p>
   <div class="s1-reid-popup-geo">
     <span>&#9679; Valida per qualsiasi area sismica del mondo</span>
     <span>b-value Italia peninsulare: 0.9 – 1.1 &nbsp;·&nbsp; zona L'Aquila: ~0.95</span>
