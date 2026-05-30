@@ -591,7 +591,8 @@
 
         .city-grid { display: grid; grid-template-columns: 1fr 1fr; width: 100%; height: 100%; }
         .city-left {
-            background: linear-gradient(150deg, #120800 0%, #1e0d00 100%);
+            background: linear-gradient(150deg, rgba(18,8,0,0.88) 0%, rgba(30,13,0,0.82) 100%),
+                        url('https://upload.wikimedia.org/wikipedia/commons/6/64/Emergenza_Terremoto_Abruzzo_2009_-_12.jpg') center/cover no-repeat;
             display: flex; flex-direction: column; justify-content: center;
             padding: 5rem;
             position: relative; overflow: hidden;
@@ -16433,7 +16434,7 @@ function s6InitOpenQuake() {
                     <div class="damage-label">Edifici danneggiati</div>
                     <div class="damage-sub">Centro storico e provincia</div>
                 </div>
-                <div class="damage-block" style="background:#08050a;">
+                <div class="damage-block" style="background: linear-gradient(rgba(8,5,10,0.80),rgba(8,5,10,0.75)), url('https://i.ibb.co/23JPcPNk/foto-distruzione.jpg') center/cover no-repeat;">
                     <div class="damage-num" data-val="67000" data-dec="0">—</div>
                     <div class="damage-label">Sfollati</div>
                     <div class="damage-sub">Senza casa in una notte</div>
@@ -16452,7 +16453,8 @@ function s6InitOpenQuake() {
               <span class="art-sl-eyebrow">CASO STUDIO - XVIII SEC. - BAROCCO AQUILANO</span>
               <span class="art-sl-counter">06 - 06</span>
               <h3 class="art-sl-title">Chiesa di Santa Maria<br>del <em>Suffragio</em></h3>
-              <p class="art-sl-body">Conosciuta come "delle Anime Sante", è uno dei gioielli barocchi del centro storico aquilano. Gravemente danneggiata — i meccanismi di ribaltamento hanno compromesso la facciata e parte della struttura interna. Il restauro, ancora in corso, è parte di un processo che dura da 15 anni.</p>
+              <p class="art-sl-body">Conosciuta come "delle Anime Sante", è uno dei gioielli barocchi del centro storico aquilano. La sua <strong style="color:var(--terracotta)">cupola</strong> è opera di <strong style="color:var(--cream)">Giuseppe Valadier</strong> (1762–1839), il grande architetto e urbanista romano celebre per la sistemazione di Piazza del Popolo a Roma. Gravemente danneggiata — i meccanismi di ribaltamento hanno compromesso la facciata e parte della struttura interna.</p>
+              <p class="art-sl-body" style="margin-top:0.7rem">Il restauro ha beneficiato di un contributo straordinario del <strong style="color:var(--cream)">governo francese</strong>, in riconoscimento del legame storico tra Valadier e la cultura neoclassica europea. Un gesto di solidarietà culturale che ha accelerato il recupero della cupola. Il processo di restauro, ancora in corso, dura da oltre 15 anni.</p>
               <div class="art-sl-dmg-bar-wrap"><div class="art-sl-dmg-bar" data-dmg="60"></div></div>
               <div class="art-sl-dmg-label">60% — Danni significativi</div>
               <img class="art-photo" src="https://upload.wikimedia.org/wikipedia/commons/3/30/AnimeSante.jpg" alt="Chiesa delle Anime Sante dopo il sisma del 6 aprile 2009" loading="lazy">
@@ -18067,7 +18069,7 @@ function onSlideEnter(i, el) {
     }
     // sezione 1 (SCIENCE_IDX): gestita dal proprio IIFE
     if (i === 3 && window._s2InitSlide0) window._s2InitSlide0(); // sezione 2 — mappa INGV
-    if (i === 7) { // città (s-city ora all'indice 7, dopo l'aggiunta di s-section5)
+    if (i === 8) { // città (s-city è all'indice 8, dopo s-section1–6)
         el.querySelectorAll('.damage-num[data-val]').forEach((n, j) =>
             setTimeout(() => countUp(n), 300 + j * 200));
     }
