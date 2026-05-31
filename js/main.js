@@ -304,7 +304,7 @@ document.addEventListener('keydown', e => {
       .catch(() => _renderMapCanvas([]));
   }
 
-•â• BRANCH ANIMATION — Slide 2 â•â•â• */
+  /* ── BRANCH ANIMATION — Slide 2 ── */
 
   function initBranchAnim() {
     const mainPath  = document.getElementById('s1-b-main');
