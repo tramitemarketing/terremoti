@@ -269,6 +269,7 @@
 }
 .s1-link:hover { color: var(--ochre); border-color: var(--ochre); }
 #s1-map { width: 100%; height: 100%; background: #060e18; touch-action: none; }
+#s1-map-canvas { width: 100%; height: 100%; display: block; background: #080808; }
 .s1-map-wrap { overscroll-behavior: contain; }
 .s1-popup .leaflet-popup-content-wrapper {
     background: rgba(8,8,8,0.95);
@@ -708,10 +709,15 @@
 }
 #s1-zones-map {
     width: 100%;
-    height: 310px;
     background: #080808;
     border: 1px solid rgba(196,97,42,0.2);
     border-radius: 2px;
+    overflow: hidden;
+}
+#s1-zones-map svg {
+    width: 100%;
+    height: auto;
+    display: block;
 }
 .s1-zones-legend {
     display: flex;
