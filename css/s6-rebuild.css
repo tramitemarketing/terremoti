@@ -1,0 +1,311 @@
+/* ===== SEZIONE 6 — Stili condivisi + slide 1-4 ===== */
+
+#s-section6 {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  background: var(--black);
+  color: var(--cream);
+  font-family: 'Cormorant Garamond', serif;
+  display: block !important;
+}
+
+#s6-track {
+  display: flex;
+  width: calc(100vw * 14);
+  height: 100vh;
+  transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+  will-change: transform;
+}
+
+.s6-slide {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 60px 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Frecce navigazione */
+#s6-prev,
+#s6-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid rgba(245, 237, 224, 0.4);
+  color: var(--cream);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: border-color 0.3s, color 0.3s;
+}
+
+#s6-prev {
+  left: 20px;
+}
+
+#s6-next {
+  right: 20px;
+}
+
+#s6-prev:hover,
+#s6-next:hover {
+  border-color: var(--terracotta);
+  color: var(--terracotta);
+}
+
+/* Nav bottom: dots + counter */
+.s6-nav {
+  position: absolute;
+  bottom: 1.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+.s6-dots-row {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.s6-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(196, 97, 42, 0.2);
+  cursor: pointer;
+  transition: all 0.35s ease;
+  border: none;
+  padding: 0;
+}
+
+.s6-dot.active {
+  background: var(--terracotta);
+  transform: scale(1.9);
+}
+
+.s6-counter {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.56rem;
+  letter-spacing: 0.28em;
+  color: rgba(245, 237, 224, 0.2);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Tipografia comune */
+.s6-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--ochre);
+  text-transform: uppercase;
+  margin: 0 0 16px;
+}
+
+.s6-h1-main {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 64px;
+  line-height: 1.0;
+  color: var(--cream);
+  font-weight: normal;
+  margin: 0 0 16px;
+}
+
+.s6-subtitle-main {
+  font-size: 20px;
+  color: rgba(245, 237, 224, 0.7);
+  font-style: italic;
+  margin: 0 0 40px;
+}
+
+.s6-h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 42px;
+  line-height: 1.15;
+  color: var(--cream);
+  font-weight: normal;
+  margin: 0 0 24px;
+}
+
+/* Slide 1 */
+.s6-cards-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.s6-card {
+  background: var(--charcoal);
+  border: 1px solid rgba(196, 97, 42, 0.2);
+  padding: 28px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(245, 237, 224, 0.85);
+}
+
+.s6-card h3 {
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 2px;
+  color: var(--terracotta);
+  text-transform: uppercase;
+  margin: 0 0 12px;
+}
+
+.s6-card p {
+  margin: 0;
+}
+
+.s6-blockquote {
+  margin: 40px 0 0;
+  font-style: italic;
+  font-size: 22px;
+  text-align: center;
+  color: var(--cream);
+  border: none;
+  padding: 0;
+}
+
+.s6-cite {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: rgba(245, 237, 224, 0.5);
+  display: block;
+  margin-top: 8px;
+  font-style: normal;
+}
+
+/* Slide 2 + 3 — layout split */
+.s6-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  height: auto;
+  align-items: start;
+}
+
+.s6-system-box {
+  background: var(--charcoal);
+  border: 1px solid var(--terracotta);
+  padding: 13px 16px;
+  margin-bottom: 10px;
+}
+
+.s6-system-box h4 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--terracotta);
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+
+.s6-system-box p {
+  margin: 0;
+  color: rgba(245, 237, 224, 0.8);
+}
+
+.s6-info-box {
+  background: rgba(212, 137, 58, 0.1);
+  border: 1px solid var(--ochre);
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(245, 237, 224, 0.8);
+  margin-top: 16px;
+}
+
+/* Slide 3 */
+.s6-chart-wrap {
+  width: 100%;
+  max-width: 460px;
+}
+
+.s6-psha-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+
+.s6-blood-box {
+  background: rgba(139, 26, 26, 0.15);
+  border: 1px solid var(--blood);
+  padding: 20px;
+  margin-top: 20px;
+  font-size: 15px;
+  line-height: 1.75;
+  color: rgba(245, 237, 224, 0.85);
+  font-style: italic;
+}
+
+/* Slide 4 — model cards */
+.s6-model-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+.s6-model-card {
+  background: var(--charcoal);
+  border: 1px solid rgba(196, 97, 42, 0.3);
+  padding: 24px;
+  cursor: pointer;
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.s6-model-card:hover {
+  border-color: var(--terracotta);
+  transform: translateY(-4px);
+}
+
+.s6-model-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  background: rgba(196, 97, 42, 0.15);
+  color: var(--terracotta);
+  padding: 4px 8px;
+  display: inline-block;
+  margin-top: 12px;
+  letter-spacing: 0.5px;
+}
+
+.s6-model-icon {
+  height: 60px;
+  width: 100%;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.s6-model-icon svg {
+  height: 60px;
+  width: auto;
+}
+@keyframes s6BounceDown {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(10px); }
+}
+@keyframes s6TlBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(3px); }
+}
+.s6-eng-content { display: flex; gap: 48px; padding: 32px 0; align-items: flex-start; }
+.s6-left { flex: 1; }
+.s6-right { flex: 1; }
