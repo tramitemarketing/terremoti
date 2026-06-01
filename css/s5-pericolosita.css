@@ -111,117 +111,20 @@
     margin-bottom: 0.8rem;
 }
 
-/* ── 2. Slide 1 — layout 2 colonne ── */
+/* ── 2. Slide 1 — mappa sinistra, box DPC destra ── */
 
 #s5-s1 {
     display: grid;
-    grid-template-columns: 320px 1fr;
+    grid-template-columns: 1fr 300px;
     width: 100%;
     height: 100%;
     background: #080808;
 }
-
-.s5-s1-left {
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
-    padding: 2.8rem 1.8rem 2rem 2.8rem;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(196,97,42,0.2) transparent;
-    border-right: 1px solid rgba(245,237,224,0.06);
-    z-index: 10;
-    background: rgba(8,8,8,0.97);
-}
-
-.s5-s1-title {
-    font-family: 'Cormorant Garamond', Georgia, serif;
-    font-size: clamp(2rem, 3.5vw, 3.8rem);
-    font-weight: 300;
-    line-height: 1.05;
-    color: var(--cream);
-    margin: 0;
-}
-
-/* Box DPC */
-.s5-dpc-box {
-    background: rgba(245,237,224,0.03);
-    border: 1px solid rgba(196,97,42,0.2);
-    border-radius: 3px;
-    padding: 1rem 1.1rem;
-}
-.s5-dpc-box-header { margin-bottom: 0.45rem; }
-.s5-dpc-box-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.48rem;
-    letter-spacing: 0.3em;
-    color: rgba(196,97,42,0.65);
-    text-transform: uppercase;
-}
-.s5-dpc-box-text {
-    font-family: 'Cormorant Garamond', Georgia, serif;
-    font-size: 0.92rem;
-    line-height: 1.75;
-    color: rgba(245,237,224,0.65);
-    margin: 0;
-}
-.s5-dpc-zones-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    margin-top: 0.8rem;
-    padding-top: 0.7rem;
-    border-top: 1px solid rgba(245,237,224,0.07);
-}
-.s5-dpc-zone-row {
-    display: grid;
-    grid-template-columns: 10px 46px 80px 1fr;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.5rem;
-    letter-spacing: 0.06em;
-}
-.s5-dpc-zone-dot {
-    width: 9px; height: 9px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-.s5-dpc-zone-num { color: rgba(245,237,224,0.8); }
-.s5-dpc-zone-pga { color: rgba(245,237,224,0.45); }
-.s5-dpc-zone-desc { color: rgba(245,237,224,0.3); text-transform: uppercase; letter-spacing: 0.12em; }
-
-/* Controlli compatti */
-.s5-s1-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    padding-top: 0.6rem;
-    border-top: 1px solid rgba(245,237,224,0.07);
-}
-.s5-s1-controls label {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.56rem;
-    letter-spacing: 0.06em;
-    color: rgba(245,237,224,0.6);
-    cursor: pointer;
-}
-.s5-s1-controls input[type="checkbox"],
-.s5-s1-controls input[type="radio"] {
-    accent-color: var(--terracotta);
-    cursor: pointer;
-}
-
-.s5-s1-right {
+.s5-s1-map {
     position: relative;
     width: 100%;
     height: 100%;
 }
-
-/* Mappa Leaflet: occupa la colonna destra */
 #s5-map {
     width: 100%;
     height: 100%;
@@ -230,6 +133,83 @@
     background: #080808;
 }
 .leaflet-container { background: #080808 !important; }
+.s5-s1-right {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 2.2rem 1.6rem 1.6rem 1.4rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(196,97,42,0.2) transparent;
+    border-left: 1px solid rgba(245,237,224,0.07);
+    background: rgba(8,8,8,0.97);
+}
+.s5-s1-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(1.6rem, 2.5vw, 2.8rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--cream);
+    margin: 0;
+}
+.s5-dpc-box {
+    background: rgba(245,237,224,0.03);
+    border: 1px solid rgba(196,97,42,0.2);
+    border-radius: 3px;
+    padding: 0.9rem 1rem;
+}
+.s5-dpc-box-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.46rem;
+    letter-spacing: 0.28em;
+    color: rgba(196,97,42,0.65);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.4rem;
+}
+.s5-dpc-box-text {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: rgba(245,237,224,0.62);
+    margin: 0;
+}
+.s5-dpc-zones-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-top: 0.7rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba(245,237,224,0.07);
+}
+.s5-dpc-zone-row {
+    display: grid;
+    grid-template-columns: 9px 42px 72px 1fr;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.48rem;
+    letter-spacing: 0.05em;
+}
+.s5-dpc-zone-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.s5-dpc-zone-num { color: rgba(245,237,224,0.8); }
+.s5-dpc-zone-pga { color: rgba(245,237,224,0.4); }
+.s5-dpc-zone-desc { color: rgba(245,237,224,0.28); text-transform:uppercase; letter-spacing:0.1em; }
+.s5-s1-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba(245,237,224,0.07);
+}
+.s5-s1-controls label {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.52rem; letter-spacing: 0.06em;
+    color: rgba(245,237,224,0.55); cursor: pointer;
+}
+.s5-s1-controls input { accent-color: var(--terracotta); cursor: pointer; }
+
 
 /* Sovrascrittura stili Leaflet per tema scuro */
 #s5-map .leaflet-tile-pane { filter: brightness(0.92); }

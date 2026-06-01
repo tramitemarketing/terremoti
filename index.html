@@ -1793,21 +1793,15 @@
 
         <!-- SLIDE 1: Mappa classificazione sismica -->
         <div class="s5-slide" id="s5-s1">
-
-            <!-- Colonna sinistra: info DPC -->
-            <div class="s5-s1-left">
+            <div class="s5-s1-map"><div id="s5-map"></div></div>
+            <div class="s5-s1-right">
                 <span class="s5-eyebrow">CLASSIFICAZIONE SISMICA DPC · INGV</span>
-                <h2 class="s5-s1-title">Dove trema<br>l'Italia.</h2>
-
+                <h2 class="s5-s1-title">Dove trema l'Italia.</h2>
                 <div class="s5-dpc-box">
-                    <div class="s5-dpc-box-header">
-                        <span class="s5-dpc-box-label">CHE COS'È IL DPC</span>
-                    </div>
-                    <p class="s5-dpc-box-text">Il <strong>Dipartimento della Protezione Civile</strong> classifica ogni comune in una delle 4 zone sismiche, basandosi sui valori di <strong>PGA</strong> stimati dall'INGV. La classificazione stabilisce le norme edilizie antisismiche obbligatorie: più alta è la zona, più severi i requisiti costruttivi.</p>
-                    <div class="s5-dpc-box-header" style="margin-top:0.9rem">
-                        <span class="s5-dpc-box-label">COME VIENE CALCOLATA</span>
-                    </div>
-                    <p class="s5-dpc-box-text">L'INGV calcola la <em>pericolosità probabilistica</em> (PSHA): stima la probabilità che il suolo raggiunga una certa accelerazione nei prossimi 50 anni, integrando catalogo storico, modelli di attenuazione e zonazione sismogenetica. Il DPC trasforma questo valore continuo in 4 classi normative.</p>
+                    <span class="s5-dpc-box-label">CHE COS'È IL DPC</span>
+                    <p class="s5-dpc-box-text">Il <strong>Dipartimento della Protezione Civile</strong> classifica ogni comune in una delle 4 zone sismiche in base ai valori di <strong>PGA</strong> stimati dall'INGV. Più alta è la zona, più severi i requisiti costruttivi antisismici obbligatori per legge.</p>
+                    <span class="s5-dpc-box-label" style="display:block;margin-top:0.7rem">COME VIENE CALCOLATA</span>
+                    <p class="s5-dpc-box-text">L'INGV usa la <em>PSHA</em> (Probabilistic Seismic Hazard Analysis): stima la probabilità che il suolo raggiunga una certa accelerazione nei prossimi 50 anni, integrando catalogo storico, zonazione sismogenetica e modelli di attenuazione. Il DPC converte il valore continuo in 4 classi normative.</p>
                     <div class="s5-dpc-zones-grid">
                         <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(139,26,26)"></span><span class="s5-dpc-zone-num">Zona 1</span><span class="s5-dpc-zone-pga">PGA &gt; 0.25g</span><span class="s5-dpc-zone-desc">Massima</span></div>
                         <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(196,97,42)"></span><span class="s5-dpc-zone-num">Zona 2</span><span class="s5-dpc-zone-pga">0.15&ndash;0.25g</span><span class="s5-dpc-zone-desc">Alta</span></div>
@@ -1815,28 +1809,19 @@
                         <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(58,126,196)"></span><span class="s5-dpc-zone-num">Zona 4</span><span class="s5-dpc-zone-pga">&lt; 0.05g</span><span class="s5-dpc-zone-desc">Bassa</span></div>
                     </div>
                 </div>
-
                 <div class="s5-s1-controls">
                     <label><input type="checkbox" id="s5-toggle-zones" checked> Zone sismiche DPC</label>
-                    <label><input type="checkbox" id="s5-toggle-quakes" checked> Terremoti ultimi 12 mesi</label>
-                    <div class="s5-magfilter-group" style="margin-top:0.5rem">
+                    <label><input type="checkbox" id="s5-toggle-quakes" checked> Terremoti 12 mesi</label>
+                    <div class="s5-magfilter-group">
                         <span class="s5-group-label">Magnitudine minima</span>
                         <label><input type="radio" name="s5-magfilter" value="all" checked> Tutti</label>
-                        <label><input type="radio" name="s5-magfilter" value="3"> M&#8805;3.0</label>
-                        <label><input type="radio" name="s5-magfilter" value="4"> M&#8805;4.0</label>
+                        <label><input type="radio" name="s5-magfilter" value="3"> M&#8805;3</label>
+                        <label><input type="radio" name="s5-magfilter" value="4"> M&#8805;4</label>
                     </div>
-                    <div class="s5-event-counter" style="margin-top:0.5rem">
-                        <span id="s5-quake-count">&#8212;</span> eventi M&#8805;2.5
-                    </div>
+                    <div class="s5-event-counter"><span id="s5-quake-count">&#8212;</span> eventi M&#8805;2.5</div>
                     <div id="s5-api-status" style="display:none"></div>
                 </div>
             </div>
-
-            <!-- Colonna destra: mappa Leaflet -->
-            <div class="s5-s1-right">
-                <div id="s5-map"></div>
-            </div>
-
         </div><!-- fine #s5-s1 -->
 
         <!-- Slide 2-6: placeholder vuoti, riempiti dagli altri agenti -->
@@ -2422,6 +2407,7 @@
 
     <!-- Area mappa 70% -->
     <div id="s5-map-area">
+        <div id="s5-zone-map" style="position:absolute;inset:0;background:#080808;"></div>
 
         <!-- Header titolo sovrapposto alla mappa -->
         <div class="s5-s5-map-header">
