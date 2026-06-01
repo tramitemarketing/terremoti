@@ -28,12 +28,12 @@ function s5_initSlide1() {
     // Bounds: estensione approssimativa del territorio italiano
     map.fitBounds([[35.0, 6.0], [47.5, 19.0]]);
 
-    // Tiles CartoDB Dark Matter
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        subdomains: 'abcd',
-        maxZoom: 10,
-        minZoom: 5
-    }).addTo(map);
+    // Sfondo scuro locale (nessun tile CDN)
+    var REG_FILL = {1:'rgba(139,26,26,0.35)',2:'rgba(196,97,42,0.28)',3:'rgba(212,137,58,0.18)',4:'rgba(88,160,88,0.12)'};
+    var REG_ZONES = {'calabria':1,'campania':1,'basilicata':1,'sicilia':1,'abruzzo':1,'molise':2,'friuli venezia giulia':2,'marche':2,'umbria':2,'lazio':2,'liguria':3,'toscana':3,'emilia-romagna':3,'veneto':3,'piemonte':3,'lombardia':3,'trentino-alto adige/sudtirol':3,'puglia':3,"valle d'aosta":4,'sardegna':4};
+    fetch('italy-regions.json').then(function(r){return r.json();}).then(function(gj){
+        L.geoJSON(gj,{style:function(f){var z=REG_ZONES[(f.properties.name||'').toLowerCase()]||3;return{fillColor:REG_FILL[z],fillOpacity:1,color:'rgba(245,237,224,0.08)',weight:0.5};}}).addTo(map);
+    }).catch(function(){});
 
     // Salva istanza sulla S5 per uso esterno
     S5.mapInstance = map;

@@ -128,7 +128,9 @@
     top: 0;
     left: 0;
     z-index: 1;
+    background: #080808;
 }
+.leaflet-container { background: #080808 !important; }
 
 /* Sovrascrittura stili Leaflet per tema scuro */
 #s5-map .leaflet-tile-pane { filter: brightness(0.92); }

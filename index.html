@@ -1002,17 +1002,10 @@
       <div id="s4-s3-inner">
 
         <div class="s4-eyebrow">2000 ANNI DI SISMOLOGIA</div>
-        <h2 class="s4-title" style="text-align:center">Da Zhang Heng a oggi: 2000 anni di ascolto.</h2>
+        <h2 class="s4-title">Da Zhang Heng a oggi: 2000 anni di ascolto.</h2>
 
-        <!-- Wrapper timeline sub-carosello -->
-        <div id="s4-hist-wrap">
-
-          <!-- Frecce navigazione sub-carosello -->
-          <button id="s4-hist-prev" class="s4-hist-arrow" aria-label="Precedente invenzione">&#8592;</button>
-          <button id="s4-hist-next" class="s4-hist-arrow" aria-label="Successiva invenzione">&#8594;</button>
-
-          <!-- Track card storiche -->
-          <div id="s4-hist-track" role="list">
+        <!-- Grid 3×2: tutte le card visibili senza scorrere -->
+        <div id="s4-hist-track" role="list">
 
             <!-- Card 1 — Zhang Heng 132 d.C. -->
             <div class="s4-hcard" role="listitem">
@@ -1188,8 +1181,7 @@
               <p class="s4-hcard-text">I sismografi moderni sono sensori MEMS o sismometri a banda larga collegati in rete digitale. La stazione AQU trasmette dati ogni secondo ai server INGV a Roma. Oggi oltre 500 stazioni nella Rete Sismica Nazionale italiana.</p>
             </div><!-- /card 6 -->
 
-          </div><!-- /s4-hist-track -->
-        </div><!-- /s4-hist-wrap -->
+        </div><!-- /s4-hist-track -->
 
       </div><!-- /s4-s3-inner -->
     </div><!-- /s4-s3 -->
@@ -1289,11 +1281,11 @@
           <div id="s4-nomo-controls" style="display:none">
             <label class="s4-input-row">
               <span>Gap P-S (s)</span>
-              <input type="number" id="s4-nomo-gap" min="0.1" max="60" step="0.1" value="0.8" aria-label="Gap tempo P-S in secondi">
+              <input type="number" id="s4-nomo-gap" min="0.1" max="60" step="0.1" value="8.0" aria-label="Gap tempo P-S in secondi">
             </label>
             <label class="s4-input-row">
               <span>Ampiezza (mm)</span>
-              <input type="number" id="s4-nomo-amp" min="0.1" max="100" step="0.1" value="23" aria-label="Ampiezza massima in millimetri">
+              <input type="number" id="s4-nomo-amp" min="0.1" max="10000" step="1" value="5000" aria-label="Ampiezza massima in millimetri">
             </label>
           </div>
 
@@ -1311,47 +1303,41 @@
     <div class="s4-slide" id="s4-s6" data-slide="5">
       <div id="s4-s6-inner">
 
-        <div class="s4-eyebrow">CALCOLO IN TEMPO REALE · INGV</div>
-        <h2 class="s4-title">L'ultimo terremoto italiano:<br>come è stata calcolata la magnitudo.</h2>
+        <div id="s4-s6-header">
+          <div class="s4-eyebrow">CALCOLO IN TEMPO REALE · INGV</div>
+          <h2 class="s4-title">L'ultimo terremoto italiano:<br>come è stata calcolata la magnitudo.</h2>
+        </div>
 
-        <!-- Step sequenziali rivelati da JS -->
+        <!-- Griglia 2×2: 4 step sempre in vista -->
         <div id="s4-calc-steps">
 
           <!-- Step 1 — L'evento -->
           <div class="s4-step-card" id="s4-step1">
-            <div class="s4-step-num" aria-hidden="true">01</div>
-            <div class="s4-step-content">
-              <div class="s4-step-label">L'EVENTO</div>
-              <div id="s4-ev-desc" aria-live="polite">Caricamento dati INGV…</div>
-            </div>
+            <div class="s4-step-num">01</div>
+            <div class="s4-step-label">L'EVENTO</div>
+            <div id="s4-ev-desc" aria-live="polite">Caricamento dati INGV…</div>
           </div>
 
           <!-- Step 2 — La stazione più vicina -->
-          <div class="s4-step-card" id="s4-step2" style="opacity:0" aria-hidden="true">
-            <div class="s4-step-num" aria-hidden="true">02</div>
-            <div class="s4-step-content">
-              <div class="s4-step-label">LA STAZIONE PIÙ VICINA</div>
-              <div id="s4-sta-desc" aria-live="polite">—</div>
-            </div>
+          <div class="s4-step-card" id="s4-step2" aria-hidden="true">
+            <div class="s4-step-num">02</div>
+            <div class="s4-step-label">LA STAZIONE PIÙ VICINA</div>
+            <div id="s4-sta-desc" aria-live="polite">—</div>
           </div>
 
           <!-- Step 3 — Il calcolo -->
-          <div class="s4-step-card" id="s4-step3" style="opacity:0" aria-hidden="true">
-            <div class="s4-step-num" aria-hidden="true">03</div>
-            <div class="s4-step-content">
-              <div class="s4-step-label">IL CALCOLO</div>
-              <div id="s4-calc-desc" aria-live="polite">—</div>
-              <div class="s4-step-note">Stima didattica dalla magnitudo + distanza — i valori esatti richiedono il sismogramma grezzo della stazione</div>
-            </div>
+          <div class="s4-step-card" id="s4-step3" aria-hidden="true">
+            <div class="s4-step-num">03</div>
+            <div class="s4-step-label">IL CALCOLO</div>
+            <div id="s4-calc-desc" aria-live="polite">—</div>
+            <div class="s4-step-note">Stima didattica dalla magnitudo + distanza — i valori esatti richiedono il sismogramma grezzo della stazione</div>
           </div>
 
           <!-- Step 4 — Verifica -->
-          <div class="s4-step-card" id="s4-step4" style="opacity:0" aria-hidden="true">
-            <div class="s4-step-num" aria-hidden="true">04</div>
-            <div class="s4-step-content">
-              <div class="s4-step-label">VERIFICA</div>
-              <div id="s4-verify-desc" aria-live="polite">—</div>
-            </div>
+          <div class="s4-step-card" id="s4-step4" aria-hidden="true">
+            <div class="s4-step-num">04</div>
+            <div class="s4-step-label">VERIFICA</div>
+            <div id="s4-verify-desc" aria-live="polite">—</div>
           </div>
 
         </div><!-- /s4-calc-steps -->
@@ -1366,64 +1352,54 @@
     <div class="s4-slide" id="s4-s7" data-slide="6">
       <div id="s4-s7-inner">
 
-        <div class="s4-eyebrow">MERCALLI · CANCANI · SIEBERG · 1917</div>
-        <h2 class="s4-title">Non l'energia. Gli effetti.</h2>
-        <p class="s4-body-text" style="text-align:center; max-width:600px; margin:0 auto 1rem">
-          La scala MCS misura ciò che le persone e gli edifici subiscono — non ciò che avviene
-          in profondità. È empirica: ogni grado corrisponde a effetti osservati e documentati.
-          Varia da luogo a luogo per lo stesso evento.
-        </p>
-
-        <!-- Slider MCS I → XII -->
-        <div class="s4-mcs-slider-wrap">
-          <span class="s4-slider-label-sm" aria-hidden="true">I</span>
-          <input type="range" id="s4-mcs-slider" min="1" max="12" value="6" step="1" aria-label="Grado MCS da I a XII" aria-valuetext="Grado VI">
-          <span class="s4-slider-label-sm" aria-hidden="true">XII</span>
+        <!-- Header -->
+        <div id="s4-s7-header">
+          <div class="s4-eyebrow">MERCALLI · CANCANI · SIEBERG · 1917</div>
+          <h2 class="s4-title">Non l'energia. Gli effetti.</h2>
+          <p id="s4-s7-intro">La scala MCS misura ciò che persone e edifici subiscono: empirica, varia da luogo a luogo per lo stesso evento.</p>
         </div>
 
-        <!-- Numero romano del grado corrente -->
-        <div id="s4-mcs-roman" aria-live="polite" aria-atomic="true">VI</div>
-
-        <!-- Tre zone contenuto dinamico -->
-        <div class="s4-mcs-zones">
-
-          <!-- Zona 1: Illustrazione SVG (gestita da JS) -->
-          <div id="s4-mcs-illus" aria-live="polite" aria-atomic="true">
-            <!-- JS inserisce qui un SVG per ogni grado -->
-          </div>
-
-          <!-- Zona 2: Descrizione effetti (gestita da JS) -->
-          <div id="s4-mcs-text" aria-live="polite" aria-atomic="true">
-            <!-- JS inserisce qui il testo descrittivo del grado -->
-          </div>
-
-          <!-- Zona 3: Confronto L'Aquila 2009 -->
-          <div id="s4-mcs-compare">
-            <div class="s4-compare-header">L'AQUILA 2009</div>
-            <div class="s4-compare-mag">Mw 6.3 — uguale ovunque</div>
-            <div id="s4-mcs-compare-label" aria-live="polite">Come la periferia de L'Aquila</div>
-          </div>
-
-        </div><!-- /s4-mcs-zones -->
-
-        <!-- Placeholder foto per gradi VIII–XII (src vuoti, compilati dall'utente) -->
-        <div id="s4-mcs-photos" style="display:none" aria-hidden="true">
-          <figure class="s4-mcs-photo-wrap" data-grade="8">
-            <img class="user-mcs-photo" data-grade="8" src="" alt="Danni grado VIII MCS — edifici con gravi lesioni strutturali">
-          </figure>
-          <figure class="s4-mcs-photo-wrap" data-grade="9">
-            <img class="user-mcs-photo" data-grade="9" src="" alt="Danni grado IX MCS — distruzione parziale edifici non resistenti">
-          </figure>
-          <figure class="s4-mcs-photo-wrap" data-grade="10">
-            <img class="user-mcs-photo" data-grade="10" src="" alt="Danni grado X MCS — L'Aquila 2009 · Onna">
-          </figure>
-          <figure class="s4-mcs-photo-wrap" data-grade="11">
-            <img class="user-mcs-photo" data-grade="11" src="" alt="Danni grado XI MCS — rovina completa">
-          </figure>
-          <figure class="s4-mcs-photo-wrap" data-grade="12">
-            <img class="user-mcs-photo" data-grade="12" src="" alt="Danni grado XII MCS — distruzione totale">
-          </figure>
+        <!-- Barra dei 12 gradi cliccabili -->
+        <div id="s4-mcs-grade-bar" role="group" aria-label="Scegli il grado MCS da I a XII">
+          <button class="s4-grade-chip" data-grade="1" aria-pressed="false">I</button>
+          <button class="s4-grade-chip" data-grade="2" aria-pressed="false">II</button>
+          <button class="s4-grade-chip" data-grade="3" aria-pressed="false">III</button>
+          <button class="s4-grade-chip" data-grade="4" aria-pressed="false">IV</button>
+          <button class="s4-grade-chip" data-grade="5" aria-pressed="false">V</button>
+          <button class="s4-grade-chip s4-active" data-grade="6" aria-pressed="true">VI</button>
+          <button class="s4-grade-chip" data-grade="7" aria-pressed="false">VII</button>
+          <button class="s4-grade-chip" data-grade="8" aria-pressed="false">VIII</button>
+          <button class="s4-grade-chip" data-grade="9" aria-pressed="false">IX</button>
+          <button class="s4-grade-chip" data-grade="10" aria-pressed="false">X</button>
+          <button class="s4-grade-chip" data-grade="11" aria-pressed="false">XI</button>
+          <button class="s4-grade-chip" data-grade="12" aria-pressed="false">XII</button>
+          <!-- Slider nascosto per accessibilità keyboard -->
+          <input type="range" id="s4-mcs-slider" min="1" max="12" value="6" step="1"
+                 aria-label="Grado MCS da I a XII" aria-valuetext="Grado VI">
         </div>
+
+        <!-- Corpo: numero romano | descrizione | illustrazione -->
+        <div id="s4-s7-body">
+
+          <!-- Numero romano + confronto L'Aquila -->
+          <div id="s4-s7-left">
+            <div id="s4-mcs-roman" aria-live="polite" aria-atomic="true">VI</div>
+            <div id="s4-mcs-compare">
+              <div class="s4-compare-header">L'AQUILA 2009</div>
+              <div class="s4-compare-mag">Mw 6.3 — uguale ovunque</div>
+              <div id="s4-mcs-compare-label" aria-live="polite">Come la periferia de L'Aquila</div>
+            </div>
+          </div>
+
+          <!-- Descrizione effetti -->
+          <div id="s4-s7-center">
+            <div id="s4-mcs-text" aria-live="polite" aria-atomic="true"></div>
+          </div>
+
+          <!-- Illustrazione SVG -->
+          <div id="s4-mcs-illus" aria-live="polite" aria-atomic="true"></div>
+
+        </div><!-- /s4-s7-body -->
 
       </div><!-- /s4-s7-inner -->
     </div><!-- /s4-s7 -->
@@ -1436,55 +1412,54 @@
       <div id="s4-s8-inner">
 
         <div class="s4-eyebrow">DUE SCALE · DUE DOMANDE DIVERSE</div>
-        <h2 class="s4-title" style="text-align:center">
-          Quanto era forte?<br>
-          <span class="s4-vs-label">vs</span><br>
+        <h2 class="s4-title">
+          Quanto era forte?
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.55em;opacity:0.45;padding:0 0.4em">vs</span>
           Cosa ha fatto alle persone?
         </h2>
 
-        <!-- Colonne comparative -->
+        <!-- Colonne comparative + separatore -->
         <div class="s4-s8-cols">
 
           <!-- Colonna Richter -->
           <div class="s4-compare-col s4-col-richter">
             <div class="s4-col-header">SCALA RICHTER · MAGNITUDO</div>
-            <div class="s4-compare-row"><span class="s4-ci" aria-hidden="true">🎯</span><strong>Misura:</strong> Energia liberata alla sorgente</div>
-            <div class="s4-compare-row"><span class="s4-ci" aria-hidden="true">📍</span><strong>Varia:</strong> NO — identica ovunque si misuri</div>
-            <div class="s4-compare-row"><span class="s4-ci" aria-hidden="true">🔬</span><strong>Come:</strong> Strumentalmente dal sismogramma</div>
-            <div class="s4-compare-row"><span class="s4-ci" aria-hidden="true">📐</span><strong>Unità:</strong> Adimensionale, logaritmica</div>
-            <div class="s4-compare-row"><span class="s4-ci" aria-hidden="true">👥</span><strong>Chi:</strong> Sismologi, ricercatori</div>
-            <div class="s4-compare-row"><span class="s4-ci" aria-hidden="true">🔢</span><strong>Tipo:</strong> Oggettiva — una sola per evento</div>
+            <div class="s4-compare-row"><strong>Misura</strong> Energia liberata alla sorgente</div>
+            <div class="s4-compare-row"><strong>Varia?</strong> NO — identica ovunque si misuri</div>
+            <div class="s4-compare-row"><strong>Come</strong> Strumentalmente dal sismogramma</div>
+            <div class="s4-compare-row"><strong>Scala</strong> Adimensionale, logaritmica</div>
+            <div class="s4-compare-row"><strong>Chi</strong> Sismologi, ricercatori</div>
+            <div class="s4-compare-row"><strong>Tipo</strong> Oggettiva — una sola per evento</div>
             <div class="s4-formula-box">ML = log&#x2081;&#x2080;(A/A&#x2080;)</div>
-            <div class="s4-col-example">L'Aquila 2009: Mw 6.3<br><small>Identico a L'Aquila, Roma, Londra</small></div>
+            <div class="s4-col-example">L'Aquila 2009: Mw 6.3<br>Identico a L'Aquila, Roma, Londra</div>
           </div>
 
           <!-- Separatore centrale -->
           <div class="s4-s8-sep" aria-hidden="true">
-            <span class="s4-sep-label">stesso terremoto →</span>
-            <div class="s4-sep-line"></div>
-            <span class="s4-sep-label">← effetti diversi</span>
+            <span class="s4-sep-label">stesso terremoto</span>
+            <span class="s4-sep-label">effetti diversi</span>
           </div>
 
           <!-- Colonna MCS -->
           <div class="s4-compare-col s4-col-mcs">
             <div class="s4-col-header">SCALA MCS · INTENSITÀ</div>
-            <div class="s4-compare-row"><span class="s4-ci" aria-hidden="true">🎯</span><strong>Misura:</strong> Effetti su persone, edifici, terreno</div>
-            <div class="s4-compare-row"><span class="s4-ci" aria-hidden="true">📍</span><strong>Varia:</strong> SÌ — molto, da zona a zona</div>
-            <div class="s4-compare-row"><span class="s4-ci" aria-hidden="true">👁️</span><strong>Come:</strong> Sopralluoghi tecnici e questionari</div>
-            <div class="s4-compare-row"><span class="s4-ci" aria-hidden="true">📐</span><strong>Unità:</strong> Gradi I–XII empirici</div>
-            <div class="s4-compare-row"><span class="s4-ci" aria-hidden="true">👥</span><strong>Chi:</strong> Protezione civile, ingegneri</div>
-            <div class="s4-compare-row"><span class="s4-ci" aria-hidden="true">🔢</span><strong>Tipo:</strong> Soggettiva — diversa per ogni zona</div>
+            <div class="s4-compare-row"><strong>Misura</strong> Effetti su persone, edifici, terreno</div>
+            <div class="s4-compare-row"><strong>Varia?</strong> SÌ — molto, da zona a zona</div>
+            <div class="s4-compare-row"><strong>Come</strong> Sopralluoghi tecnici e questionari</div>
+            <div class="s4-compare-row"><strong>Scala</strong> Gradi I–XII empirici</div>
+            <div class="s4-compare-row"><strong>Chi</strong> Protezione civile, ingegneri</div>
+            <div class="s4-compare-row"><strong>Tipo</strong> Soggettiva — diversa per ogni zona</div>
             <div class="s4-formula-box">Grado = f(distanza, terreno, edifici)</div>
-            <div class="s4-col-example">L'Aquila 2009: da IV (Roma)<br><small>a IX–X (centro storico)</small></div>
+            <div class="s4-col-example">L'Aquila 2009: da IV (Roma)<br>a IX–X (centro storico)</div>
           </div>
 
         </div><!-- /s4-s8-cols -->
 
-        <!-- Box riassuntivo con tabella -->
+        <!-- Box riassuntivo -->
         <div id="s4-s8-summary">
-          <p>"La scala Richter risponde a: <em>Quanto era forte il terremoto?</em>
-          La scala MCS risponde a: <em>Cosa ha fatto alle persone?</em>
-          Entrambe sono necessarie — nessuna da sola è sufficiente."</p>
+          <em>"La scala Richter risponde a: Quanto era forte?
+          La scala MCS risponde a: Cosa ha fatto alle persone?
+          Entrambe sono necessarie."</em>
           <table class="s4-s8-table">
             <thead>
               <tr><th></th><th>M alta</th><th>M bassa</th></tr>
@@ -1815,25 +1790,25 @@
   <button id="s4-prev" class="s4-nav-arrow" aria-label="Slide precedente">&#8592;</button>
   <button id="s4-next" class="s4-nav-arrow" aria-label="Slide successiva">&#8594;</button>
 
-  <!-- Pallini indicatori di posizione -->
-  <div id="s4-dots" role="tablist" aria-label="Navigazione slide">
-    <span class="s4-dot s4-active" data-dot="0" role="tab" aria-label="Slide 1: Sismografo live" aria-selected="true" tabindex="0"></span>
-    <span class="s4-dot" data-dot="1" role="tab" aria-label="Slide 2: Come funziona un sismografo" aria-selected="false" tabindex="-1"></span>
-    <span class="s4-dot" data-dot="2" role="tab" aria-label="Slide 3: Storia del sismografo" aria-selected="false" tabindex="-1"></span>
-    <span class="s4-dot" data-dot="3" role="tab" aria-label="Slide 4: Leggi il sismogramma" aria-selected="false" tabindex="-1"></span>
-    <span class="s4-dot" data-dot="4" role="tab" aria-label="Slide 5: Come si calcola la magnitudo" aria-selected="false" tabindex="-1"></span>
-    <span class="s4-dot" data-dot="5" role="tab" aria-label="Slide 6: Calcolo Richter live" aria-selected="false" tabindex="-1"></span>
-    <span class="s4-dot" data-dot="6" role="tab" aria-label="Slide 7: Scala MCS 12 gradi" aria-selected="false" tabindex="-1"></span>
-    <span class="s4-dot" data-dot="7" role="tab" aria-label="Slide 8: Richter vs MCS" aria-selected="false" tabindex="-1"></span>
-    <span class="s4-dot" data-dot="8" role="tab" aria-label="Slide 9: Localizzazione epicentro" aria-selected="false" tabindex="-1"></span>
-    <span class="s4-dot" data-dot="9" role="tab" aria-label="Slide 10: Scala Richter comparatore" aria-selected="false" tabindex="-1"></span>
-    <span class="s4-dot" data-dot="10" role="tab" aria-label="Slide 11: Simulatore MCS" aria-selected="false" tabindex="-1"></span>
-    <span class="s4-dot" data-dot="11" role="tab" aria-label="Slide 12: Mappa isosismica" aria-selected="false" tabindex="-1"></span>
-    <span class="s4-dot" data-dot="12" role="tab" aria-label="Slide 13: Transizione" aria-selected="false" tabindex="-1"></span>
-  </div><!-- /s4-dots -->
-
-  <!-- Contatore slide -->
-  <div id="s4-counter" aria-live="polite" aria-atomic="true">1 / 13</div>
+  <!-- Barra nav bottom: dots + counter (come s1-nav / s3-nav) -->
+  <div class="s4-nav">
+    <div id="s4-dots" role="tablist" aria-label="Navigazione slide">
+      <span class="s4-dot s4-active" data-dot="0" role="tab" aria-label="Slide 1" aria-selected="true" tabindex="0"></span>
+      <span class="s4-dot" data-dot="1" role="tab" aria-label="Slide 2" aria-selected="false" tabindex="-1"></span>
+      <span class="s4-dot" data-dot="2" role="tab" aria-label="Slide 3" aria-selected="false" tabindex="-1"></span>
+      <span class="s4-dot" data-dot="3" role="tab" aria-label="Slide 4" aria-selected="false" tabindex="-1"></span>
+      <span class="s4-dot" data-dot="4" role="tab" aria-label="Slide 5" aria-selected="false" tabindex="-1"></span>
+      <span class="s4-dot" data-dot="5" role="tab" aria-label="Slide 6" aria-selected="false" tabindex="-1"></span>
+      <span class="s4-dot" data-dot="6" role="tab" aria-label="Slide 7" aria-selected="false" tabindex="-1"></span>
+      <span class="s4-dot" data-dot="7" role="tab" aria-label="Slide 8" aria-selected="false" tabindex="-1"></span>
+      <span class="s4-dot" data-dot="8" role="tab" aria-label="Slide 9" aria-selected="false" tabindex="-1"></span>
+      <span class="s4-dot" data-dot="9" role="tab" aria-label="Slide 10" aria-selected="false" tabindex="-1"></span>
+      <span class="s4-dot" data-dot="10" role="tab" aria-label="Slide 11" aria-selected="false" tabindex="-1"></span>
+      <span class="s4-dot" data-dot="11" role="tab" aria-label="Slide 12" aria-selected="false" tabindex="-1"></span>
+      <span class="s4-dot" data-dot="12" role="tab" aria-label="Slide 13" aria-selected="false" tabindex="-1"></span>
+    </div>
+    <span id="s4-counter" aria-live="polite" aria-atomic="true">01 · 13</span>
+  </div>
 
 </div><!-- /s4-wrap -->
 
@@ -2541,7 +2516,7 @@
 
         <!-- Immagine mappa pericolosità -->
         <img
-            src="/assets/mappa-pericolosita-ingv.png"
+            src="assets/mappa-pericolosita-ingv.jpg"
             id="s5-hazard-img"
             alt="Mappa pericolosità sismica INGV"
             onerror="this.style.display='none'; document.getElementById('s5-img-fallback').style.display='flex';"
