@@ -28,13 +28,6 @@ function s5_initSlide1() {
     // Bounds: estensione approssimativa del territorio italiano
     map.fitBounds([[35.0, 6.0], [47.5, 19.0]]);
 
-    // Sfondo scuro locale (nessun tile CDN)
-    var REG_FILL = {1:'rgba(139,26,26,0.35)',2:'rgba(196,97,42,0.28)',3:'rgba(212,137,58,0.18)',4:'rgba(88,160,88,0.12)'};
-    var REG_ZONES = {'calabria':1,'campania':1,'basilicata':1,'sicilia':1,'abruzzo':1,'molise':2,'friuli venezia giulia':2,'marche':2,'umbria':2,'lazio':2,'liguria':3,'toscana':3,'emilia-romagna':3,'veneto':3,'piemonte':3,'lombardia':3,'trentino-alto adige/sudtirol':3,'puglia':3,"valle d'aosta":4,'sardegna':4};
-    fetch('italy-regions.json').then(function(r){return r.json();}).then(function(gj){
-        L.geoJSON(gj,{style:function(f){var z=REG_ZONES[(f.properties.name||'').toLowerCase()]||3;return{fillColor:REG_FILL[z],fillOpacity:1,color:'rgba(245,237,224,0.08)',weight:0.5};}}).addTo(map);
-    }).catch(function(){});
-
     // Salva istanza sulla S5 per uso esterno
     S5.mapInstance = map;
 
@@ -132,11 +125,9 @@ function s5_initSlide1() {
             .then(function(gj){ renderZonesGJ(gj); })
             .catch(function(){ clearTimeout(tm); tryFetch(urls, i + 1); });
     })([
+        'assets/provinces.geojson',
         'https://cdn.jsdelivr.net/gh/openpolis/geojson-italy/geojson/limits_P_provinces.geojson',
-        'https://raw.githubusercontent.com/openpolis/geojson-italy/master/geojson/limits_P_provinces.geojson',
-        'https://raw.githubusercontent.com/openpolis/geojson-italy/main/geojson/limits_P_provinces.geojson',
-        'https://cdn.jsdelivr.net/gh/openpolis/geojson-italy/geojson/limits_R_regions.geojson',
-        'https://raw.githubusercontent.com/openpolis/geojson-italy/master/geojson/limits_R_regions.geojson'
+        'https://raw.githubusercontent.com/openpolis/geojson-italy/master/geojson/limits_P_provinces.geojson'
     ], 0);
 
     /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
@@ -190,7 +181,7 @@ function s5_initSlide1() {
     // Fetch e rendering sismicità INGV
     function fetchINGV() {
         const startDate = getStartDate();
-        const url = `https://webservices.ingv.it/fdsnws/event/1/query?format=text&minmag=2.5&starttime=${startDate}&orderby=time&limit=800`;
+        const url = `https://webservices.ingv.it/fdsnws/event/1/query?format=text&minmag=2.5&starttime=${startDate}&orderby=time&limit=800&minlatitude=35&maxlatitude=47.5&minlongitude=6&maxlongitude=19`;
 
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 5000);
@@ -321,6 +312,10 @@ function s5_initSlide1() {
     }
 
     // Toggle sismicità recente
+    // Terremoti attivi di default — carica subito
+    if (toggleQuakes) toggleQuakes.checked = true;
+    fetchINGV();
+
     if (toggleQuakes) {
         toggleQuakes.addEventListener('change', function() {
             if (toggleQuakes.checked) {
@@ -1074,59 +1069,8 @@ function s5_initSlide4() {
    Si occupa solo di eventuali correzioni al fallback.
    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function s5_initSlide5() {
-    if (typeof L === 'undefined') return;
-    var mapEl = document.getElementById('s5-zone-map');
-    if (!mapEl || mapEl._leaflet_id) return;
-
-    var ZONE_FILL = {1:'rgba(139,26,26,0.72)',2:'rgba(196,97,42,0.60)',3:'rgba(212,137,58,0.38)',4:'rgba(88,160,88,0.26)'};
-    var ZONE_LABEL = {1:'Zona 1 — Massima pericolosità',2:'Zona 2 — Alta',3:'Zona 3 — Media',4:'Zona 4 — Bassa'};
-    var PZ = {
-        AQ:1,CH:2,PE:2,TE:2,PZ:1,MT:2,CZ:1,CS:2,KR:2,RC:1,VV:1,
-        AV:1,BN:1,CE:2,NA:2,SA:2,BO:3,FE:3,FC:3,MO:3,PR:3,PC:3,RA:3,RE:3,RN:3,
-        GO:2,PN:2,TS:2,UD:2,FR:2,LT:3,RI:2,RM:3,VT:3,GE:3,IM:3,SP:3,SV:3,
-        BG:3,BS:3,CO:4,CR:3,LC:3,LO:3,MN:3,MI:4,MB:4,PV:3,SO:3,VA:4,
-        AN:2,AP:2,FM:2,MC:2,PU:2,CB:1,IS:1,AL:3,AT:3,BI:3,CN:3,NO:4,TO:4,VB:3,VC:4,
-        BA:3,BT:3,BR:3,FG:2,LE:3,TA:3,CA:4,NU:4,OR:4,SS:4,SU:4,
-        AG:2,CL:2,CT:1,EN:2,ME:1,PA:2,RG:2,SR:1,TP:2,
-        AR:3,FI:3,GR:3,LI:3,LU:3,MS:2,PI:3,PT:3,PO:3,SI:3,BZ:4,TN:3,
-        PG:2,TR:2,AO:3,BL:2,PD:3,RO:3,TV:3,VE:4,VR:3,VI:3
-    };
-
-    var map = L.map('s5-zone-map', {
-        scrollWheelZoom: true, zoomControl: true, attributionControl: false, preferCanvas: true
-    });
-    map.fitBounds([[35.0, 6.0], [47.5, 19.0]]);
-    map.zoomControl.setPosition('bottomright');
-
-    var zonesLayer = null;
-    var statusEl = document.getElementById('s5-api-status');
-
-    fetch('assets/provinces.geojson')
-        .then(function(r) { return r.json(); })
-        .then(function(gj) {
-            zonesLayer = L.geoJSON(gj, {
-                style: function(f) {
-                    var z = PZ[f.properties.prov_acr] || 3;
-                    return { fillColor: ZONE_FILL[z], fillOpacity: 1, color: 'rgba(245,237,224,0.07)', weight: 0.6 };
-                },
-                onEachFeature: function(f, layer) {
-                    var acr  = f.properties.prov_acr  || '';
-                    var name = f.properties.prov_name || '';
-                    var z = PZ[acr] || 3;
-                    layer.bindTooltip(
-                        '<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.7rem;letter-spacing:0.1em">' +
-                        '<strong>' + name + '</strong> (' + acr + ')<br>' +
-                        '<span style="color:' + ZONE_FILL[z].replace(/[\d.]+\)$/, '1)') + '">' + ZONE_LABEL[z] + '</span></span>',
-                        { sticky: true, offset: [10, 0] }
-                    );
-                    layer.on('mouseover', function() { this.setStyle({ weight: 1.5, color: 'rgba(245,237,224,0.35)' }); });
-                    layer.on('mouseout',  function() { zonesLayer && zonesLayer.resetStyle(this); });
-                }
-            }).addTo(map);
-        })
-        .catch(function() {
-            if (statusEl) { statusEl.textContent = 'Province non disponibili'; statusEl.style.display = 'block'; }
-        });
+    /* Slide statica — SVG province già incorporato via <img>.
+       Nessuna inizializzazione necessaria. */
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
