@@ -1227,15 +1227,22 @@
           <div id="s4-s5-calc">
             <div class="s4-s5-calc-title">INSERISCI I VALORI — IL PROGRAMMA CALCOLA ML</div>
             <div class="s4-calc-row">
-              <label class="s4-calc-label" for="s4-nomo-gap">Gap P-S</label>
-              <input type="number" id="s4-nomo-gap" min="0.1" max="60" step="0.1" value="8.0" class="s4-calc-input" aria-label="Gap P-S in secondi">
+              <label class="s4-calc-label" for="s4-gap-slider">Gap P-S</label>
+              <input type="range" id="s4-gap-slider" min="0.5" max="30" step="0.1" value="8.0"
+                     class="s4-calc-slider" aria-label="Gap P-S slider">
+              <input type="number" id="s4-nomo-gap" min="0.1" max="60" step="0.1" value="8.0"
+                     class="s4-calc-input" aria-label="Gap P-S in secondi">
               <span class="s4-calc-unit">s</span>
               <span class="s4-calc-hint">&#8594;&nbsp;<span id="s4-dist-display">72.0</span> km</span>
             </div>
             <div class="s4-calc-row">
-              <label class="s4-calc-label" for="s4-nomo-amp">Ampiezza</label>
-              <input type="number" id="s4-nomo-amp" min="0.1" max="10000" step="1" value="5000" class="s4-calc-input" aria-label="Ampiezza in mm">
+              <label class="s4-calc-label" for="s4-amp-slider">Ampiezza</label>
+              <input type="range" id="s4-amp-slider" min="1" max="200" step="1" value="100"
+                     class="s4-calc-slider" aria-label="Ampiezza slider">
+              <input type="number" id="s4-nomo-amp" min="0.1" max="10000" step="1" value="5000"
+                     class="s4-calc-input" aria-label="Ampiezza in mm">
               <span class="s4-calc-unit">mm</span>
+              <span class="s4-calc-hint" id="s4-amp-note"></span>
             </div>
             <div id="s4-ml-display" aria-live="polite" aria-atomic="true">
               <span class="s4-ml-eq">ML&nbsp;=</span><span id="s4-ml-number">6.3</span>
@@ -1324,7 +1331,10 @@
         <div id="s4-s7-left">
           <div class="s4-eyebrow">MERCALLI &middot; CANCANI &middot; SIEBERG &middot; 1917</div>
           <h2 class="s4-title">Non l&rsquo;energia.<br>Gli effetti.</h2>
-          <p id="s4-s7-history">Giuseppe Mercalli descrisse 12 gradi nel 1902; Cancani e Sieberg li raffinarono nel 1917. La <strong>scala MCS</strong> misura ci&ograve; che persone, edifici e territorio subiscono &mdash; non l&rsquo;energia. Per lo stesso terremoto varia da zona a zona.</p>
+          <div id="s4-s7-history">
+            <p>Proposta da <strong>Giuseppe Mercalli</strong> nel 1902, revisionata da Adolfo Cancani e August Sieberg nel 1917. La <strong>Scala MCS</strong> (Mercalli-Cancani-Sieberg) non misura l&rsquo;energia liberata alla sorgente &mdash; misura gli <em>effetti osservati</em>: cosa sentono le persone, come reagiscono gli edifici, cosa succede al suolo.</p>
+            <p>Per lo stesso terremoto il grado MCS &egrave; diverso in ogni zona: dipende dalla distanza, dal tipo di terreno, dalla qualit&agrave; delle costruzioni. A L&rsquo;Aquila 2009 variava da IV (Roma, avvertito) a X (Onna, distruzione quasi totale).</p>
+          </div>
           <div id="s4-mcs-scale-col" role="group" aria-label="Gradi MCS I-XII">
             <button class="s4-mcs-bar-item" data-grade="1" aria-pressed="false"><span class="s4-bar-roman">I</span></button>
             <button class="s4-mcs-bar-item" data-grade="2" aria-pressed="false"><span class="s4-bar-roman">II</span></button>
@@ -1793,27 +1803,33 @@
 
         <!-- SLIDE 1: Mappa classificazione sismica -->
         <div class="s5-slide" id="s5-s1">
-            <div class="s5-s1-map"><div id="s5-map"></div></div>
-            <div class="s5-s1-right">
-                <span class="s5-eyebrow">CLASSIFICAZIONE SISMICA DPC · INGV</span>
-                <h2 class="s5-s1-title">Dove trema l'Italia.</h2>
-                <div class="s5-dpc-box">
+
+            <!-- Mappa full-screen -->
+            <div id="s5-map"></div>
+
+            <!-- Box DPC — overlay a destra -->
+            <div class="s5-dpc-panel">
+                <span class="s5-eyebrow" style="font-size:0.5rem">CLASSIFICAZIONE SISMICA</span>
+                <h3 class="s5-dpc-panel-title">Dove trema<br>l'Italia.</h3>
+                <div class="s5-dpc-section">
                     <span class="s5-dpc-box-label">CHE COS'È IL DPC</span>
-                    <p class="s5-dpc-box-text">Il <strong>Dipartimento della Protezione Civile</strong> classifica ogni comune in una delle 4 zone sismiche in base ai valori di <strong>PGA</strong> stimati dall'INGV. Più alta è la zona, più severi i requisiti costruttivi antisismici obbligatori per legge.</p>
-                    <span class="s5-dpc-box-label" style="display:block;margin-top:0.7rem">COME VIENE CALCOLATA</span>
-                    <p class="s5-dpc-box-text">L'INGV usa la <em>PSHA</em> (Probabilistic Seismic Hazard Analysis): stima la probabilità che il suolo raggiunga una certa accelerazione nei prossimi 50 anni, integrando catalogo storico, zonazione sismogenetica e modelli di attenuazione. Il DPC converte il valore continuo in 4 classi normative.</p>
-                    <div class="s5-dpc-zones-grid">
-                        <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(139,26,26)"></span><span class="s5-dpc-zone-num">Zona 1</span><span class="s5-dpc-zone-pga">PGA &gt; 0.25g</span><span class="s5-dpc-zone-desc">Massima</span></div>
-                        <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(196,97,42)"></span><span class="s5-dpc-zone-num">Zona 2</span><span class="s5-dpc-zone-pga">0.15&ndash;0.25g</span><span class="s5-dpc-zone-desc">Alta</span></div>
-                        <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(212,137,58)"></span><span class="s5-dpc-zone-num">Zona 3</span><span class="s5-dpc-zone-pga">0.05&ndash;0.15g</span><span class="s5-dpc-zone-desc">Media</span></div>
-                        <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(58,126,196)"></span><span class="s5-dpc-zone-num">Zona 4</span><span class="s5-dpc-zone-pga">&lt; 0.05g</span><span class="s5-dpc-zone-desc">Bassa</span></div>
-                    </div>
+                    <p class="s5-dpc-box-text">Il <strong>Dipartimento della Protezione Civile</strong> classifica ogni comune in una delle 4 zone sismiche in base ai valori di <strong>PGA</strong> stimati dall'INGV. Più alta è la zona, più severi i requisiti edilizi antisismici.</p>
                 </div>
-                <div class="s5-s1-controls">
-                    <label><input type="checkbox" id="s5-toggle-zones" checked> Zone sismiche DPC</label>
+                <div class="s5-dpc-section">
+                    <span class="s5-dpc-box-label">COME VIENE CALCOLATA</span>
+                    <p class="s5-dpc-box-text">L'INGV usa la <em>PSHA</em>: calcola la probabilità che il suolo raggiunga una certa accelerazione nei prossimi 50 anni, integrando catalogo storico, zonazione sismogenetica e modelli di attenuazione.</p>
+                </div>
+                <div class="s5-dpc-zones-grid">
+                    <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(139,26,26)"></span><span class="s5-dpc-zone-num">Zona 1</span><span class="s5-dpc-zone-pga">PGA &gt; 0.25g</span><span class="s5-dpc-zone-desc">Massima</span></div>
+                    <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(196,97,42)"></span><span class="s5-dpc-zone-num">Zona 2</span><span class="s5-dpc-zone-pga">0.15&ndash;0.25g</span><span class="s5-dpc-zone-desc">Alta</span></div>
+                    <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(212,137,58)"></span><span class="s5-dpc-zone-num">Zona 3</span><span class="s5-dpc-zone-pga">0.05&ndash;0.15g</span><span class="s5-dpc-zone-desc">Media</span></div>
+                    <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(58,126,196)"></span><span class="s5-dpc-zone-num">Zona 4</span><span class="s5-dpc-zone-pga">&lt; 0.05g</span><span class="s5-dpc-zone-desc">Bassa</span></div>
+                </div>
+                <div class="s5-dpc-controls">
+                    <label><input type="checkbox" id="s5-toggle-zones" checked> Zone sismiche</label>
                     <label><input type="checkbox" id="s5-toggle-quakes" checked> Terremoti 12 mesi</label>
                     <div class="s5-magfilter-group">
-                        <span class="s5-group-label">Magnitudine minima</span>
+                        <span class="s5-group-label">Magnitudo min.</span>
                         <label><input type="radio" name="s5-magfilter" value="all" checked> Tutti</label>
                         <label><input type="radio" name="s5-magfilter" value="3"> M&#8805;3</label>
                         <label><input type="radio" name="s5-magfilter" value="4"> M&#8805;4</label>
@@ -1822,6 +1838,7 @@
                     <div id="s5-api-status" style="display:none"></div>
                 </div>
             </div>
+
         </div><!-- fine #s5-s1 -->
 
         <!-- Slide 2-6: placeholder vuoti, riempiti dagli altri agenti -->
@@ -3184,14 +3201,12 @@
         <p style=”font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ochre);letter-spacing:1px;margin:0 0 8px”>📱 APP · LASTQUAKE (EMSC)</p>
         <p style=”font-size:13px;color:rgba(245,237,224,0.7);margin:0 0 14px;line-height:1.6”>L'app ufficiale EMSC per notifiche in tempo reale di terremoti nel Mediterraneo. Gratuita.</p>
         <div style=”display:flex;gap:8px”>
-          <a href=”https://apps.apple.com/us/app/lastquake/id890799748” target=”_blank” rel=”noopener”
-            style=”flex:1;display:block;text-align:center;background:rgba(196,97,42,0.15);border:1px solid var(--terracotta);color:var(--cream);padding:9px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-decoration:none”>
-            → iOS App Store
-          </a>
-          <a href=”https://play.google.com/store/apps/details?id=org.emsc_csem.lastquake” target=”_blank” rel=”noopener”
-            style=”flex:1;display:block;text-align:center;background:rgba(196,97,42,0.15);border:1px solid var(--terracotta);color:var(--cream);padding:9px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-decoration:none”>
-            → Google Play
-          </a>
+          <button onclick=”window.open('https://apps.apple.com/us/app/lastquake/id890799748','_blank')” style=”flex:1;background:rgba(196,97,42,0.15);border:1px solid var(--terracotta);color:var(--cream);padding:10px 8px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px”>
+            → iOS
+          </button>
+          <button onclick=”window.open('https://play.google.com/store/apps/details?id=org.emsc_csem.lastquake','_blank')” style=”flex:1;background:rgba(196,97,42,0.15);border:1px solid var(--terracotta);color:var(--cream);padding:10px 8px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px”>
+            → Android
+          </button>
         </div>
       </div>
 
@@ -3199,10 +3214,9 @@
       <div style=”background:var(--charcoal);border:1px solid rgba(58,126,196,0.3);padding:20px”>
         <p style=”font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--blue);letter-spacing:1px;margin:0 0 8px”>🔔 ANDROID · ALLERTA SISMICA</p>
         <p style=”font-size:13px;color:rgba(245,237,224,0.7);margin:0 0 14px;line-height:1.6”>Se hai un dispositivo Android, puoi attivare le allerte sismiche di Google nelle impostazioni.</p>
-        <a href=”https://support.google.com/android/answer/12464968” target=”_blank” rel=”noopener”
-          style=”display:block;text-align:center;background:rgba(58,126,196,0.1);border:1px solid var(--blue);color:var(--cream);padding:10px 20px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;text-decoration:none”>
-          → Istruzioni Google Support
-        </a>
+        <button onclick=”window.open('https://support.google.com/android/answer/12464968','_blank')” style=”background:rgba(58,126,196,0.1);border:1px solid var(--blue);color:var(--cream);padding:10px 20px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;width:100%”>
+          → Istruzioni Google
+        </button>
       </div>
     </div>
   </div>

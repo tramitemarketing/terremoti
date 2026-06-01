@@ -26,7 +26,7 @@ function s5_initSlide1() {
     });
 
     // Bounds: estensione approssimativa del territorio italiano
-    map.fitBounds([[35.0, 6.0], [47.5, 19.0]]);
+    map.fitBounds([[35.0, 6.0], [47.5, 19.0]], { paddingTopRight: [300, 20] });
 
     // Salva istanza sulla S5 per uso esterno
     S5.mapInstance = map;
