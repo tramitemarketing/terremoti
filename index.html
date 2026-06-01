@@ -1794,83 +1794,48 @@
         <!-- SLIDE 1: Mappa classificazione sismica -->
         <div class="s5-slide" id="s5-s1">
 
-            <!-- Mappa Leaflet (occupa tutto il background) -->
-            <div id="s5-map"></div>
-
-            <!-- Titolo sovrapposto, top-center -->
-            <div class="s5-map-title">
+            <!-- Colonna sinistra: info DPC -->
+            <div class="s5-s1-left">
                 <span class="s5-eyebrow">CLASSIFICAZIONE SISMICA DPC · INGV</span>
-                <h2>Dove trema l'Italia.</h2>
+                <h2 class="s5-s1-title">Dove trema<br>l'Italia.</h2>
+
+                <div class="s5-dpc-box">
+                    <div class="s5-dpc-box-header">
+                        <span class="s5-dpc-box-label">CHE COS'È IL DPC</span>
+                    </div>
+                    <p class="s5-dpc-box-text">Il <strong>Dipartimento della Protezione Civile</strong> classifica ogni comune in una delle 4 zone sismiche, basandosi sui valori di <strong>PGA</strong> stimati dall'INGV. La classificazione stabilisce le norme edilizie antisismiche obbligatorie: più alta è la zona, più severi i requisiti costruttivi.</p>
+                    <div class="s5-dpc-box-header" style="margin-top:0.9rem">
+                        <span class="s5-dpc-box-label">COME VIENE CALCOLATA</span>
+                    </div>
+                    <p class="s5-dpc-box-text">L'INGV calcola la <em>pericolosità probabilistica</em> (PSHA): stima la probabilità che il suolo raggiunga una certa accelerazione nei prossimi 50 anni, integrando catalogo storico, modelli di attenuazione e zonazione sismogenetica. Il DPC trasforma questo valore continuo in 4 classi normative.</p>
+                    <div class="s5-dpc-zones-grid">
+                        <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(139,26,26)"></span><span class="s5-dpc-zone-num">Zona 1</span><span class="s5-dpc-zone-pga">PGA &gt; 0.25g</span><span class="s5-dpc-zone-desc">Massima</span></div>
+                        <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(196,97,42)"></span><span class="s5-dpc-zone-num">Zona 2</span><span class="s5-dpc-zone-pga">0.15&ndash;0.25g</span><span class="s5-dpc-zone-desc">Alta</span></div>
+                        <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(212,137,58)"></span><span class="s5-dpc-zone-num">Zona 3</span><span class="s5-dpc-zone-pga">0.05&ndash;0.15g</span><span class="s5-dpc-zone-desc">Media</span></div>
+                        <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(58,126,196)"></span><span class="s5-dpc-zone-num">Zona 4</span><span class="s5-dpc-zone-pga">&lt; 0.05g</span><span class="s5-dpc-zone-desc">Bassa</span></div>
+                    </div>
+                </div>
+
+                <div class="s5-s1-controls">
+                    <label><input type="checkbox" id="s5-toggle-zones" checked> Zone sismiche DPC</label>
+                    <label><input type="checkbox" id="s5-toggle-quakes" checked> Terremoti ultimi 12 mesi</label>
+                    <div class="s5-magfilter-group" style="margin-top:0.5rem">
+                        <span class="s5-group-label">Magnitudine minima</span>
+                        <label><input type="radio" name="s5-magfilter" value="all" checked> Tutti</label>
+                        <label><input type="radio" name="s5-magfilter" value="3"> M&#8805;3.0</label>
+                        <label><input type="radio" name="s5-magfilter" value="4"> M&#8805;4.0</label>
+                    </div>
+                    <div class="s5-event-counter" style="margin-top:0.5rem">
+                        <span id="s5-quake-count">&#8212;</span> eventi M&#8805;2.5
+                    </div>
+                    <div id="s5-api-status" style="display:none"></div>
+                </div>
             </div>
 
-            <!-- Pannello controlli, top-left -->
-            <div class="s5-control-panel">
-                <span class="s5-panel-eyebrow">FILTRI</span>
-
-                <!-- Toggle zone sismiche -->
-                <label>
-                    <input type="checkbox" id="s5-toggle-zones" checked>
-                    Zone sismiche DPC
-                </label>
-
-                <!-- Toggle sismicità recente -->
-                <label>
-                    <input type="checkbox" id="s5-toggle-quakes" checked>
-                    Terremoti ultimi 12 mesi
-                </label>
-
-                <div class="s5-panel-divider"></div>
-
-                <!-- Filtro magnitudine -->
-                <div class="s5-magfilter-group">
-                    <span class="s5-group-label">Magnitudine minima</span>
-                    <label>
-                        <input type="radio" name="s5-magfilter" value="all" checked>
-                        Tutti
-                    </label>
-                    <label>
-                        <input type="radio" name="s5-magfilter" value="3">
-                        Solo M&ge;3.0
-                    </label>
-                    <label>
-                        <input type="radio" name="s5-magfilter" value="4">
-                        Solo M&ge;4.0
-                    </label>
-                </div>
-
-                <div class="s5-panel-divider"></div>
-
-                <!-- Counter eventi -->
-                <div class="s5-event-counter">
-                    Totale: <span id="s5-quake-count">—</span> eventi M&ge;2.5
-                </div>
-
-                <!-- Stato API (fallback) -->
-                <div id="s5-api-status" style="display:none;"></div>
-
-                <div class="s5-panel-divider"></div>
-
-                <!-- Legenda zone -->
-                <div class="s5-legend">
-                    <div class="s5-legend-title">Zone sismiche</div>
-                    <div class="s5-legend-row">
-                        <span class="s5-legend-dot z1"></span>
-                        Zona 1 · Massima
-                    </div>
-                    <div class="s5-legend-row">
-                        <span class="s5-legend-dot z2"></span>
-                        Zona 2 · Alta
-                    </div>
-                    <div class="s5-legend-row">
-                        <span class="s5-legend-dot z3"></span>
-                        Zona 3 · Media
-                    </div>
-                    <div class="s5-legend-row">
-                        <span class="s5-legend-dot z4"></span>
-                        Zona 4 · Bassa
-                    </div>
-                </div>
-            </div><!-- fine .s5-control-panel -->
+            <!-- Colonna destra: mappa Leaflet -->
+            <div class="s5-s1-right">
+                <div id="s5-map"></div>
+            </div>
 
         </div><!-- fine #s5-s1 -->
 
@@ -2621,17 +2586,17 @@
 </div>
 
 <!-- Slide 2 -->
-<div class="s6-slide" id="s6-s2" style="justify-content:flex-start;padding:36px 60px 40px">
-  <div style="max-width:1400px;margin:0 auto;width:100%">
+<div class="s6-slide" id="s6-s2" style="justify-content:center;align-items:center;padding:28px 48px 32px;overflow-y:auto">
+  <div style="max-width:1300px;margin:0 auto;width:100%">
 
     <!-- Riga superiore: testo + canvas fianco a fianco -->
-    <div style="display:grid;grid-template-columns:1fr 380px;gap:48px;align-items:start">
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start">
 
       <!-- Colonna testo -->
       <div>
         <p class="s6-eyebrow">ALLERTA PRECOCE SISMICA</p>
-        <h2 class="s6-h2" style="font-size:38px;margin-bottom:14px">Non previsione.<br>Pochi secondi in più.</h2>
-        <p style="font-size:15px;line-height:1.75;color:rgba(245,237,224,0.82);margin-bottom:20px">
+        <h2 class="s6-h2" style="font-size:clamp(24px,3vw,36px);margin-bottom:12px">Non previsione.<br>Pochi secondi in più.</h2>
+        <p style="font-size:clamp(12px,1.1vw,14px);line-height:1.65;color:rgba(245,237,224,0.82);margin-bottom:16px">
           I sistemi di early warning non prevedono i terremoti: li rilevano nel momento in cui iniziano e sfruttano la differenza di velocità tra le onde sismiche e i segnali elettronici. Le onde P (innocue, veloci: 6 km/s) arrivano prima delle onde S e superficiali (distruttive). Un sistema che rileva le onde P può inviare un allarme elettronico prima che le onde pericolose raggiungano la zona abitata. Non è prevenzione — è qualche secondo in più.
         </p>
 
@@ -3194,12 +3159,12 @@
           <span style="color:var(--terracotta)">→</span>
           GitHub: gem/oq-engine
         </a>
-        <a href="https://platform.openquake.org" target="_blank" rel="noopener"
+        <a href="https://www.globalquakemodel.org/openquake" target="_blank" rel="noopener"
           style="display:flex;align-items:center;gap:12px;background:var(--charcoal);border:1px solid rgba(196,97,42,0.2);padding:12px 16px;color:var(--cream);text-decoration:none;transition:border-color 0.2s;font-family:'JetBrains Mono',monospace;font-size:12px">
           <span style="color:var(--terracotta)">→</span>
-          platform.openquake.org
+          GEM · OpenQuake Platform
         </a>
-        <a href="https://docs.openquake.org" target="_blank" rel="noopener"
+        <a href="https://docs.openquake.org/oq-engine/manual/latest/" target="_blank" rel="noopener"
           style="display:flex;align-items:center;gap:12px;background:var(--charcoal);border:1px solid rgba(196,97,42,0.2);padding:12px 16px;color:var(--cream);text-decoration:none;transition:border-color 0.2s;font-family:'JetBrains Mono',monospace;font-size:12px">
           <span style="color:var(--terracotta)">→</span>
           Documentazione OpenQuake
@@ -3229,22 +3194,28 @@
       </div>
 
       <!-- BOX 3 — LastQuake -->
-      <div style="background:var(--charcoal);border:1px solid rgba(196,97,42,0.2);padding:20px">
+      <div style=”background:var(--charcoal);border:1px solid rgba(196,97,42,0.2);padding:20px”>
         <p style=”font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ochre);letter-spacing:1px;margin:0 0 8px”>📱 APP · LASTQUAKE (EMSC)</p>
-        <p style="font-size:13px;color:rgba(245,237,224,0.7);margin:0 0 14px;line-height:1.6">L'app ufficiale EMSC per notifiche in tempo reale di terremoti nel Mediterraneo. Gratuita.</p>
-        <a href="https://www.emsc-csem.org/app/" target="_blank" rel="noopener"
-          style="display:block;text-align:center;background:rgba(196,97,42,0.15);border:1px solid var(--terracotta);color:var(--cream);padding:10px 20px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;text-decoration:none">
-          → Vai all'app store
-        </a>
+        <p style=”font-size:13px;color:rgba(245,237,224,0.7);margin:0 0 14px;line-height:1.6”>L'app ufficiale EMSC per notifiche in tempo reale di terremoti nel Mediterraneo. Gratuita.</p>
+        <div style=”display:flex;gap:8px”>
+          <a href=”https://apps.apple.com/us/app/lastquake/id890799748” target=”_blank” rel=”noopener”
+            style=”flex:1;display:block;text-align:center;background:rgba(196,97,42,0.15);border:1px solid var(--terracotta);color:var(--cream);padding:9px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-decoration:none”>
+            → iOS App Store
+          </a>
+          <a href=”https://play.google.com/store/apps/details?id=org.emsc_csem.lastquake” target=”_blank” rel=”noopener”
+            style=”flex:1;display:block;text-align:center;background:rgba(196,97,42,0.15);border:1px solid var(--terracotta);color:var(--cream);padding:9px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-decoration:none”>
+            → Google Play
+          </a>
+        </div>
       </div>
 
       <!-- BOX 4 — Allerta Android -->
-      <div style="background:var(--charcoal);border:1px solid rgba(58,126,196,0.3);padding:20px">
+      <div style=”background:var(--charcoal);border:1px solid rgba(58,126,196,0.3);padding:20px”>
         <p style=”font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--blue);letter-spacing:1px;margin:0 0 8px”>🔔 ANDROID · ALLERTA SISMICA</p>
-        <p style="font-size:13px;color:rgba(245,237,224,0.7);margin:0 0 14px;line-height:1.6">Se hai un dispositivo Android, puoi attivare le allerte sismiche di Google nelle impostazioni.</p>
-        <a href="https://crisisresponse.google/android-alerts" target="_blank" rel="noopener"
-          style="display:block;text-align:center;background:rgba(58,126,196,0.1);border:1px solid var(--blue);color:var(--cream);padding:10px 20px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;text-decoration:none">
-          → Istruzioni Google
+        <p style=”font-size:13px;color:rgba(245,237,224,0.7);margin:0 0 14px;line-height:1.6”>Se hai un dispositivo Android, puoi attivare le allerte sismiche di Google nelle impostazioni.</p>
+        <a href=”https://support.google.com/android/answer/12464968” target=”_blank” rel=”noopener”
+          style=”display:block;text-align:center;background:rgba(58,126,196,0.1);border:1px solid var(--blue);color:var(--cream);padding:10px 20px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;text-decoration:none”>
+          → Istruzioni Google Support
         </a>
       </div>
     </div>
