@@ -177,132 +177,128 @@ document.addEventListener('keydown', e => {
   });
 
   /* â•â•â• API INGV â•â•â• */
-  /* ── INGV Canvas Map — Slide 1 ── */
-  const _PROJ = { lnMin:6.6, lnMax:18.5, ltMin:35.5, ltMax:47.1 };
-  let _regionsGJ = null;
+  let mapInstance = null;
 
-  function _projPt(lon, lat, W, H) {
-    return [
-      (lon - _PROJ.lnMin) / (_PROJ.lnMax - _PROJ.lnMin) * W,
-      (_PROJ.ltMax - lat) / (_PROJ.ltMax - _PROJ.ltMin) * H
-    ];
+  function isoNow(offsetMs) {
+    return new Date(Date.now() + (offsetMs || 0)).toISOString().replace(/\.\d{3}Z$/, '');
   }
 
-  function _drawRegions(ctx, gj, W, H) {
-    const FILL = {
-      1:'rgba(139,26,26,0.40)', 2:'rgba(196,97,42,0.30)',
-      3:'rgba(212,137,58,0.20)', 4:'rgba(88,160,88,0.14)'
-    };
-    const ZONES = {
-      'calabria':1,'campania':1,'basilicata':1,'sicilia':1,'abruzzo':1,
-      'molise':2,'friuli venezia giulia':2,'marche':2,'umbria':2,'lazio':2,
-      'liguria':3,'toscana':3,'emilia-romagna':3,'veneto':3,'piemonte':3,
-      'lombardia':3,'trentino-alto adige/sudtirol':3,'puglia':3,
-      "valle d'aosta":4,'sardegna':4
-    };
-    gj.features.forEach(feat => {
-      const name = (feat.properties.name || '').toLowerCase();
-      const z = ZONES[name] || 3;
-      ctx.fillStyle = FILL[z];
-      ctx.strokeStyle = 'rgba(245,237,224,0.12)';
-      ctx.lineWidth = 0.5;
-      const geom = feat.geometry;
-      const polys = geom.type === 'MultiPolygon' ? geom.coordinates : [geom.coordinates];
-      polys.forEach(poly => {
-        poly.forEach(ring => {
-          ctx.beginPath();
-          ring.forEach(([ln, lt], i) => {
-            const [x, y] = _projPt(ln, lt, W, H);
-            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-          });
-          ctx.closePath(); ctx.fill(); ctx.stroke();
-        });
-      });
-    });
+  function parseINGV(text) {
+    const lines = text.trim().split('\n').slice(1);
+    return lines.map(line => {
+      const cols = line.split('|');
+      if (cols.length < 13) return null;
+      return {
+        id: cols[0].trim(), time: cols[1].trim(),
+        lat: parseFloat(cols[2]), lon: parseFloat(cols[3]),
+        depth: parseFloat(cols[4]), magType: cols[9].trim(),
+        mag: parseFloat(cols[10]), location: cols[12].trim(),
+      };
+    }).filter(e => e && !isNaN(e.lat) && !isNaN(e.mag));
   }
 
-  function _drawMarkers(ctx, events, W, H) {
+  function markerStyle(mag) {
+    if (mag < 2.0) return { color: 'rgba(100,180,100,0.7)',  radius: 5 };
+    if (mag < 3.5) return { color: 'rgba(212,137,58,0.8)',   radius: 8 };
+    if (mag < 5.0) return { color: 'rgba(196,97,42,0.9)',    radius: 12 };
+    return             { color: 'rgba(139,26,26,1.0)',        radius: 18 };
+  }
+
+  function formatDateTime(isoStr) {
+    try {
+      const d = new Date(isoStr.replace(' ', 'T'));
+      return d.toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) + ' UTC';
+    } catch (e) { return isoStr; }
+  }
+
+  function addMarkersToMap(events) {
+    if (!mapInstance) return;
     events.forEach(ev => {
-      const [x, y] = _projPt(ev.lon, ev.lat, W, H);
-      const r = ev.mag < 2 ? 2 : ev.mag < 3 ? 3.5 : ev.mag < 4 ? 5.5 : ev.mag < 5 ? 8 : 12;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fillStyle = ev.mag < 3 ? 'rgba(245,237,224,0.55)' : ev.mag < 4 ? 'rgba(212,137,58,0.9)' : 'rgba(196,58,58,1)';
-      ctx.fill();
+      const style = markerStyle(ev.mag);
+      const circle = L.circleMarker([ev.lat, ev.lon], {
+        radius: style.radius, fillColor: style.color, color: 'transparent', fillOpacity: 1, weight: 0,
+      });
+      const html = `<div class="s1-popup-inner"><span class="s1-popup-mag">M ${ev.mag.toFixed(1)}</span><span class="s1-popup-loc">${ev.location}</span><span class="s1-popup-meta">${formatDateTime(ev.time)}<br>Profondità: ${ev.depth} km</span></div>`;
+      circle.bindPopup(html, { className: 's1-popup', maxWidth: 260, closeButton: false });
+      circle.on('mouseover', function() { this.openPopup(); });
+      circle.on('mouseout',  function() { this.closePopup(); });
+      circle.addTo(mapInstance);
     });
-  }
-
-  function _renderMapCanvas(events) {
-    const canvas = document.getElementById('s1-map-canvas');
-    if (!canvas) return;
-    const W = canvas.parentElement.clientWidth || 500;
-    const H = Math.round(W * 1.25);
-    canvas.width = W; canvas.height = H;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#080808'; ctx.fillRect(0, 0, W, H);
-    if (_regionsGJ) _drawRegions(ctx, _regionsGJ, W, H);
-    if (events && events.length) _drawMarkers(ctx, events, W, H);
-    /* Marcatore fisso L'Aquila */
-    const [ax, ay] = _projPt(13.3995, 42.3498, W, H);
-    ctx.beginPath(); ctx.arc(ax, ay, 5, 0, Math.PI * 2);
-    ctx.fillStyle = '#F5EDE0'; ctx.fill();
-    ctx.strokeStyle = '#C4612A'; ctx.lineWidth = 1.5; ctx.stroke();
-    ctx.font = '8px JetBrains Mono, monospace';
-    ctx.fillStyle = 'rgba(245,237,224,0.65)';
-    ctx.fillText("L'AQUILA", ax + 8, ay + 3);
   }
 
   function countUpElement(el, target, duration) {
     if (!el) return;
-    const t0 = performance.now();
+    const start = performance.now();
     (function tick(now) {
-      const p = Math.min((now - t0) / duration, 1);
-      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      const p = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * ease);
       if (p < 1) requestAnimationFrame(tick);
-    })(t0);
+    })(start);
+  }
+
+  function fetchINGV() {
+    const endTime   = isoNow(0);
+    const startTime = isoNow(-24 * 60 * 60 * 1000);
+    const url = `https://webservices.ingv.it/fdsnws/event/1/query?format=text&minmag=1.5&starttime=${startTime}&endtime=${endTime}&orderby=time`;
+    fetch(url)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(text => {
+        const events = parseINGV(text);
+        if (!events.length) { showFallback(); return; }
+        const countEl = document.getElementById('s1-quake-count');
+        if (!fetchDone) { fetchDone = true; countUpElement(countEl, events.length, 1400); }
+        else if (countEl) { countEl.textContent = events.length; }
+        const lastEl = document.getElementById('s1-last-event');
+        const locEl  = document.getElementById('s1-last-loc');
+        const timeEl = document.getElementById('s1-last-time');
+        const magEl  = document.getElementById('s1-last-mag');
+        const first  = events[0];
+        if (lastEl && first) {
+          if (locEl)  locEl.textContent  = first.location;
+          if (timeEl) timeEl.textContent = formatDateTime(first.time);
+          if (magEl)  magEl.textContent  = first.mag.toFixed(1);
+          lastEl.style.display = 'block';
+        }
+        addMarkersToMap(events);
+      })
+      .catch(() => { showFallback(); });
   }
 
   function showFallback() {
     const fb = document.getElementById('s1-api-fallback');
+    const le = document.getElementById('s1-last-event');
     const cq = document.getElementById('s1-quake-count');
     if (fb) fb.style.display = 'block';
-    if (cq) cq.textContent = '~15';
-  }
-
-  function fetchINGV() {
-    const tEnd   = new Date().toISOString().slice(0, 19);
-    const tStart = new Date(Date.now() - 86400000).toISOString().slice(0, 19);
-    const url = `https://webservices.ingv.it/fdsnws/event/1/query?format=text&minmag=1.5&starttime=${tStart}&endtime=${tEnd}&orderby=time`;
-    fetch(url)
-      .then(r => { if (!r.ok) throw 0; return r.text(); })
-      .then(text => {
-        const events = text.trim().split('\n').slice(1).map(l => {
-          const c = l.split('|');
-          return c.length >= 11 ? { lat:+c[2], lon:+c[3], mag:+c[10], location:(c[12]||'').trim(), time:(c[1]||'') } : null;
-        }).filter(e => e && !isNaN(e.lat) && !isNaN(e.mag));
-        if (!events.length) { showFallback(); _renderMapCanvas([]); return; }
-        const cnt = document.getElementById('s1-quake-count');
-        if (cnt) { fetchDone ? cnt.textContent = events.length : countUpElement(cnt, events.length, 1400); fetchDone = true; }
-        const first = events[0];
-        const le = document.getElementById('s1-last-event');
-        if (le && first) {
-          const loc = document.getElementById('s1-last-loc'), tim = document.getElementById('s1-last-time'), mag = document.getElementById('s1-last-mag');
-          if (loc) loc.textContent = first.location;
-          if (tim) tim.textContent = first.time.slice(0,16).replace('T',' ');
-          if (mag) mag.textContent = first.mag.toFixed(1);
-          le.style.display = 'block';
-        }
-        _renderMapCanvas(events);
-      })
-      .catch(() => { showFallback(); _renderMapCanvas([]); });
+    if (le) le.style.display = 'none';
+    if (cq) cq.textContent   = '—';
   }
 
   function initMap() {
-    fetch('italy-regions.json')
-      .then(r => r.json())
-      .then(gj => { _regionsGJ = gj; _renderMapCanvas([]); })
-      .catch(() => _renderMapCanvas([]));
+    if (mapInstance) return;
+    if (typeof L === 'undefined') return;
+    mapInstance = L.map('s1-map', {
+      scrollWheelZoom: true, zoomControl: true, attributionControl: false,
+      dragging: true, touchZoom: true, doubleClickZoom: true, boxZoom: false,
+    });
+    mapInstance.zoomControl.setPosition('bottomright');
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 18 }).addTo(mapInstance);
+    mapInstance.fitBounds([[36.5, 6.6], [47.1, 18.5]], { padding: [8, 8] });
+    L.control.attribution({ position: 'bottomleft', prefix: false })
+      .addTo(mapInstance)
+      .setPrefix('<span style="font-family:monospace;font-size:0.45rem;letter-spacing:0.08em;color:rgba(245,237,224,0.15)">INGV · CartoDB</span>');
+    /* blocca propagazione eventi di interazione verso carosello/pagina */
+    const mapEl = document.getElementById('s1-map');
+    if (mapEl) {
+      mapEl.addEventListener('wheel',       e => e.stopPropagation(), { passive: false });
+      mapEl.addEventListener('touchstart',  e => e.stopPropagation(), { passive: true });
+      mapEl.addEventListener('touchmove',   e => e.stopPropagation(), { passive: false });
+      mapEl.addEventListener('pointerdown', e => e.stopPropagation());
+      mapEl.addEventListener('pointermove', e => e.stopPropagation());
+    }
   }
+
+  /* â•â•â• BRANCH ANIMATION — Slide 2 â•â•â• */
 
   /* ── BRANCH ANIMATION — Slide 2 ── */
 
