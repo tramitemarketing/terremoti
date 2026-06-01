@@ -1212,168 +1212,147 @@
     <!-- ═══════════════════════════════════════════ -->
     <div class="s4-slide" id="s4-s5" data-slide="4">
       <div id="s4-s5-inner">
-
-        <!-- Colonna sinistra: spiegazione + calcolatore -->
         <div id="s4-s5-left">
           <div class="s4-eyebrow">CHARLES RICHTER · CALTECH · 1935</div>
           <h2 class="s4-title">Come si misura la forza di un terremoto.</h2>
-          <p class="s4-body-text">
-            Charles Richter sviluppò la sua scala nel 1935 usando un sismografo specifico:
-            il Wood-Anderson. Il metodo originale era semplice: si tracciava una riga su un foglio
-            di carta con tre assi stampati — il nomogramma.
-          </p>
-          <p class="s4-body-text">
-            Servono due misure dal sismogramma: l'ampiezza massima delle onde sismiche
-            (in mm) e il gap temporale tra onda P e onda S che indica la distanza dalla stazione.
-          </p>
-          <p class="s4-body-text">
-            La chiave è il logaritmo: ogni incremento di 1 unità corrisponde ad
-            ampiezza 10× maggiore e circa 30× più energia liberata.
-          </p>
-
-          <!-- Box formula -->
-          <div id="s4-formula-box">
-            ML = log&#x2081;&#x2080;(A) + 3·log&#x2081;&#x2080;(&#916;) &#8722; 2.92
-            <div class="s4-formula-sub">A = ampiezza (mm) · &#916; = distanza (km)</div>
+          <div class="s4-s5-key">
+            <div class="s4-s5-key-label">IL PRINCIPIO FONDAMENTALE</div>
+            <p>Le onde <strong>P</strong> arrivano prima delle <strong>S</strong>. La <strong>differenza P&ndash;S</strong> rivela la distanza: pi&ugrave; grande il gap, pi&ugrave; lontano il terremoto.</p>
           </div>
-        </div><!-- /s4-s5-text -->
-
-        <!-- Nomogramma canvas a destra -->
-        <div class="s4-s5-nomo">
-          <canvas id="s4-nomo-canvas" width="340" height="360" role="img" aria-label="Nomogramma di Richter interattivo"></canvas>
-
-          <!-- Toggle modalità libera -->
-          <label class="s4-toggle-wrap">
-            <input type="checkbox" id="s4-nomo-free">
-            <span class="s4-toggle-label">Modalità libera</span>
-          </label>
-
-          <!-- Controlli modalità libera (nascosti inizialmente) -->
-          <div id="s4-nomo-controls" style="display:none">
-            <label class="s4-input-row">
-              <span>Gap P-S (s)</span>
-              <input type="number" id="s4-nomo-gap" min="0.1" max="60" step="0.1" value="8.0" aria-label="Gap tempo P-S in secondi">
-            </label>
-            <label class="s4-input-row">
-              <span>Ampiezza (mm)</span>
-              <input type="number" id="s4-nomo-amp" min="0.1" max="10000" step="1" value="5000" aria-label="Ampiezza massima in millimetri">
-            </label>
+          <ol class="s4-s5-steps">
+            <li><span class="s4-s5-stepnum">1</span> Leggi il <strong>gap P-S</strong> in secondi dal sismogramma</li>
+            <li><span class="s4-s5-stepnum">2</span> Misura l&rsquo;<strong>ampiezza massima</strong> delle onde in mm</li>
+            <li><span class="s4-s5-stepnum">3</span> Collega i due valori sul nomogramma: la riga indica <strong>ML</strong></li>
+          </ol>
+          <div id="s4-s5-calc">
+            <div class="s4-s5-calc-title">INSERISCI I VALORI — IL PROGRAMMA CALCOLA ML</div>
+            <div class="s4-calc-row">
+              <label class="s4-calc-label" for="s4-nomo-gap">Gap P-S</label>
+              <input type="number" id="s4-nomo-gap" min="0.1" max="60" step="0.1" value="8.0" class="s4-calc-input" aria-label="Gap P-S in secondi">
+              <span class="s4-calc-unit">s</span>
+              <span class="s4-calc-hint">&#8594;&nbsp;<span id="s4-dist-display">72.0</span> km</span>
+            </div>
+            <div class="s4-calc-row">
+              <label class="s4-calc-label" for="s4-nomo-amp">Ampiezza</label>
+              <input type="number" id="s4-nomo-amp" min="0.1" max="10000" step="1" value="5000" class="s4-calc-input" aria-label="Ampiezza in mm">
+              <span class="s4-calc-unit">mm</span>
+            </div>
+            <div id="s4-ml-display" aria-live="polite" aria-atomic="true">
+              <span class="s4-ml-eq">ML&nbsp;=</span><span id="s4-ml-number">6.3</span>
+            </div>
+            <div class="s4-formula-box">ML = log&#x2081;&#x2080;(A) + 3&middot;log&#x2081;&#x2080;(&Delta;) &minus; 2.92
+              <div class="s4-formula-sub">A = ampiezza (mm) &middot; &Delta; = gap &times; 9 km/s</div>
+            </div>
           </div>
-
-          <!-- Display magnitudo calcolata -->
-          <div id="s4-ml-display" aria-live="polite">ML = 6.3</div>
-        </div><!-- /s4-s5-nomo -->
-
-      </div><!-- /s4-s5-inner -->
-    </div><!-- /s4-s5 -->
+        </div>
+        <div id="s4-s5-right">
+          <div class="s4-s5-nomo-label">NOMOGRAMMA DI RICHTER</div>
+          <canvas id="s4-nomo-canvas" role="img" aria-label="Nomogramma interattivo"></canvas>
+          <p class="s4-s5-nomo-caption">La linea rossa collega gap P-S (sx) e ampiezza (dx). Il punto sull&rsquo;asse centrale &egrave; ML.</p>
+        </div>
+      </div>
+    </div>
 
 
     <!-- ═══════════════════════════════════════════ -->
     <!-- SLIDE 6 — Calcolo Richter live INGV        -->
-    <!-- ═══════════════════════════════════════════ -->
+    <!-- slide 6 -->
     <div class="s4-slide" id="s4-s6" data-slide="5">
       <div id="s4-s6-inner">
-
         <div id="s4-s6-header">
-          <div class="s4-eyebrow">CALCOLO IN TEMPO REALE · INGV</div>
-          <h2 class="s4-title">L'ultimo terremoto italiano:<br>come è stata calcolata la magnitudo.</h2>
+          <div class="s4-eyebrow">SCALA RICHTER &middot; CALCOLO IN TEMPO REALE</div>
+          <h2 class="s4-title">Da un&rsquo;onda che arriva a un numero su una scala.</h2>
+          <p id="s4-s6-intro">La <strong>magnitudo locale ML</strong> misura l&rsquo;energia sismica alla sorgente &mdash; ovunque si misuri il valore &egrave; identico. INGV la calcola in tempo reale per ogni terremoto italiano usando la rete di oltre 500 stazioni.</p>
         </div>
-
-        <!-- Griglia 2×2: 4 step sempre in vista -->
-        <div id="s4-calc-steps">
-
-          <!-- Step 1 — L'evento -->
-          <div class="s4-step-card" id="s4-step1">
-            <div class="s4-step-num">01</div>
-            <div class="s4-step-label">L'EVENTO</div>
-            <div id="s4-ev-desc" aria-live="polite">Caricamento dati INGV…</div>
+        <div id="s4-s6-layout">
+          <div id="s4-s6-pipeline">
+            <div class="s4-pipe-step s4-visible" id="s4-step1">
+              <div class="s4-pipe-num">01</div>
+              <div class="s4-pipe-body">
+                <div class="s4-pipe-label">RILEVA L&rsquo;EVENTO</div>
+                <div class="s4-pipe-data" id="s4-ev-desc" aria-live="polite">Caricamento dati INGV&hellip;</div>
+              </div>
+            </div>
+            <div class="s4-pipe-connector" aria-hidden="true">&#8595;</div>
+            <div class="s4-pipe-step" id="s4-step2" aria-hidden="true">
+              <div class="s4-pipe-num">02</div>
+              <div class="s4-pipe-body">
+                <div class="s4-pipe-label">STAZIONE PI&Ugrave; VICINA</div>
+                <div class="s4-pipe-data" id="s4-sta-desc" aria-live="polite">&mdash;</div>
+              </div>
+            </div>
+            <div class="s4-pipe-connector" aria-hidden="true">&#8595;</div>
+            <div class="s4-pipe-step" id="s4-step3" aria-hidden="true">
+              <div class="s4-pipe-num">03</div>
+              <div class="s4-pipe-body">
+                <div class="s4-pipe-label">MISURA E CALCOLA</div>
+                <div class="s4-pipe-data" id="s4-calc-desc" aria-live="polite">&mdash;</div>
+                <div class="s4-step-note">Stima didattica dalla magnitudo + distanza</div>
+              </div>
+            </div>
+            <div class="s4-pipe-connector" aria-hidden="true">&#8595;</div>
+            <div class="s4-pipe-step" id="s4-step4" aria-hidden="true">
+              <div class="s4-pipe-num">04</div>
+              <div class="s4-pipe-body">
+                <div class="s4-pipe-label">VERIFICA</div>
+                <div class="s4-pipe-data" id="s4-verify-desc" aria-live="polite">&mdash;</div>
+              </div>
+            </div>
           </div>
-
-          <!-- Step 2 — La stazione più vicina -->
-          <div class="s4-step-card" id="s4-step2" aria-hidden="true">
-            <div class="s4-step-num">02</div>
-            <div class="s4-step-label">LA STAZIONE PIÙ VICINA</div>
-            <div id="s4-sta-desc" aria-live="polite">—</div>
+          <div id="s4-s6-result">
+            <div class="s4-s6-formula-block">
+              <div class="s4-eyebrow" style="margin-bottom:0.6rem">LA FORMULA</div>
+              <div class="s4-formula-box-lg">ML = log&#x2081;&#x2080;(A) + 3&middot;log&#x2081;&#x2080;(&Delta;) &minus; 2.92</div>
+              <div class="s4-s6-formula-vars">A = ampiezza massima (mm)<br>&Delta; = distanza stazione &ndash; epicentro (km)</div>
+            </div>
+            <div id="s4-s6-result-display">
+              <div class="s4-s6-res-label">MAGNITUDO CALCOLATA</div>
+              <div id="s4-ml-big" aria-live="polite">&mdash;</div>
+              <div id="s4-ml-compare-note" aria-live="polite"></div>
+            </div>
           </div>
-
-          <!-- Step 3 — Il calcolo -->
-          <div class="s4-step-card" id="s4-step3" aria-hidden="true">
-            <div class="s4-step-num">03</div>
-            <div class="s4-step-label">IL CALCOLO</div>
-            <div id="s4-calc-desc" aria-live="polite">—</div>
-            <div class="s4-step-note">Stima didattica dalla magnitudo + distanza — i valori esatti richiedono il sismogramma grezzo della stazione</div>
-          </div>
-
-          <!-- Step 4 — Verifica -->
-          <div class="s4-step-card" id="s4-step4" aria-hidden="true">
-            <div class="s4-step-num">04</div>
-            <div class="s4-step-label">VERIFICA</div>
-            <div id="s4-verify-desc" aria-live="polite">—</div>
-          </div>
-
-        </div><!-- /s4-calc-steps -->
-
-      </div><!-- /s4-s6-inner -->
-    </div><!-- /s4-s6 -->
+        </div>
+      </div>
+    </div>
 
 
     <!-- ═══════════════════════════════════════════ -->
     <!-- SLIDE 7 — Scala MCS: 12 gradi              -->
-    <!-- ═══════════════════════════════════════════ -->
+    <!-- slide 7 -->
     <div class="s4-slide" id="s4-s7" data-slide="6">
       <div id="s4-s7-inner">
-
-        <!-- Header -->
-        <div id="s4-s7-header">
-          <div class="s4-eyebrow">MERCALLI · CANCANI · SIEBERG · 1917</div>
-          <h2 class="s4-title">Non l'energia. Gli effetti.</h2>
-          <p id="s4-s7-intro">La scala MCS misura ciò che persone e edifici subiscono: empirica, varia da luogo a luogo per lo stesso evento.</p>
-        </div>
-
-        <!-- Barra dei 12 gradi cliccabili -->
-        <div id="s4-mcs-grade-bar" role="group" aria-label="Scegli il grado MCS da I a XII">
-          <button class="s4-grade-chip" data-grade="1" aria-pressed="false">I</button>
-          <button class="s4-grade-chip" data-grade="2" aria-pressed="false">II</button>
-          <button class="s4-grade-chip" data-grade="3" aria-pressed="false">III</button>
-          <button class="s4-grade-chip" data-grade="4" aria-pressed="false">IV</button>
-          <button class="s4-grade-chip" data-grade="5" aria-pressed="false">V</button>
-          <button class="s4-grade-chip s4-active" data-grade="6" aria-pressed="true">VI</button>
-          <button class="s4-grade-chip" data-grade="7" aria-pressed="false">VII</button>
-          <button class="s4-grade-chip" data-grade="8" aria-pressed="false">VIII</button>
-          <button class="s4-grade-chip" data-grade="9" aria-pressed="false">IX</button>
-          <button class="s4-grade-chip" data-grade="10" aria-pressed="false">X</button>
-          <button class="s4-grade-chip" data-grade="11" aria-pressed="false">XI</button>
-          <button class="s4-grade-chip" data-grade="12" aria-pressed="false">XII</button>
-          <!-- Slider nascosto per accessibilità keyboard -->
-          <input type="range" id="s4-mcs-slider" min="1" max="12" value="6" step="1"
-                 aria-label="Grado MCS da I a XII" aria-valuetext="Grado VI">
-        </div>
-
-        <!-- Corpo: numero romano | descrizione | illustrazione -->
-        <div id="s4-s7-body">
-
-          <!-- Numero romano + confronto L'Aquila -->
-          <div id="s4-s7-left">
-            <div id="s4-mcs-roman" aria-live="polite" aria-atomic="true">VI</div>
-            <div id="s4-mcs-compare">
-              <div class="s4-compare-header">L'AQUILA 2009</div>
-              <div class="s4-compare-mag">Mw 6.3 — uguale ovunque</div>
-              <div id="s4-mcs-compare-label" aria-live="polite">Come la periferia de L'Aquila</div>
-            </div>
+        <div id="s4-s7-left">
+          <div class="s4-eyebrow">MERCALLI &middot; CANCANI &middot; SIEBERG &middot; 1917</div>
+          <h2 class="s4-title">Non l&rsquo;energia.<br>Gli effetti.</h2>
+          <p id="s4-s7-history">Giuseppe Mercalli descrisse 12 gradi nel 1902; Cancani e Sieberg li raffinarono nel 1917. La <strong>scala MCS</strong> misura ci&ograve; che persone, edifici e territorio subiscono &mdash; non l&rsquo;energia. Per lo stesso terremoto varia da zona a zona.</p>
+          <div id="s4-mcs-scale-col" role="group" aria-label="Gradi MCS I-XII">
+            <button class="s4-mcs-bar-item" data-grade="1" aria-pressed="false"><span class="s4-bar-roman">I</span></button>
+            <button class="s4-mcs-bar-item" data-grade="2" aria-pressed="false"><span class="s4-bar-roman">II</span></button>
+            <button class="s4-mcs-bar-item" data-grade="3" aria-pressed="false"><span class="s4-bar-roman">III</span></button>
+            <button class="s4-mcs-bar-item" data-grade="4" aria-pressed="false"><span class="s4-bar-roman">IV</span></button>
+            <button class="s4-mcs-bar-item" data-grade="5" aria-pressed="false"><span class="s4-bar-roman">V</span></button>
+            <button class="s4-mcs-bar-item s4-active" data-grade="6" aria-pressed="true"><span class="s4-bar-roman">VI</span></button>
+            <button class="s4-mcs-bar-item" data-grade="7" aria-pressed="false"><span class="s4-bar-roman">VII</span></button>
+            <button class="s4-mcs-bar-item" data-grade="8" aria-pressed="false"><span class="s4-bar-roman">VIII</span></button>
+            <button class="s4-mcs-bar-item" data-grade="9" aria-pressed="false"><span class="s4-bar-roman">IX</span></button>
+            <button class="s4-mcs-bar-item" data-grade="10" aria-pressed="false"><span class="s4-bar-roman">X</span></button>
+            <button class="s4-mcs-bar-item" data-grade="11" aria-pressed="false"><span class="s4-bar-roman">XI</span></button>
+            <button class="s4-mcs-bar-item" data-grade="12" aria-pressed="false"><span class="s4-bar-roman">XII</span></button>
           </div>
-
-          <!-- Descrizione effetti -->
-          <div id="s4-s7-center">
-            <div id="s4-mcs-text" aria-live="polite" aria-atomic="true"></div>
-          </div>
-
-          <!-- Illustrazione SVG -->
+          <input type="range" id="s4-mcs-slider" min="1" max="12" value="6" step="1" class="s4-sr-only" aria-label="Grado MCS">
+        </div>
+        <div id="s4-s7-right">
+          <div id="s4-mcs-roman" aria-live="polite" aria-atomic="true">VI</div>
+          <div id="s4-mcs-text" aria-live="polite" aria-atomic="true"></div>
           <div id="s4-mcs-illus" aria-live="polite" aria-atomic="true"></div>
-
-        </div><!-- /s4-s7-body -->
-
-      </div><!-- /s4-s7-inner -->
-    </div><!-- /s4-s7 -->
+          <div id="s4-mcs-compare">
+            <div class="s4-compare-header">L&rsquo;AQUILA 2009</div>
+            <div class="s4-compare-mag">Mw 6.3 &mdash; uguale ovunque</div>
+            <div id="s4-mcs-compare-label" aria-live="polite">Come la periferia de L&rsquo;Aquila</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
 
     <!-- ═══════════════════════════════════════════ -->
@@ -2497,29 +2476,38 @@
 
         <!-- Scala colori -->
         <div class="s5-legend-scale">
-            <div class="s5-legend-band">
-                <div class="s5-legend-color" style="background:var(--blood);"></div>
+            <!-- Gradiente PGA continuo -->
+            <div class="s5-pga-gradient-bar"></div>
+            <div class="s5-pga-gradient-labels">
+                <span>0.36g</span>
+                <span>0.25g</span>
+                <span>0.15g</span>
+                <span>0.05g</span>
+                <span>0.00g</span>
+            </div>
+            <div class="s5-legend-band" style="margin-top:0.8rem">
+                <div class="s5-legend-color" style="background:rgb(139,26,26);"></div>
                 <div class="s5-legend-band-text">
                     <span class="s5-legend-band-pga">&gt; 0.25g</span>
-                    <span class="s5-legend-band-zona">Molto alta — Zona 1</span>
+                    <span class="s5-legend-band-zona">Massima — Zona 1</span>
                 </div>
             </div>
             <div class="s5-legend-band">
-                <div class="s5-legend-color" style="background:var(--terracotta);"></div>
+                <div class="s5-legend-color" style="background:rgb(196,97,42);"></div>
                 <div class="s5-legend-band-text">
-                    <span class="s5-legend-band-pga">0.15–0.25g</span>
+                    <span class="s5-legend-band-pga">0.15 – 0.25g</span>
                     <span class="s5-legend-band-zona">Alta — Zona 2</span>
                 </div>
             </div>
             <div class="s5-legend-band">
-                <div class="s5-legend-color" style="background:var(--ochre);"></div>
+                <div class="s5-legend-color" style="background:rgb(212,137,58);"></div>
                 <div class="s5-legend-band-text">
-                    <span class="s5-legend-band-pga">0.05–0.15g</span>
+                    <span class="s5-legend-band-pga">0.05 – 0.15g</span>
                     <span class="s5-legend-band-zona">Media — Zona 3</span>
                 </div>
             </div>
             <div class="s5-legend-band">
-                <div class="s5-legend-color" style="background:var(--blue);"></div>
+                <div class="s5-legend-color" style="background:rgb(58,126,196);"></div>
                 <div class="s5-legend-band-text">
                     <span class="s5-legend-band-pga">&lt; 0.05g</span>
                     <span class="s5-legend-band-zona">Bassa — Zona 4</span>
@@ -3242,7 +3230,7 @@
 
       <!-- BOX 3 — LastQuake -->
       <div style="background:var(--charcoal);border:1px solid rgba(196,97,42,0.2);padding:20px">
-        <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ochre);letter-spacing:1px;margin:0 0 8px">ðŸ“± APP · LASTQUAKE (EMSC)</p>
+        <p style=”font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ochre);letter-spacing:1px;margin:0 0 8px”>📱 APP · LASTQUAKE (EMSC)</p>
         <p style="font-size:13px;color:rgba(245,237,224,0.7);margin:0 0 14px;line-height:1.6">L'app ufficiale EMSC per notifiche in tempo reale di terremoti nel Mediterraneo. Gratuita.</p>
         <a href="https://www.emsc-csem.org/app/" target="_blank" rel="noopener"
           style="display:block;text-align:center;background:rgba(196,97,42,0.15);border:1px solid var(--terracotta);color:var(--cream);padding:10px 20px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;text-decoration:none">
@@ -3252,7 +3240,7 @@
 
       <!-- BOX 4 — Allerta Android -->
       <div style="background:var(--charcoal);border:1px solid rgba(58,126,196,0.3);padding:20px">
-        <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--blue);letter-spacing:1px;margin:0 0 8px">ðŸ”” ANDROID · ALLERTA SISMICA</p>
+        <p style=”font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--blue);letter-spacing:1px;margin:0 0 8px”>🔔 ANDROID · ALLERTA SISMICA</p>
         <p style="font-size:13px;color:rgba(245,237,224,0.7);margin:0 0 14px;line-height:1.6">Se hai un dispositivo Android, puoi attivare le allerte sismiche di Google nelle impostazioni.</p>
         <a href="https://crisisresponse.google/android-alerts" target="_blank" rel="noopener"
           style="display:block;text-align:center;background:rgba(58,126,196,0.1);border:1px solid var(--blue);color:var(--cream);padding:10px 20px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;text-decoration:none">
@@ -3651,6 +3639,33 @@
   </div>
 </div>
 
+
+<!-- ── Popup PGA ── -->
+<div class="s5-popup-overlay" id="s5-popup-overlay"></div>
+<div class="s5-info-popup" id="s5-pga-popup" role="dialog" aria-modal="true">
+  <button class="s5-popup-close" id="s5-pga-close" aria-label="chiudi">&#10005;</button>
+  <p class="s5-popup-name">Peak Ground Acceleration — PGA</p>
+  <p class="s5-popup-dates">Accelerazione di picco del suolo · INGV MPS04 · 2004</p>
+  <p class="s5-popup-body">Il <strong>PGA</strong> (Peak Ground Acceleration) misura l'accelerazione massima del terreno durante un terremoto, espressa come frazione dell'accelerazione di gravità (g = 9.81 m/s²). È la grandezza fisica usata per progettare edifici antisismici: un PGA di 0.25g significa che il suolo ha subito un'accelerazione orizzontale pari al 25% della gravità.<br><br>La mappa mostra i valori di PGA con una <em>probabilità di superamento del 10% in 50 anni</em> — cioè il livello che ha una probabilità del 10% di essere raggiunto o superato nei prossimi 50 anni in ogni punto del territorio. Questo orizzonte temporale corrisponde alla vita utile di un edificio.<br><br>I valori variano da <span style="color:rgb(58,126,196)"><strong>~0.02g</strong></span> (Pianura Padana, Sardegna) a <span style="color:rgb(139,26,26)"><strong>~0.36g</strong></span> (Reggio Calabria, Messina) — un fattore 18 di differenza tra le zone più sicure e quelle più pericolose d'Italia.</p>
+  <div class="s5-popup-geo">
+    <span>&#9679; Fonte: INGV 2004 — MPS Working Group</span>
+    <span>Stucchi et al., 2011 — licenza CC-BY · doi:10.6092/INGV.IT-MPS04</span>
+    <span>Metodo: PSHA (Probabilistic Seismic Hazard Analysis) · 33 gradi di libertà di modello</span>
+  </div>
+</div>
+
+<!-- ── Popup DPC ── -->
+<div class="s5-info-popup" id="s5-dpc-popup" role="dialog" aria-modal="true">
+  <button class="s5-popup-close" id="s5-dpc-close" aria-label="chiudi">&#10005;</button>
+  <p class="s5-popup-name">Classificazione Sismica DPC</p>
+  <p class="s5-popup-dates">Dipartimento della Protezione Civile · OPCM 3274/2003 · aggiornata 2006</p>
+  <p class="s5-popup-body">Il <strong>DPC</strong> (Dipartimento della Protezione Civile) ha suddiviso il territorio italiano in <strong>4 zone sismiche</strong> basate sui valori di PGA stimati dall'INGV, con lo scopo di applicare regole costruttive diverse per ogni livello di rischio.<br><br><strong>Zona 1</strong> — PGA &gt; 0.25g: la più pericolosa. Comprende Calabria, Campania, Molise, Abruzzo, Sicilia orientale, Friuli orientale. Normativa antisismica più stringente.<br><strong>Zona 2</strong> — PGA 0.15–0.25g: rischio medio-alto. Gran parte del Sud e del Centro appenninico.<br><strong>Zona 3</strong> — PGA 0.05–0.15g: rischio moderato. La maggior parte del Nord e del Centro.<br><strong>Zona 4</strong> — PGA &lt; 0.05g: rischio basso. Pianura Padana, Sardegna, alcune aree alpine.<br><br>La classificazione è deliberatamente semplificata rispetto ai valori PGA continui per essere usabile nelle normative edilizie. Ogni regione può adottare criteri più restrittivi, ma non meno restrittivi, di quelli nazionali.</p>
+  <div class="s5-popup-geo">
+    <span>&#9679; OPCM n. 3274 del 20 marzo 2003 — Norme tecniche per il progetto, la valutazione e l'adeguamento sismico degli edifici</span>
+    <span>Aggiornamento: OPCM 3519/2006 · NTC 2008 · NTC 2018</span>
+    <span>44 milioni di italiani vivono in zone 1 e 2 · 70% degli edifici costruiti prima del 1974</span>
+  </div>
+</div>
 <script src="js/init.js"></script>
 </body>
 </html>

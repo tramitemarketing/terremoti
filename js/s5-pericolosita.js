@@ -1069,8 +1069,94 @@ function s5_initSlide4() {
    Si occupa solo di eventuali correzioni al fallback.
    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function s5_initSlide5() {
-    /* Slide statica — SVG province già incorporato via <img>.
-       Nessuna inizializzazione necessaria. */
+    if (typeof L === 'undefined') return;
+    var mapEl = document.getElementById('s5-zone-map');
+    if (!mapEl || mapEl._leaflet_id) return;
+
+    /* Valori PGA (g) per provincia — pericolosità sismica INGV MPS04
+       probabilità di superamento 10% in 50 anni, suolo rigido */
+    var PGA = {
+        RC:0.356,ME:0.337,VV:0.312,AQ:0.297,PZ:0.286,AV:0.281,CZ:0.274,
+        CT:0.274,BN:0.267,CB:0.267,IS:0.256,SR:0.259,CZ2:0,CS:0.208,
+        MT:0.203,CE:0.213,KR:0.219,FG:0.220,NA:0.197,SA:0.228,
+        UD:0.221,AP:0.228,TE:0.228,PE:0.211,FR:0.219,PG:0.213,TR:0.219,
+        GO:0.213,TS:0.198,CH:0.192,CL:0.192,EN:0.188,PU:0.188,
+        PN:0.185,AG:0.184,PA:0.183,RG:0.188,AN:0.197,MC:0.216,FM:0.210,
+        TP:0.177,BL:0.197,MS:0.213,RI:0.213,
+        TN:0.138,SI:0.128,AR:0.125,RM:0.112,FI:0.112,BA:0.119,RE:0.112,
+        RN:0.119,MO:0.118,SO:0.107,FC:0.107,TA:0.104,BT:0.107,
+        FE:0.098,GR:0.094,SP:0.094,PI:0.079,PT:0.096,PO:0.103,
+        VI:0.092,VT:0.092,VR:0.089,BS:0.089,LU:0.089,LE:0.089,LT:0.089,
+        BO:0.095,CN:0.086,VB:0.086,RA:0.086,AL:0.074,SV:0.074,LC:0.074,
+        MN:0.074,AO:0.074,TV:0.074,AT:0.079,BI:0.079,GE:0.079,BG:0.079,
+        IM:0.071,PV:0.071,PC:0.071,VC:0.071,PD:0.071,PR:0.079,
+        CR:0.067,RO:0.064,LO:0.064,
+        MI:0.042,MB:0.039,CO:0.038,NO:0.040,TO:0.046,VA:0.040,VE:0.044,
+        BZ:0.046,CA:0.034,SU:0.033,OR:0.032,NU:0.030,SS:0.028
+    };
+
+    /* Gradiente continuo: PGA → colore */
+    function pga2color(pga) {
+        var stops = [
+            [0.00, [26,32,53]],
+            [0.05, [58,126,196]],
+            [0.15, [212,137,58]],
+            [0.25, [196,97,42]],
+            [0.36, [139,26,26]]
+        ];
+        pga = Math.max(0, Math.min(0.36, pga || 0.06));
+        for (var i = 0; i < stops.length - 1; i++) {
+            var lo = stops[i], hi = stops[i+1];
+            if (pga >= lo[0] && pga <= hi[0]) {
+                var t = (pga - lo[0]) / (hi[0] - lo[0]);
+                var r = Math.round(lo[1][0] + t*(hi[1][0]-lo[1][0]));
+                var g = Math.round(lo[1][1] + t*(hi[1][1]-lo[1][1]));
+                var b = Math.round(lo[1][2] + t*(hi[1][2]-lo[1][2]));
+                return 'rgb('+r+','+g+','+b+')';
+            }
+        }
+        return 'rgb(139,26,26)';
+    }
+
+    var map = L.map('s5-zone-map', {
+        scrollWheelZoom:true, zoomControl:true, attributionControl:false, preferCanvas:true
+    });
+    map.fitBounds([[35.0,6.0],[47.5,19.0]]);
+    map.zoomControl.setPosition('bottomright');
+
+    var pgaLayer = null;
+
+    fetch('assets/provinces.geojson')
+        .then(function(r){ return r.json(); })
+        .then(function(gj){
+            pgaLayer = L.geoJSON(gj, {
+                style: function(f) {
+                    var acr = f.properties.prov_acr || '';
+                    var pga = PGA[acr] || 0.07;
+                    return {
+                        fillColor: pga2color(pga),
+                        fillOpacity: 1,
+                        color: 'rgba(245,237,224,0.07)',
+                        weight: 0.5
+                    };
+                },
+                onEachFeature: function(f, layer) {
+                    var acr  = f.properties.prov_acr  || '';
+                    var name = f.properties.prov_name || '';
+                    var pga  = PGA[acr] || 0.07;
+                    var pgaStr = (pga * 100).toFixed(1) + '% g';
+                    layer.bindTooltip(
+                        '<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.72rem">' +
+                        '<strong>' + name + '</strong> (' + acr + ')<br>' +
+                        'PGA = <span style="color:' + pga2color(pga).replace('rgb','rgba').replace(')',',1)') + ';font-weight:bold">' + pgaStr + '</span>' +
+                        '</span>',
+                        { sticky:true, offset:[10,0] }
+                    );
+                    layer.on('mouseover', function() { this.setStyle({weight:1.5, color:'rgba(245,237,224,0.4)'}); });
+                    layer.on('mouseout',  function() { pgaLayer && pgaLayer.resetStyle(this); });
+                }
+            }).addTo(map);
+        });
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•

@@ -408,19 +408,21 @@
 
 .s5-s2-left {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 3rem 2.5rem 3rem 3.5rem;
-  overflow: hidden;
+  padding: 2rem 2rem 2rem 3rem;
+  overflow-y: auto;
+  gap: 0;
 }
 
 .s5-s2-right {
-  flex: 0 0 480px;
+  flex: 0 0 min(440px, 40vw);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 .s5-eyebrow {
@@ -443,10 +445,10 @@
 
 .s5-s2-body {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 0.9rem;
-  line-height: 1.8;
+  font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+  line-height: 1.65;
   color: rgba(245, 237, 224, 0.6);
-  margin: 0 0 0 0;
+  margin: 0;
 }
 
 .s5-formula-box {
@@ -1304,3 +1306,108 @@
     box-shadow: none;
 }
 #s5-zone-map .leaflet-tooltip::before { display: none; }
+
+/* ── Popup PGA / DPC ── */
+.s5-pga-trigger, .s5-dpc-trigger {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--terracotta);
+    color: var(--terracotta);
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    letter-spacing: 0.05em;
+    transition: color 0.2s, border-color 0.2s;
+}
+.s5-pga-trigger:hover, .s5-dpc-trigger:hover { color: var(--ochre); border-color: var(--ochre); }
+.s5-s5-subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    color: rgba(245,237,224,0.45);
+    margin-top: 0.6rem;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.8);
+}
+.s5-popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 9000;
+    backdrop-filter: blur(4px);
+}
+.s5-popup-overlay.open { display: block; }
+.s5-info-popup {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9001;
+    background: rgba(12,12,12,0.97);
+    border: 1px solid rgba(196,97,42,0.5);
+    border-radius: 4px;
+    padding: 2.5rem 2.8rem;
+    max-width: 560px;
+    width: 90vw;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.8);
+}
+.s5-info-popup.open { display: block; }
+.s5-popup-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: transparent; border: none;
+    color: rgba(245,237,224,0.35); font-size: 1rem;
+    cursor: pointer; transition: color 0.2s;
+}
+.s5-popup-close:hover { color: var(--cream); }
+.s5-popup-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem; font-weight: 300;
+    color: var(--cream); margin-bottom: 0.2rem;
+}
+.s5-popup-dates {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.56rem; letter-spacing: 0.2em;
+    color: rgba(196,97,42,0.7); text-transform: uppercase;
+    margin-bottom: 1.2rem;
+}
+.s5-popup-body {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem; line-height: 1.85;
+    color: rgba(245,237,224,0.75); margin-bottom: 1.2rem;
+}
+.s5-popup-geo {
+    display: flex; flex-direction: column; gap: 0.3rem;
+    border-top: 1px solid rgba(245,237,224,0.08);
+    padding-top: 0.9rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem; letter-spacing: 0.1em;
+    color: rgba(245,237,224,0.3);
+}
+/* Gradient bar PGA */
+.s5-pga-gradient-bar {
+    width: 100%; height: 14px;
+    border-radius: 2px;
+    background: linear-gradient(to top,
+        rgb(26,32,53) 0%, rgb(58,126,196) 14%,
+        rgb(212,137,58) 42%, rgb(196,97,42) 69%,
+        rgb(139,26,26) 100%);
+    margin-bottom: 0.25rem;
+}
+.s5-pga-gradient-labels {
+    display: flex; flex-direction: column;
+    align-items: flex-end; gap: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.48rem; letter-spacing: 0.08em;
+    color: rgba(245,237,224,0.35);
+    margin-bottom: 0.6rem;
+    line-height: 1;
+}
+.s5-pga-gradient-labels span { margin-bottom: 0; }
+.s5-panel-dpc-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.54rem; letter-spacing: 0.06em;
+    color: rgba(245,237,224,0.4);
+    line-height: 1.6; margin-bottom: 0.8rem;
+}
