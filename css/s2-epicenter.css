@@ -492,7 +492,7 @@
     align-items: stretch;
 }
 .s3-panel {
-    flex: 1;
+    flex: 0 0 22%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -503,7 +503,7 @@
     border-left: 1px solid rgba(245,237,224,0.06);
 }
 .s3-panel--map {
-    flex: 0 0 45%;
+    flex: 1;
     border-left: 1px solid rgba(245,237,224,0.06);
 }
 .s3-panel-title {
