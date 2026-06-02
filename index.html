@@ -501,7 +501,12 @@
       <!-- ─── Slide 3 — Split profondità ─── -->
       <div class="s2-slide" id="s2-s3">
         <div class="s3-split">
-          <!-- Sinistra: slider verticale + preset -->
+          <!-- Sinistra: sezione verticale della crosta -->
+          <div class="s3-panel">
+            <span class="s3-panel-title">SEZIONE<br>VERTICALE</span>
+            <canvas id="s2-section-canvas" width="320" height="400"></canvas>
+          </div>
+          <!-- Centro: slider verticale + preset -->
           <div class="s3-ctrl">
             <div class="s3-depth-readout">
               <span class="s3-depth-label">Profondità</span>
@@ -517,11 +522,6 @@
               <button class="s2-preset-btn" data-depth="16">Irpinia 1980<em>16 km · intermedio</em></button>
               <button class="s2-preset-btn" data-depth="280">Calabria<em>280 km · profondo</em></button>
             </div>
-          </div>
-          <!-- Centro: sezione verticale della crosta -->
-          <div class="s3-panel">
-            <span class="s3-panel-title">SEZIONE<br>VERTICALE</span>
-            <canvas id="s2-section-canvas" width="320" height="400"></canvas>
           </div>
           <!-- Destra (grande): vista dall'alto + griglia km -->
           <div class="s3-panel s3-panel--map">
