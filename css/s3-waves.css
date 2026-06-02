@@ -275,7 +275,7 @@
     .s3-end-title {
       font-family:'Cormorant Garamond',Georgia,serif;
       font-size:clamp(2.2rem,4vw,4.5rem); font-weight:300; line-height:1.1;
-      color:var(--cream); max-width:640px;
+      color:var(--cream); max-width:900px;
     }
     .s3-end-sub {
       font-family:'Cormorant Garamond',Georgia,serif;
