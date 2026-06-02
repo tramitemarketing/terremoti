@@ -310,11 +310,11 @@
 /* â•â•â• SLIDE 2 â•â•â• */
 #s1-s2 { background: var(--charcoal); display: flex; }
 .s1-def-text {
-    flex: 0 0 52%;
+    flex: 0 0 44%;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 3rem 3rem 3rem 5rem;
+    padding: 4.5rem 3rem 3rem 5rem;
     border-right: 1px solid rgba(245,237,224,0.05);
 }
 .s1-def-visual {

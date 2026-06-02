@@ -16,6 +16,7 @@
 
   makePopup('s1-reid-trigger', 's1-reid-popup', 's1-reid-close');
   makePopup('s1-gr-trigger',   's1-gr-popup',   's1-gr-close');
+  makePopup('s1-etim-trigger', 's1-etim-popup', 's1-etim-close');
 
   // Popup S5 — usano il proprio overlay
   const s5overlay = document.getElementById('s5-popup-overlay');
