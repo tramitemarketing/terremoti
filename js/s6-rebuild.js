@@ -157,9 +157,9 @@ function s6InitEWCanvas() {
   if (btn) {
     btn.addEventListener('click', function() {
       if (animId === null) {
-        // First click: avvia
+        // First click: avvia — lastTs = now per evitare salto iniziale
         paused = false;
-        lastTs = 0;
+        lastTs = performance.now();
         animId = requestAnimationFrame(loop);
         btn.textContent = '|| PAUSA';
       } else {

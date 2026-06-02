@@ -385,7 +385,9 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 4rem 2.5rem 3.5rem 5rem;
+    align-items: center;
+    text-align: left;
+    padding: 3.5rem 2.5rem;
     border-right: 1px solid rgba(245,237,224,0.055);
     gap: 1.4rem;
     overflow-y: auto;
@@ -525,7 +527,7 @@
 #s2-depth-canvas {
     display: block;
     width: 100%;
-    height: calc(100vh - 120px);
+    height: 70vh;
     flex-shrink: 1;
 }
 /* Controlli centrali */
