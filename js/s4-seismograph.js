@@ -104,42 +104,44 @@
   ];
 
   // [6] Poligoni isosismici approssimati (slide 12)
+  // Coordinate concentriche attorno all'epicentro (42.342°N 13.380°E)
+  // Ogni zona è contenuta nella successiva — nessuna sovrapposizione
   const S4_ISO_ZONES = [
     {
-      grade: 10, label: 'X — Distruttivo', color: '#4a0000', opacity: 0.75,
+      grade: 10, label: 'X — Distruttivo', color: '#4a0000', opacity: 0.80,
       zones: ['L\'Aquila centro storico', 'Onna', 'Paganica'],
-      popup: 'Centro storico di L\'Aquila, Onna, Paganica. Tipo terreno: alluvionale.',
-      coords: [[42.347, 13.382], [42.363, 13.382], [42.368, 13.405], [42.360, 13.420], [42.345, 13.418], [42.335, 13.405], [42.338, 13.385]]
+      popup: 'Centro storico di L\'Aquila, Onna, Paganica. MCS X — distruzione quasi totale.',
+      coords: [[42.310, 13.348], [42.348, 13.345], [42.378, 13.362], [42.382, 13.398], [42.362, 13.425], [42.330, 13.428], [42.305, 13.408], [42.300, 13.372]]
     },
     {
-      grade: 9, label: 'IX — Molto forte', color: '#8B1A1A', opacity: 0.70,
+      grade: 9, label: 'IX — Molto forte', color: '#8B1A1A', opacity: 0.72,
       zones: ['Poggio Picenze', 'San Gregorio', 'Roio'],
       popup: 'Comuni limitrofi all\'epicentro. Danni gravi a murature.',
-      coords: [[42.320, 13.355], [42.382, 13.355], [42.390, 13.440], [42.375, 13.470], [42.330, 13.460], [42.310, 13.430], [42.310, 13.375]]
+      coords: [[42.230, 13.272], [42.348, 13.258], [42.448, 13.295], [42.475, 13.378], [42.460, 13.468], [42.392, 13.518], [42.290, 13.510], [42.210, 13.458], [42.185, 13.365]]
     },
     {
-      grade: 8, label: 'VIII — Molto forte', color: '#C4612A', opacity: 0.65,
+      grade: 8, label: 'VIII — Molto forte', color: '#C4612A', opacity: 0.62,
       zones: ['Pizzoli', 'Barete', 'Cagnano Amiterno'],
       popup: 'Pizzoli, Barete, Cagnano Amiterno. Danni strutturali diffusi.',
-      coords: [[42.295, 13.300], [42.410, 13.300], [42.430, 13.490], [42.400, 13.530], [42.295, 13.510], [42.270, 13.420]]
+      coords: [[42.092, 13.118], [42.348, 13.055], [42.618, 13.082], [42.755, 13.225], [42.772, 13.498], [42.672, 13.672], [42.422, 13.768], [42.100, 13.718], [41.948, 13.518], [41.882, 13.258]]
     },
     {
-      grade: 7, label: 'VII — Forte', color: '#D4893A', opacity: 0.60,
+      grade: 7, label: 'VII — Forte', color: '#D4893A', opacity: 0.52,
       zones: ['Area Sulmona', 'Avezzano', 'Teramo'],
       popup: 'Sulmona, Avezzano, Teramo. Danni locali, panico diffuso.',
-      coords: [[42.20, 13.15], [42.50, 13.10], [42.65, 13.20], [42.70, 13.60], [42.50, 13.70], [42.20, 13.65], [42.10, 13.40]]
+      coords: [[41.818, 12.778], [42.348, 12.618], [42.948, 12.748], [43.218, 13.178], [43.182, 13.848], [42.848, 14.178], [42.298, 14.218], [41.878, 13.978], [41.598, 13.448], [41.578, 12.998]]
     },
     {
-      grade: 6, label: 'VI — Moderato', color: '#8B8B00', opacity: 0.50,
+      grade: 6, label: 'VI — Moderato', color: '#8B8B00', opacity: 0.42,
       zones: ['Pescara', 'Rieti'],
       popup: 'Pescara, Rieti. Percepito nettamente, danni lievi.',
-      coords: [[42.00, 12.90], [43.00, 12.90], [43.30, 14.00], [42.50, 14.20], [42.00, 13.90]]
+      coords: [[41.548, 12.218], [42.348, 12.038], [43.388, 12.248], [43.748, 12.898], [43.688, 14.108], [43.308, 14.728], [42.348, 14.808], [41.658, 14.448], [41.188, 13.618], [41.118, 12.878]]
     },
     {
-      grade: 5, label: 'V — Avvertito', color: '#4a6a4a', opacity: 0.40,
+      grade: 5, label: 'V — Avvertito', color: '#4a6a4a', opacity: 0.32,
       zones: ['Roma'],
       popup: 'Roma e circondario. Avvertito da molti, nessun danno.',
-      coords: [[41.70, 12.30], [42.20, 12.20], [42.50, 13.00], [42.00, 13.10], [41.60, 12.80]]
+      coords: [[40.998, 11.448], [42.348, 11.148], [43.928, 11.578], [44.428, 12.648], [44.288, 14.418], [43.648, 15.488], [42.008, 15.548], [40.788, 14.778], [40.198, 13.448], [40.378, 12.098]]
     }
   ];
 
@@ -1819,13 +1821,13 @@
     const EPICENTRO = [42.342, 13.380]; // Paganica
     const STAZIONI = [
       { name: 'AQU', lat: 42.354, lon: 13.403, rKm: 3,  color: '#C4612A' },
-      { name: 'SULM', lat: 42.050, lon: 13.930, rKm: 35, color: '#3A7EC4' },
-      { name: 'TERO', lat: 42.661, lon: 13.704, rKm: 55, color: '#D4893A' }
+      { name: 'SULM', lat: 42.050, lon: 13.930, rKm: 56, color: '#3A7EC4' },
+      { name: 'TERO', lat: 42.661, lon: 13.704, rKm: 44, color: '#D4893A' }
     ];
 
     const map = L.map('s4-map9', {
-      center: [42.35, 13.45],
-      zoom: 8,
+      center: [42.35, 13.55],
+      zoom: 7,
       scrollWheelZoom: true,
       dragging: true
     });
@@ -1918,6 +1920,8 @@
 
     function updateRichter(mag) {
       const E = Math.pow(10, 1.5 * mag + 4.8);
+      const valEl = document.getElementById('s4-richter-val');
+      if (valEl) valEl.textContent = 'M ' + parseFloat(mag).toFixed(1);
       const jouleEl = document.getElementById('s4-richter-joule');
       if (jouleEl) jouleEl.innerHTML = formatJoules(E);
 

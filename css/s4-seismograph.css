@@ -991,8 +991,9 @@
 #s4-s6-inner {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   height: 100%;
-  padding: 1.3rem 2rem 3.8rem 2rem;
+  padding: 1.3rem 2rem 3.5rem 2rem;
   box-sizing: border-box;
   gap: 0.9rem;
 }
