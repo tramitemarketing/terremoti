@@ -2003,6 +2003,24 @@
   gap: 0.3rem;
 }
 
+.s4-sim-sl-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.06em;
+  color: rgba(245, 237, 224, 0.38);
+  text-transform: uppercase;
+}
+
+.s4-sl-dash {
+  color: rgba(245, 237, 224, 0.18);
+  font-size: 0.6rem;
+  flex: 1;
+  text-align: center;
+}
+
 .s4-sim-row label {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.6rem;
