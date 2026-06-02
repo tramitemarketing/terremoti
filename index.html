@@ -1867,6 +1867,29 @@
             <!-- Mappa full-screen -->
             <div id="s5-map"></div>
 
+            <!-- Pannello controlli — overlay a sinistra -->
+            <div class="s5-control-panel">
+                <span class="s5-panel-eyebrow">LIVE · INGV 12 MESI</span>
+                <label><input type="checkbox" id="s5-toggle-zones" checked> Zone sismiche</label>
+                <label><input type="checkbox" id="s5-toggle-quakes" checked> Terremoti 12 mesi</label>
+                <div class="s5-panel-divider"></div>
+                <div class="s5-magfilter-group">
+                    <span class="s5-group-label">Magnitudo min.</span>
+                    <label><input type="radio" name="s5-magfilter" value="all" checked> Tutti</label>
+                    <label><input type="radio" name="s5-magfilter" value="3"> M&#8805;3</label>
+                    <label><input type="radio" name="s5-magfilter" value="4"> M&#8805;4</label>
+                </div>
+                <div class="s5-event-counter"><span id="s5-quake-count">&#8212;</span> eventi M&#8805;2.5</div>
+                <div id="s5-api-status" style="display:none"></div>
+                <div class="s5-legend">
+                    <div class="s5-legend-title">Zone sismiche</div>
+                    <div class="s5-legend-row"><span class="s5-legend-dot z1"></span>Zona 1 — Massima</div>
+                    <div class="s5-legend-row"><span class="s5-legend-dot z2"></span>Zona 2 — Alta</div>
+                    <div class="s5-legend-row"><span class="s5-legend-dot z3"></span>Zona 3 — Media</div>
+                    <div class="s5-legend-row"><span class="s5-legend-dot z4"></span>Zona 4 — Bassa</div>
+                </div>
+            </div>
+
             <!-- Box DPC — overlay a destra -->
             <div class="s5-dpc-panel">
                 <span class="s5-eyebrow" style="font-size:0.5rem">CLASSIFICAZIONE SISMICA</span>
@@ -1877,25 +1900,13 @@
                 </div>
                 <div class="s5-dpc-section">
                     <span class="s5-dpc-box-label">COME VIENE CALCOLATA</span>
-                    <p class="s5-dpc-box-text">L'INGV usa la <em>PSHA</em>: calcola la probabilità che il suolo raggiunga una certa accelerazione nei prossimi 50 anni, integrando catalogo storico, zonazione sismogenetica e modelli di attenuazione.</p>
+                    <p class="s5-dpc-box-text">L'INGV usa la <em>PSHA</em>: calcola la probabilità che il suolo raggiunga una certa accelerazione nei prossimi 50 anni, integrando catalogo storico, zonazione sismogenetica e modelli di attenuazione. La classificazione sismica DPC traduce questi valori tecnici in 4 zone pratiche per la normativa edilizia.</p>
                 </div>
                 <div class="s5-dpc-zones-grid">
                     <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(139,26,26)"></span><span class="s5-dpc-zone-num">Zona 1</span><span class="s5-dpc-zone-pga">PGA &gt; 0.25g</span><span class="s5-dpc-zone-desc">Massima</span></div>
                     <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(196,97,42)"></span><span class="s5-dpc-zone-num">Zona 2</span><span class="s5-dpc-zone-pga">0.15&ndash;0.25g</span><span class="s5-dpc-zone-desc">Alta</span></div>
                     <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(212,137,58)"></span><span class="s5-dpc-zone-num">Zona 3</span><span class="s5-dpc-zone-pga">0.05&ndash;0.15g</span><span class="s5-dpc-zone-desc">Media</span></div>
                     <div class="s5-dpc-zone-row"><span class="s5-dpc-zone-dot" style="background:rgb(58,126,196)"></span><span class="s5-dpc-zone-num">Zona 4</span><span class="s5-dpc-zone-pga">&lt; 0.05g</span><span class="s5-dpc-zone-desc">Bassa</span></div>
-                </div>
-                <div class="s5-dpc-controls">
-                    <label><input type="checkbox" id="s5-toggle-zones" checked> Zone sismiche</label>
-                    <label><input type="checkbox" id="s5-toggle-quakes" checked> Terremoti 12 mesi</label>
-                    <div class="s5-magfilter-group">
-                        <span class="s5-group-label">Magnitudo min.</span>
-                        <label><input type="radio" name="s5-magfilter" value="all" checked> Tutti</label>
-                        <label><input type="radio" name="s5-magfilter" value="3"> M&#8805;3</label>
-                        <label><input type="radio" name="s5-magfilter" value="4"> M&#8805;4</label>
-                    </div>
-                    <div class="s5-event-counter"><span id="s5-quake-count">&#8212;</span> eventi M&#8805;2.5</div>
-                    <div id="s5-api-status" style="display:none"></div>
                 </div>
             </div>
 
@@ -1934,7 +1945,7 @@
 
   <!-- Colonna destra: canvas ingranaggi -->
   <div class="s5-s2-right">
-    <canvas id="s5-gear-canvas" width="460" height="380"></canvas>
+    <canvas id="s5-gear-canvas" width="460" height="330"></canvas>
   </div>
         </div>
         <div class="s5-slide" id="s5-s3">
@@ -2657,40 +2668,40 @@
   <div style="margin:0 auto;width:100%">
 
     <!-- Riga superiore: testo + canvas fianco a fianco -->
-    <div style="display:grid;grid-template-columns:1fr 420px;gap:36px;align-items:start">
+    <div style="display:grid;grid-template-columns:1fr 480px;gap:28px;align-items:start">
 
       <!-- Colonna testo -->
-      <div>
+      <div style="padding:0 8px 0 0">
         <p class="s6-eyebrow">ALLERTA PRECOCE SISMICA</p>
-        <h2 class="s6-h2" style="font-size:clamp(24px,3vw,36px);margin-bottom:12px">Non previsione.<br>Pochi secondi in più.</h2>
-        <p style="font-size:clamp(12px,1.1vw,14px);line-height:1.65;color:rgba(245,237,224,0.82);margin-bottom:16px">
-          I sistemi di early warning non prevedono i terremoti: li rilevano nel momento in cui iniziano e sfruttano la differenza di velocità tra le onde sismiche e i segnali elettronici. Le onde P (innocue, veloci: 6 km/s) arrivano prima delle onde S e superficiali (distruttive). Un sistema che rileva le onde P può inviare un allarme elettronico prima che le onde pericolose raggiungano la zona abitata. Non è prevenzione — è qualche secondo in più.
+        <h2 class="s6-h2" style="font-size:clamp(22px,2.8vw,34px);margin-bottom:10px">Non previsione.<br>Pochi secondi in più.</h2>
+        <p style="font-size:clamp(11px,1vw,13px);line-height:1.6;color:rgba(245,237,224,0.82);margin-bottom:12px">
+          I sistemi di early warning non prevedono i terremoti: li rilevano nel momento in cui iniziano e sfruttano la differenza di velocità tra le onde sismiche e i segnali elettronici. Le onde P (innocue, veloci: 6 km/s) arrivano prima delle onde S e superficiali (distruttive). Un sistema che rileva le onde P può inviare un allarme elettronico prima che le onde pericolose raggiungano la zona abitata.
         </p>
 
-        <!-- 3 box in riga orizzontale -->
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
-          <div class="s6-system-box" style="margin-bottom:0">
+        <!-- 3 box in colonna verticale -->
+        <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:12px">
+          <div class="s6-system-box" style="margin-bottom:0;padding:9px 13px">
             <h4>PRESTo · Italia</h4>
-            <p style="font-size:12px;line-height:1.6">Sviluppato da Univ. Napoli Federico II / INGV. Retroattivamente applicato a L'Aquila: 3–8 secondi di anticipo. <em>Sperimentale.</em></p>
+            <p style="font-size:11px;line-height:1.55">Univ. Napoli Federico II / INGV. Applicato retroattivamente a L'Aquila: 3–8 secondi di anticipo. <em>Sperimentale.</em></p>
           </div>
-          <div class="s6-system-box" style="margin-bottom:0">
+          <div class="s6-system-box" style="margin-bottom:0;padding:9px 13px">
             <h4>Android AEA · Google</h4>
-            <p style="font-size:12px;line-height:1.6">2 mld smartphone come rete sismica. 2021–2024: 11.000 terremoti in 98 paesi. Turchia 2023: 500.000 persone allertate. <em>Operativo.</em></p>
+            <p style="font-size:11px;line-height:1.55">2 mld smartphone come rete sismica. 2021–2024: 11.000 terremoti in 98 paesi. Turchia 2023: 500.000 allertati. <em>Operativo.</em></p>
           </div>
-          <div class="s6-system-box" style="margin-bottom:0">
+          <div class="s6-system-box" style="margin-bottom:0;padding:9px 13px">
             <h4>JMA · Giappone</h4>
-            <p style="font-size:12px;line-height:1.6">Dal 2007. Avvisa ferrovie, ospedali, industria. Record: 90 secondi di anticipo per zone distanti. <em>Obbligatorio per infrastrutture critiche.</em></p>
+            <p style="font-size:11px;line-height:1.55">Dal 2007. Avvisa ferrovie, ospedali, industria. Record: 90 secondi di anticipo per zone distanti. <em>Obbligatorio per infrastrutture critiche.</em></p>
           </div>
         </div>
 
-        <div class="s6-info-box" style="margin-top:0;font-size:13px">
+        <div class="s6-info-box" style="margin-top:0;font-size:12px;padding:12px 14px">
           ℹ Questa pagina è connessa al servizio EMSC SeismicPortal. Se avviene un terremoto significativo nel Mediterraneo mentre stai leggendo, potresti ricevere una notifica in tempo reale.
         </div>
       </div>
 
       <!-- Canvas a destra -->
-      <div style="display:flex;flex-direction:column;align-items:center;padding-top:34px">
-        <canvas id="s6-ew-canvas" width="380" height="320" style="border:1px solid rgba(196,97,42,0.2);background:#0a0a0a;width:100%"></canvas>
+      <div style="display:flex;flex-direction:column;align-items:center;padding-top:20px">
+        <canvas id="s6-ew-canvas" width="460" height="380" style="border:1px solid rgba(196,97,42,0.2);background:#0a0a0a;width:100%"></canvas>
         <button id="s6-ew-pause" style="margin-top:10px;background:transparent;border:1px solid var(--terracotta);color:var(--cream);padding:7px 20px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;width:100%">
           &#x25B6; AVVIA
         </button>
@@ -3047,7 +3058,7 @@
 <!-- Slide 11 -->
 <div class="s6-slide" id="s6-s11" style="display:flex;flex-direction:column;justify-content:center;padding:28px 48px 48px">
   <p class="s6-eyebrow" style="margin-bottom:6px">DICEMBRE 2008 — 2015</p>
-  <h2 class="s6-h2" style="font-size:clamp(22px,3vw,34px);margin-bottom:4px">Il peso di comunicare l'incertezza.</h2>
+  <h2 class="s6-h2" style="font-size:clamp(28px,3.8vw,42px);margin-bottom:4px">Il peso di comunicare l'incertezza.</h2>
 
   <!-- Timeline orizzontale -->
   <div id="s6-timeline" class="s6-htl-wrap">
@@ -3247,24 +3258,16 @@
         </button>
       </div>
 
-      <!-- BOX 3 — LastQuake (più grande, due sotto-box arancioni) -->
+      <!-- BOX 3 — LastQuake -->
       <div style=”background:var(--charcoal);border:1px solid rgba(196,97,42,0.2);padding:20px”>
-        <p style=”font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ochre);letter-spacing:1px;margin:0 0 8px”>📱 APP · LASTQUAKE (EMSC)</p>
-        <p style=”font-size:13px;color:rgba(245,237,224,0.7);margin:0 0 18px;line-height:1.6”>L'app ufficiale EMSC per notifiche in tempo reale di terremoti nel Mediterraneo e nel mondo. Gratuita, disponibile su iOS e Android.</p>
-        <div style=”display:grid;grid-template-columns:1fr 1fr;gap:10px”>
-          <div style=”background:rgba(196,97,42,0.12);border:1px solid var(--terracotta);padding:14px”>
-            <p style=”font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--terracotta);letter-spacing:1.5px;margin:0 0 8px;text-transform:uppercase”>iOS · App Store</p>
-            <button onclick=”window.open('https://apps.apple.com/app/id890799748','_blank')” style=”background:var(--terracotta);color:#080808;padding:9px 0;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;border:none;width:100%”>
-              ⬇ Scarica
-            </button>
-          </div>
-          <div style=”background:rgba(196,97,42,0.12);border:1px solid var(--terracotta);padding:14px”>
-            <p style=”font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--terracotta);letter-spacing:1.5px;margin:0 0 8px;text-transform:uppercase”>Android · Play Store</p>
-            <button onclick=”window.open('https://play.google.com/store/apps/details?id=org.emsc_csem.lastquake','_blank')” style=”background:var(--terracotta);color:#080808;padding:9px 0;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;border:none;width:100%”>
-              ⬇ Scarica
-            </button>
-          </div>
-        </div>
+        <p style=”font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ochre);letter-spacing:1px;margin:0 0 8px”>📱 APP · LASTQUAKE · EMSC</p>
+        <p style=”font-size:13px;color:rgba(245,237,224,0.7);margin:0 0 14px;line-height:1.6”>L'app ufficiale EMSC per ricevere notifiche in tempo reale dei terremoti nel Mediterraneo e nel mondo. Gratuita, disponibile su iOS e Android.</p>
+        <button onclick=”window.open('https://apps.apple.com/app/id890799748','_blank')” style=”background:rgba(196,97,42,0.15);border:1px solid var(--terracotta);color:var(--cream);padding:10px 20px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;width:100%;margin-bottom:8px”>
+          ⬇ App Store — iOS
+        </button>
+        <button onclick=”window.open('https://play.google.com/store/apps/details?id=org.emsc_csem.lastquake','_blank')” style=”background:rgba(196,97,42,0.15);border:1px solid var(--terracotta);color:var(--cream);padding:10px 20px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;width:100%”>
+          ⬇ Play Store — Android
+        </button>
       </div>
     </div>
   </div>
