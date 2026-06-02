@@ -1396,11 +1396,104 @@
       onAmpChange(ampVal);
     });
 
+    // Pallini draggabili sull'asse distanza (sinistra) e ampiezza (destra)
+    // Sovrascrive drawNomo per aggiungere i cerchi draggabili al rendering
+    const _drawNomoOrig = drawNomo;
+    function drawNomoWithDots(lineProgress, gap, amp, showLabel, freeMode) {
+      _drawNomoOrig(lineProgress, gap, amp, showLabel, freeMode);
+      if (!s4NomoState.animDone && lineProgress < 1) return;
+      const dist = gapToDist(gap);
+      const yLeft  = distToY(Math.min(dist, 500));
+      const yRight = ampToY(Math.min(amp, 10000));
+      // Pallino asse distanza (sinistra)
+      ctx.beginPath();
+      ctx.arc(leftX, yLeft, 7, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.strokeStyle = '#C4612A';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      // Pallino asse ampiezza (destra)
+      ctx.beginPath();
+      ctx.arc(rightX, yRight, 7, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.strokeStyle = '#C4612A';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    let dragging = null; // 'left' | 'right' | null
+
+    function nomoPointerY(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return clientY - rect.top;
+    }
+    function nomoPointerX(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      return clientX - rect.left;
+    }
+
+    canvas.addEventListener('mousedown', function (e) {
+      const px = nomoPointerX(e), py = nomoPointerY(e);
+      const dist = gapToDist(s4NomoState.gap);
+      const yLeft  = distToY(Math.min(dist, 500));
+      const yRight = ampToY(Math.min(s4NomoState.amp, 10000));
+      if (Math.abs(px - leftX) < 18 && Math.abs(py - yLeft) < 18)  { dragging = 'left';  e.preventDefault(); }
+      if (Math.abs(px - rightX) < 18 && Math.abs(py - yRight) < 18) { dragging = 'right'; e.preventDefault(); }
+    });
+    canvas.addEventListener('touchstart', function (e) {
+      const px = nomoPointerX(e), py = nomoPointerY(e);
+      const dist = gapToDist(s4NomoState.gap);
+      const yLeft  = distToY(Math.min(dist, 500));
+      const yRight = ampToY(Math.min(s4NomoState.amp, 10000));
+      if (Math.abs(px - leftX) < 22 && Math.abs(py - yLeft) < 22)  { dragging = 'left';  e.preventDefault(); }
+      if (Math.abs(px - rightX) < 22 && Math.abs(py - yRight) < 22) { dragging = 'right'; e.preventDefault(); }
+    }, { passive: false });
+
+    function onNomoMove(e) {
+      if (!dragging || !s4NomoState.animDone) return;
+      e.preventDefault();
+      const py = nomoPointerY(e);
+      const t = Math.max(0, Math.min(1, (bottomY - py) / axisH));
+      if (dragging === 'left') {
+        // y → distanza (log inversa) → gap
+        const logMin = Math.log10(1), logMax = Math.log10(500);
+        const km = Math.pow(10, logMin + t * (logMax - logMin));
+        const newGap = km / 9.0;
+        onGapChange(Math.max(0.1, Math.min(newGap, 90)));
+      } else {
+        // y → ampiezza (log inversa)
+        const logMin = Math.log10(0.1), logMax = Math.log10(10000);
+        const mm = Math.pow(10, logMin + t * (logMax - logMin));
+        onAmpChange(Math.max(0.1, Math.min(mm, 10000)));
+      }
+      drawNomoWithDots(1, s4NomoState.gap, s4NomoState.amp, true, true);
+    }
+    canvas.addEventListener('mousemove', onNomoMove);
+    canvas.addEventListener('touchmove', onNomoMove, { passive: false });
+    document.addEventListener('mouseup',  function () { dragging = null; });
+    document.addEventListener('touchend', function () { dragging = null; });
+
+    // Sostituire redrawNomo con versione con pallini
+    window._s4redrawNomo = function () {
+      drawNomoWithDots(1, s4NomoState.gap, s4NomoState.amp, true, true);
+      updateMLDisplay();
+    };
+    // Patch redrawNomo per chiamate successive
+    const origRedraw = redrawNomo;
+    redrawNomo = window._s4redrawNomo;
+
     // Resize canvas when slide becomes active
     const nomoCanvas = document.getElementById('s4-nomo-canvas');
     if (nomoCanvas && nomoCanvas.parentElement) {
       const observer = new ResizeObserver(function () {
-        if (s4NomoState.animDone) redrawNomo();
+        if (s4NomoState && s4NomoState.animDone) {
+          drawNomoWithDots(1, s4NomoState.gap, s4NomoState.amp, true, true);
+          updateMLDisplay();
+        }
       });
       observer.observe(nomoCanvas.parentElement);
     }
@@ -1562,29 +1655,44 @@
       if (textEl) textEl.textContent = S4_MCS_DESC[grade] || '';
       if (illus) illus.innerHTML = generateMCSIllus(grade, color);
 
-      let compareText;
-      if (grade < 6) compareText = 'Non ancora il livello raggiunto a Roma quel giorno.';
-      else if (grade <= 7) compareText = 'Come la periferia de L\'Aquila (Pile, Pettino).';
-      else if (grade <= 9) compareText = 'Come i quartieri semicentrali.';
-      else if (grade === 10) compareText = 'Centro storico e Onna — L\'Aquila 2009.';
-      else compareText = 'Più intenso di L\'Aquila 2009.';
+      let compareText = '';
+      if (grade >= 9 && grade <= 10) {
+        compareText = grade === 10
+          ? 'L\'Aquila 2009 — centro storico e Onna (IX–X MCS, Onna 9.5)'
+          : 'L\'Aquila 2009 — quartieri semicentrali (IX MCS)';
+      }
+      const compareBox = document.getElementById('s4-mcs-compare');
+      if (compareBox) {
+        compareBox.style.display = (grade === 9 || grade === 10) ? 'block' : 'none';
+      }
       if (compareEl) compareEl.textContent = compareText;
+    }
+
+    let currentMCSGrade = 6;
+
+    function setGrade(g) {
+      currentMCSGrade = Math.max(1, Math.min(12, g));
+      updateMCS(currentMCSGrade);
+      const slider = document.getElementById('s4-mcs-slider');
+      if (slider) slider.value = currentMCSGrade;
     }
 
     // Barra verticale: click su ciascun blocco
     document.querySelectorAll('.s4-mcs-bar-item').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        updateMCS(parseInt(btn.dataset.grade));
-        const slider = document.getElementById('s4-mcs-slider');
-        if (slider) slider.value = btn.dataset.grade;
-      });
+      btn.addEventListener('click', function () { setGrade(parseInt(btn.dataset.grade)); });
     });
 
     // Slider fallback (accessibilità keyboard)
     const slider = document.getElementById('s4-mcs-slider');
     if (slider) {
-      slider.addEventListener('input', function () { updateMCS(parseInt(slider.value)); });
+      slider.addEventListener('input', function () { setGrade(parseInt(slider.value)); });
     }
+
+    // Frecce su/giù
+    const upBtn   = document.getElementById('s4-mcs-up');
+    const downBtn = document.getElementById('s4-mcs-down');
+    if (upBtn)   upBtn.addEventListener('click',   function () { setGrade(currentMCSGrade + 1); });
+    if (downBtn) downBtn.addEventListener('click', function () { setGrade(currentMCSGrade - 1); });
 
     updateMCS(6);
   }
