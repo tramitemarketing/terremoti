@@ -381,13 +381,13 @@
 #s2-s2 { flex-direction: row; align-items: stretch; }
 
 .s2-anim-left {
-    width: 50%;
+    width: 46%;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 3.5rem 3rem 3.5rem 5rem;
+    padding: 4rem 2.5rem 3.5rem 5rem;
     border-right: 1px solid rgba(245,237,224,0.055);
-    gap: 1.2rem;
+    gap: 1.4rem;
     overflow-y: auto;
 }
 .s2-eyebrow {

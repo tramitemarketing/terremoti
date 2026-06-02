@@ -729,79 +729,104 @@
       sctx.fillText('IPOCENTRO', hypoX + 9, hypoY + 3);
     }
 
-    /* ── Vista dall'alto (canvas destra) ── */
-    function drawSurface(depth) {
-      const km    = 10 + (depth / MAX_D) * 390;
-      const color = lerpColor(depth);
+    /* ── Vista dall'alto (canvas destra) — griglia STATICA, cerchio variabile ── */
+    const GRID_MAX_KM = 30;   /* scala fissa: 30 km per semilato */
+    const GRID_STEP_MAJOR = 10; /* linea principale ogni 10 km */
+    const GRID_STEP_MINOR = 5;  /* linea secondaria ogni 5 km */
+
+    function drawSurfaceGrid() {
+      const cx = DW / 2, cy = DH / 2;
+      const pxPerKm = (DW / 2 - 20) / GRID_MAX_KM;
+
       dctx.fillStyle = '#050709';
       dctx.fillRect(0, 0, DW, DH);
 
-      const cx = DW / 2, cy = DH / 2;
-      const rPx = DW * 0.30; /* raggio fisso in pixel; la griglia scala */
-      const kmPerPx = km / rPx;
-
-      /* Passo griglia dinamico */
-      let gridKm;
-      if      (km <= 15)  gridKm = 3;
-      else if (km <= 30)  gridKm = 5;
-      else if (km <= 80)  gridKm = 10;
-      else if (km <= 200) gridKm = 25;
-      else                gridKm = 50;
-      const gridPx = gridKm / kmPerPx;
-
-      /* Griglia */
-      dctx.strokeStyle = 'rgba(245,237,224,0.07)';
+      /* Linee secondarie ogni 5 km */
+      dctx.strokeStyle = 'rgba(245,237,224,0.06)';
       dctx.lineWidth = 0.5;
-      const nLines = Math.min(14, Math.ceil(Math.max(DW, DH) / gridPx) + 2);
-      for (let i = -nLines; i <= nLines; i++) {
-        const xv = cx + i * gridPx, yv = cy + i * gridPx;
-        dctx.beginPath(); dctx.moveTo(xv, 0); dctx.lineTo(xv, DH); dctx.stroke();
-        dctx.beginPath(); dctx.moveTo(0, yv); dctx.lineTo(DW, yv); dctx.stroke();
+      for (let km = GRID_STEP_MINOR; km <= GRID_MAX_KM; km += GRID_STEP_MINOR) {
+        const d = km * pxPerKm;
+        dctx.beginPath(); dctx.moveTo(cx - d, 0); dctx.lineTo(cx - d, DH); dctx.stroke();
+        dctx.beginPath(); dctx.moveTo(cx + d, 0); dctx.lineTo(cx + d, DH); dctx.stroke();
+        dctx.beginPath(); dctx.moveTo(0, cy - d); dctx.lineTo(DW, cy - d); dctx.stroke();
+        dctx.beginPath(); dctx.moveTo(0, cy + d); dctx.lineTo(DW, cy + d); dctx.stroke();
       }
-      /* Label griglia */
-      dctx.font = '7px "JetBrains Mono", monospace';
-      dctx.fillStyle = 'rgba(245,237,224,0.18)';
-      dctx.textAlign = 'left';
-      for (let i = 1; i * gridPx < DW / 2 - 4; i++) {
-        dctx.fillText(`${i * gridKm}`, cx + i * gridPx + 2, cy - 3);
-      }
+
+      /* Linee principali ogni 10 km + etichette */
+      dctx.strokeStyle = 'rgba(245,237,224,0.20)';
+      dctx.lineWidth = 1;
+      dctx.font = '8px "JetBrains Mono", monospace';
+      dctx.fillStyle = 'rgba(245,237,224,0.40)';
       dctx.textAlign = 'center';
-      for (let i = 1; i * gridPx < DH / 2 - 4; i++) {
-        dctx.fillText(`${i * gridKm}`, cx + 3, cy - i * gridPx - 3);
+      dctx.textBaseline = 'top';
+      for (let km = GRID_STEP_MAJOR; km <= GRID_MAX_KM; km += GRID_STEP_MAJOR) {
+        const d = km * pxPerKm;
+        dctx.beginPath(); dctx.moveTo(cx + d, 0); dctx.lineTo(cx + d, DH); dctx.stroke();
+        dctx.beginPath(); dctx.moveTo(cx - d, 0); dctx.lineTo(cx - d, DH); dctx.stroke();
+        dctx.beginPath(); dctx.moveTo(0, cy + d); dctx.lineTo(DW, cy + d); dctx.stroke();
+        dctx.beginPath(); dctx.moveTo(0, cy - d); dctx.lineTo(DW, cy - d); dctx.stroke();
+        /* Etichette sull'asse orizzontale */
+        dctx.fillText(km + ' km', cx + d, cy + 4);
+        dctx.fillText('-' + km + ' km', cx - d, cy + 4);
+        /* Etichette sull'asse verticale */
+        dctx.textAlign = 'left';
+        dctx.fillText(km + ' km', cx + 4, cy - d + 2);
+        dctx.textAlign = 'center';
       }
-      dctx.fillStyle = 'rgba(245,237,224,0.12)';
-      dctx.fillText('km', cx + 3, cy - DH / 2 + 12);
-      dctx.textAlign = 'left';
+
+      /* Asse centrale */
+      dctx.strokeStyle = 'rgba(245,237,224,0.15)';
+      dctx.lineWidth = 1;
+      dctx.beginPath(); dctx.moveTo(cx, 0); dctx.lineTo(cx, DH); dctx.stroke();
+      dctx.beginPath(); dctx.moveTo(0, cy); dctx.lineTo(DW, cy); dctx.stroke();
+    }
+
+    function drawSurfaceCircle(depth) {
+      const color = lerpColor(depth);
+      const cx = DW / 2, cy = DH / 2;
+      const pxPerKm = (DW / 2 - 20) / GRID_MAX_KM;
+      /* più profondo → cerchio più grande (area scuotimento più diffusa) */
+      const minR = 8, maxR = DW * 0.40;
+      const rPx  = minR + (depth / MAX_D) * (maxR - minR);
+      const km   = Math.round(rPx / pxPerKm);
 
       /* Crosshair epicentro */
-      dctx.strokeStyle = 'rgba(245,237,224,0.18)';
+      dctx.strokeStyle = 'rgba(245,237,224,0.25)';
       dctx.lineWidth = 1;
-      dctx.beginPath(); dctx.moveTo(cx - 8, cy); dctx.lineTo(cx + 8, cy); dctx.stroke();
-      dctx.beginPath(); dctx.moveTo(cx, cy - 8); dctx.lineTo(cx, cy + 8); dctx.stroke();
+      dctx.beginPath(); dctx.moveTo(cx - 10, cy); dctx.lineTo(cx + 10, cy); dctx.stroke();
+      dctx.beginPath(); dctx.moveTo(cx, cy - 10); dctx.lineTo(cx, cy + 10); dctx.stroke();
 
-      /* Cerchio danno — gradiente radiale: intensità decresce dal centro */
+      /* Gradiente radiale */
       const fillGrad = dctx.createRadialGradient(cx, cy, 0, cx, cy, rPx);
-      fillGrad.addColorStop(0,    'rgba(139,26,26, 0.70)');  /* blood al centro */
-      fillGrad.addColorStop(0.30, 'rgba(196,97,42, 0.45)');  /* terracotta */
-      fillGrad.addColorStop(0.70, 'rgba(196,97,42, 0.15)');
-      fillGrad.addColorStop(1,    'rgba(196,97,42, 0)');      /* trasparente al bordo */
+      fillGrad.addColorStop(0,    'rgba(139,26,26,0.70)');
+      fillGrad.addColorStop(0.35, 'rgba(196,97,42,0.40)');
+      fillGrad.addColorStop(0.75, 'rgba(196,97,42,0.12)');
+      fillGrad.addColorStop(1,    'rgba(196,97,42,0)');
       dctx.fillStyle = fillGrad;
       dctx.beginPath(); dctx.arc(cx, cy, rPx, 0, Math.PI * 2); dctx.fill();
 
-      /* Bordo cerchio (spessore e colore per profondità) */
+      /* Bordo */
       dctx.strokeStyle = color;
-      dctx.lineWidth = Math.max(1, 8 - (depth / MAX_D) * 7);
+      dctx.lineWidth = 2;
       dctx.beginPath(); dctx.arc(cx, cy, rPx, 0, Math.PI * 2); dctx.stroke();
 
-      /* Label raggio a 45° */
+      /* Label raggio */
       dctx.fillStyle = color;
-      dctx.font = '7px "JetBrains Mono", monospace';
-      dctx.fillText(`r ≈ ${Math.round(km)} km`, cx + rPx * 0.52, cy - rPx * 0.52);
+      dctx.font = '8px "JetBrains Mono", monospace';
+      dctx.textAlign = 'left';
+      dctx.textBaseline = 'top';
+      dctx.fillText('r ≈ ' + km + ' km', cx + rPx * 0.6, cy - rPx * 0.6);
 
       /* Label epicentro */
-      dctx.fillStyle = 'rgba(58,126,196,0.8)';
+      dctx.fillStyle = 'rgba(58,126,196,0.9)';
       dctx.font = '8px "JetBrains Mono", monospace';
-      dctx.fillText('EPICENTRO', cx + 9, cy - 9);
+      dctx.textAlign = 'left';
+      dctx.fillText('EPICENTRO', cx + 12, cy + 4);
+    }
+
+    function drawSurface(depth) {
+      drawSurfaceGrid();
+      drawSurfaceCircle(depth);
     }
 
     function updateAll(depth) {
