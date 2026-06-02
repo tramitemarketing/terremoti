@@ -2668,10 +2668,10 @@
   <div style="margin:0 auto;width:100%">
 
     <!-- Riga superiore: testo + canvas fianco a fianco -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center">
 
       <!-- Colonna testo -->
-      <div style="padding:0 8px 0 0">
+      <div style="padding:0 8px 0 0;display:flex;flex-direction:column;justify-content:center">
         <p class="s6-eyebrow">ALLERTA PRECOCE SISMICA</p>
         <h2 class="s6-h2" style="font-size:clamp(24px,3.2vw,40px);margin-bottom:10px">Non previsione.<br>Pochi secondi in più.</h2>
         <p style="font-size:clamp(13px,1.2vw,15px);line-height:1.6;color:rgba(245,237,224,0.82);margin-bottom:12px">
@@ -2700,9 +2700,9 @@
       </div>
 
       <!-- Canvas a destra -->
-      <div style="display:flex;flex-direction:column;align-items:center;padding-top:20px">
-        <canvas id="s6-ew-canvas" width="460" height="380" style="border:1px solid rgba(196,97,42,0.2);background:#0a0a0a;width:100%"></canvas>
-        <button id="s6-ew-pause" style="margin-top:10px;background:transparent;border:1px solid var(--terracotta);color:var(--cream);padding:7px 20px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;width:100%">
+      <div style="display:flex;flex-direction:column;align-items:center;padding:0">
+        <canvas id="s6-ew-canvas" width="460" height="380" style="border:1px solid rgba(196,97,42,0.2);background:#0a0a0a;width:70%"></canvas>
+        <button id="s6-ew-pause" style="margin-top:10px;background:transparent;border:1px solid var(--terracotta);color:var(--cream);padding:7px 20px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;width:70%">
           &#x25B6; AVVIA
         </button>
       </div>
