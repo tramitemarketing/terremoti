@@ -1600,50 +1600,43 @@
     <div class="s4-slide" id="s4-s10" data-slide="9">
       <div id="s4-s10-inner">
 
-        <div class="s4-eyebrow">SCALA RICHTER · MAGNITUDO</div>
-        <h2 class="s4-title" style="text-align:center">Ogni grado vale 30 volte più energia.</h2>
-
-        <!-- Slider con marker fisso L'Aquila -->
-        <div class="s4-richter-slider-wrap">
-          <span class="s4-slider-label-sm" aria-hidden="true">M 0</span>
-          <div class="s4-richter-slider-inner">
-            <input type="range" id="s4-richter-slider" min="0" max="10" step="0.5" value="6.5" aria-label="Magnitudo Richter da 0 a 10" aria-valuetext="M 6.5">
-            <!-- Marker fisso L'Aquila 2009 (posizione ~63%) -->
-            <div class="s4-richter-fixed-marker" style="left:63%" aria-hidden="true">
-              <span class="s4-richter-marker-label">L'Aquila 2009</span>
-            </div>
-          </div>
-          <span class="s4-slider-label-sm" aria-hidden="true">M 10</span>
+        <div class="s4-s5-header">
+          <div class="s4-s5-eyebrow">SCALA RICHTER · MAGNITUDO</div>
+          <h2 class="s4-s5-title">Ogni grado vale 30 volte più energia.</h2>
         </div>
 
-        <div class="s4-richter-ref-note">M 6.3 = L'Aquila 2009</div>
-        <div id="s4-richter-val" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;color:var(--terracotta);text-align:center;font-weight:700;letter-spacing:0.05em">M 6.5</div>
-
-        <!-- Visualizzazione a 3 zone -->
-        <div class="s4-richter-viz">
-
-          <!-- Zona sinistra: illustrazione SVG dinamica -->
-          <div id="s4-richter-illus" aria-live="polite" aria-atomic="true">
-            <!-- JS inserisce SVG dinamico per ogni intervallo di magnitudo -->
+        <div class="s4-s5-top">
+          <div class="s4-svgzone">
+            <div id="s4-svgbox"></div>
+            <div id="s4-svglabel">Impercettibile — solo i sismografi</div>
           </div>
+          <div class="s4-barzone">
+            <div class="s4-barlabel-top">MAX</div>
+            <canvas id="s4-energy-bar" width="60" height="180"></canvas>
+            <div class="s4-barlabel-bot">MIN</div>
+          </div>
+          <div class="s4-datazone">
+            <div class="s4-datazone-heading">Energia rilasciata</div>
+            <div id="s4-joule-display">— J</div>
+            <div id="s4-compare">—</div>
+            <div id="s4-freq">—</div>
+          </div>
+        </div>
 
-          <!-- Zona centrale: barra energia logaritmica -->
-          <div id="s4-richter-bar-wrap">
-            <div id="s4-richter-bar-label" aria-hidden="true">ENERGIA RELATIVA</div>
-            <div id="s4-richter-bar-container" role="meter" aria-label="Livello energia relativa">
-              <div id="s4-richter-bar"></div>
+        <div class="s4-s5-bottom">
+          <div id="s4-mag-val">M 6.3</div>
+          <div class="s4-slider-wrap">
+            <div class="s4-slider-marker-wrap" style="position:relative">
+              <div class="s4-laquila-marker" id="s4-aq-pin">
+                <span class="s4-laquila-marker-label">L'Aquila 2009 · M 6.3</span>
+              </div>
+              <input type="range" id="s4-mag-slider" min="0" max="10" step="0.1" value="6.3" aria-label="Magnitudo">
+            </div>
+            <div class="s4-slider-minmax">
+              <span>M 0.0</span><span>M 5.0</span><span>M 10.0</span>
             </div>
           </div>
-
-          <!-- Zona destra: dati numerici -->
-          <div id="s4-richter-data">
-            <div id="s4-richter-joule" class="s4-big-mono" aria-live="polite">—</div>
-            <div id="s4-richter-formula" class="s4-formula-note">E = 10^(1.5M + 4.8) joule</div>
-            <div id="s4-richter-compare" class="s4-richter-compare-txt" aria-live="polite"></div>
-            <div id="s4-richter-freq" class="s4-richter-freq-txt" aria-live="polite"></div>
-          </div>
-
-        </div><!-- /s4-richter-viz -->
+        </div>
 
       </div><!-- /s4-s10-inner -->
     </div><!-- /s4-s10 -->

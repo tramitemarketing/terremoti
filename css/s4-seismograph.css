@@ -341,8 +341,8 @@
 .s4-mode-pill {
   display: flex;
   gap: 0;
-  border: 1px solid rgba(245, 237, 224, 0.2);
-  border-radius: 3px;
+  border: 1px solid rgba(245, 237, 224, 0.25);
+  border-radius: 4px;
   overflow: hidden;
   width: fit-content;
   margin-bottom: 0.5rem;
@@ -354,18 +354,32 @@
   font-size: 0.62rem;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  padding: 0.3rem 0.7rem;
-  background: none;
-  color: rgba(245, 237, 224, 0.5);
+  padding: 0.4rem 0.9rem;
+  background: rgba(245, 237, 224, 0.04);
+  color: rgba(245, 237, 224, 0.35);
   border: none;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.25s, color 0.25s, opacity 0.25s;
+  opacity: 0.5;
 }
 
-#s4-mode-live.s4-active,
-#s4-mode-2009.s4-active {
-  background: var(--terracotta);
-  color: var(--black);
+/* Separatore visibile tra i due bottoni */
+#s4-mode-live {
+  border-right: 1px solid rgba(245, 237, 224, 0.2);
+}
+
+#s4-mode-live.s4-mode-active,
+#s4-mode-2009.s4-mode-active {
+  background: rgba(196, 97, 42, 0.18);
+  color: var(--cream);
+  opacity: 1;
+  border-bottom: 2px solid var(--terracotta);
+}
+
+/* Bottone inattivo: opaco */
+#s4-mode-live:not(.s4-mode-active),
+#s4-mode-2009:not(.s4-mode-active) {
+  opacity: 0.38;
 }
 
 /* Pallino live pulsante */
@@ -603,11 +617,11 @@
 .s4-hcard {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.2rem;
   background: var(--charcoal);
   border: 1px solid rgba(196, 97, 42, 0.22);
   border-radius: 3px;
-  padding: 0.55rem 0.75rem;
+  padding: 0.4rem 0.6rem;
   box-sizing: border-box;
   overflow: hidden;
   transition: border-color 0.25s, box-shadow 0.25s;
@@ -632,7 +646,7 @@
 /* SVG illustrazione */
 .s4-hcard-svg {
   width: 100%;
-  height: 90px;
+  height: 115px;
   overflow: visible;
   flex-shrink: 0;
 }
@@ -651,10 +665,10 @@
 /* Descrizione: overflow nascosto, si adatta all'altezza disponibile */
 .s4-hcard-text {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 1.02rem;
+  font-size: 1.08rem;
   color: var(--cream);
-  opacity: 0.85;
-  line-height: 1.55;
+  opacity: 0.88;
+  line-height: 1.5;
   overflow: hidden;
   flex: 1;
   display: -webkit-box;
@@ -1014,8 +1028,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
-  flex: 1;
-  min-height: 0;
+  flex-shrink: 0;
+  max-height: 65vh;
 }
 
 /* Pipeline sinistra */
@@ -1559,9 +1573,9 @@
 
 #s4-s9-inner {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 1.5rem;
-  padding: 1rem 1.5rem 1rem 1.5rem;
+  padding: 1rem 1.5rem 3.5rem 1.5rem;
   height: 100%;
   box-sizing: border-box;
 }
@@ -1741,11 +1755,40 @@
 #s4-s10-inner {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   height: 100%;
-  padding: 1.2rem 2.5rem 3.5rem 2.5rem;
+  padding: 1.5rem 2.5rem 3.5rem;
   box-sizing: border-box;
-  gap: 0.6rem;
+  gap: 0.8rem;
+  overflow: hidden;
 }
+.s4-s5-header { text-align: center; flex-shrink: 0; }
+.s4-s5-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--terracotta); text-transform: uppercase; margin-bottom: 0.3rem; }
+.s4-s5-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 600; color: var(--cream); margin: 0; line-height: 1.2; }
+.s4-s5-top { display: grid; grid-template-columns: 35% 12% 53%; gap: 0.5rem; width: 100%; flex: 1; min-height: 0; align-items: center; }
+.s4-svgzone { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; height: 100%; }
+#s4-svgbox { width: 100%; height: 160px; display: flex; align-items: center; justify-content: center; }
+#s4-svgbox svg { transition: opacity 0.3s ease; max-width: 140px; max-height: 150px; }
+#s4-svglabel { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--ochre); text-align: center; letter-spacing: 0.05em; min-height: 2em; line-height: 1.4; }
+.s4-barzone { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; height: 100%; }
+.s4-barlabel-top { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; color: var(--blood); letter-spacing: 0.05em; text-transform: uppercase; text-align: center; }
+.s4-barlabel-bot { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; color: #4CAF50; letter-spacing: 0.05em; text-align: center; }
+#s4-energy-bar { display: block; border-radius: 2px; }
+.s4-datazone { display: flex; flex-direction: column; justify-content: center; gap: 0.6rem; padding-left: 1rem; height: 100%; }
+.s4-datazone-heading { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: var(--terracotta); text-transform: uppercase; }
+#s4-joule-display { font-family: 'JetBrains Mono', monospace; font-size: clamp(1.1rem, 2.2vw, 1.6rem); color: var(--cream); letter-spacing: 0.02em; line-height: 1; }
+#s4-compare { font-family: 'Cormorant Garamond', serif; font-size: clamp(0.9rem, 1.5vw, 1.2rem); color: var(--ochre); line-height: 1.3; min-height: 2.5em; }
+#s4-freq { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: rgba(245,237,224,0.45); letter-spacing: 0.05em; }
+.s4-s5-bottom { display: flex; align-items: center; gap: 1.5rem; width: 100%; flex-shrink: 0; padding: 0.4rem 0; }
+#s4-mag-val { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; color: var(--terracotta); font-weight: 700; flex-shrink: 0; min-width: 4rem; }
+.s4-slider-wrap { flex: 1; display: flex; flex-direction: column; gap: 0.4rem; position: relative; }
+.s4-slider-marker-wrap { position: relative; width: 100%; }
+.s4-laquila-marker { position: absolute; top: -1.6rem; transform: translateX(-50%); pointer-events: none; white-space: nowrap; }
+.s4-laquila-marker-label { font-family: 'JetBrains Mono', monospace; font-size: 0.5rem; color: var(--blood); }
+#s4-mag-slider { width: 100%; -webkit-appearance: none; appearance: none; height: 4px; background: linear-gradient(to right, var(--terracotta), var(--blood)); border-radius: 2px; outline: none; cursor: pointer; }
+#s4-mag-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--cream); border-radius: 50%; border: 2px solid var(--terracotta); cursor: pointer; }
+.s4-slider-minmax { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 0.5rem; color: rgba(245,237,224,0.35); }
 
 /* Wrapper slider con label M0/M10 */
 .s4-richter-slider-wrap {

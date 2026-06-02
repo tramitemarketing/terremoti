@@ -1391,6 +1391,10 @@
       } else {
         s4NomoState.animDone = true;
         updateMLDisplay();
+        // Disegna i pallini drag subito dopo la fine dell'animazione
+        if (typeof drawNomoWithDots === 'function') {
+          drawNomoWithDots(1, s4NomoState.gap, s4NomoState.amp, true, true);
+        }
       }
     }
 
@@ -1915,65 +1919,78 @@
     if (s4SlideInited[9]) return;
     s4SlideInited[9] = true;
 
-    const slider = document.getElementById('s4-richter-slider');
+    var slider = document.getElementById('s4-mag-slider');
     if (!slider) return;
+    var magValEl   = document.getElementById('s4-mag-val');
+    var svgBox     = document.getElementById('s4-svgbox');
+    var svgLabel   = document.getElementById('s4-svglabel');
+    var jouleDisp  = document.getElementById('s4-joule-display');
+    var compareEl  = document.getElementById('s4-compare');
+    var freqEl     = document.getElementById('s4-freq');
+    var barCanvas  = document.getElementById('s4-energy-bar');
+    var aqPin      = document.getElementById('s4-aq-pin');
+    if (!barCanvas) return;
+    var bCtx = barCanvas.getContext('2d');
+    var E_LAQUILA = Math.pow(10, 1.5 * 6.3 + 4.8);
 
-    function updateRichter(mag) {
-      const E = Math.pow(10, 1.5 * mag + 4.8);
-      const valEl = document.getElementById('s4-richter-val');
-      if (valEl) valEl.textContent = 'M ' + parseFloat(mag).toFixed(1);
-      const jouleEl = document.getElementById('s4-richter-joule');
-      if (jouleEl) jouleEl.innerHTML = formatJoules(E);
+    // Posiziona marker L'Aquila
+    if (aqPin) aqPin.style.left = '63%';
 
-      // Barra energia
-      const barEl = document.getElementById('s4-richter-bar');
-      if (barEl) {
-        const pct = Math.min((mag / 10) * 100, 100);
-        barEl.style.height = pct + '%';
-        if (mag > 8) {
-          barEl.setAttribute('data-overflow', 'true');
-          const over = barEl.nextElementSibling;
-          if (over) over.style.display = 'block';
-        } else {
-          barEl.removeAttribute('data-overflow');
-          const over = barEl.nextElementSibling;
-          if (over) over.style.display = 'none';
-        }
+    function drawEnergyBar(mag) {
+      var W = barCanvas.width, H = barCanvas.height;
+      bCtx.clearRect(0, 0, W, H);
+      // Sfondo
+      bCtx.fillStyle = 'rgba(255,255,255,0.04)';
+      bCtx.fillRect(0, 0, W, H);
+      // Barra
+      var pct = Math.max(0.02, Math.min(1, mag / 10));
+      var barH = Math.round(H * pct);
+      var r = Math.round(pct * 200), g = Math.round((1 - pct) * 100);
+      bCtx.fillStyle = 'rgb(' + r + ',' + g + ',30)';
+      bCtx.fillRect(0, H - barH, W, barH);
+      // Marker L'Aquila
+      var aqY = Math.round(H * (1 - 0.63));
+      bCtx.strokeStyle = 'rgba(245,237,224,0.5)';
+      bCtx.lineWidth = 1;
+      bCtx.setLineDash([2, 2]);
+      bCtx.beginPath(); bCtx.moveTo(0, aqY); bCtx.lineTo(W, aqY); bCtx.stroke();
+      bCtx.setLineDash([]);
+    }
+
+    function updateSlide10(mag) {
+      mag = parseFloat(mag) || 0;
+      if (magValEl) magValEl.textContent = 'M ' + mag.toFixed(1);
+      var E = Math.pow(10, 1.5 * mag + 4.8);
+      // Joule
+      if (jouleDisp) jouleDisp.innerHTML = formatJoules(E);
+      // Barra canvas
+      drawEnergyBar(mag);
+      // SVG
+      var svgData = generateRichterIllus(mag);
+      if (svgBox) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(svgData, 'text/html');
+        var svgEl = doc.querySelector('svg');
+        var labelEl = doc.querySelector('div');
+        svgBox.innerHTML = svgEl ? svgEl.outerHTML : '';
+        if (svgLabel && labelEl) svgLabel.textContent = labelEl.textContent;
       }
-
-      // SVG illustrazione
-      const illusEl = document.getElementById('s4-richter-illus');
-      if (illusEl) illusEl.innerHTML = generateRichterIllus(mag);
-
       // Confronto
-      const compareEl = document.getElementById('s4-richter-compare');
       if (compareEl) {
-        const aquilaE = Math.pow(10, 1.5 * 6.3 + 4.8);
         if (Math.abs(mag - 6.3) < 0.15) {
           compareEl.textContent = '= L\'Aquila 2009';
         } else if (mag < 6.3) {
-          const ratio = (aquilaE / E).toFixed(0);
-          compareEl.textContent = ratio + '× meno energia di L\'Aquila';
+          compareEl.textContent = Math.round(E_LAQUILA / E) + '× meno energia di L\'Aquila';
         } else {
-          const ratio = (E / aquilaE).toFixed(0);
-          compareEl.textContent = ratio + '× più energia di L\'Aquila';
+          compareEl.textContent = Math.round(E / E_LAQUILA) + '× più energia di L\'Aquila';
         }
       }
-
       // Frequenza
-      const freqEl = document.getElementById('s4-richter-freq');
       if (freqEl) freqEl.textContent = 'Frequenza globale: ' + getRichterFreq(mag);
-
-      // Aggiorna label slider
-      const valEl = document.getElementById('s4-richter-val');
-      if (valEl) valEl.textContent = 'M ' + parseFloat(mag).toFixed(1);
     }
 
-    slider.addEventListener('input', function () {
-      updateRichter(parseFloat(slider.value));
-    });
-
-    updateRichter(parseFloat(slider.value) || 6.3);
+    slider.addEventListener('input', function () { updateSlide10(slider.value); });
+    updateSlide10(slider.value || 6.3);
   }
 
   function generateRichterIllus(mag) {
