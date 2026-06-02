@@ -817,10 +817,12 @@ document.addEventListener('keydown', e => {
     ctx.fillStyle = '#232d3f'; ctx.fillRect(0, H * 0.13, W, H * 0.40);
     ctx.fillStyle = '#1c2535'; ctx.fillRect(0, H * 0.53, W, H * 0.47);
     ctx.fillStyle = 'rgba(245,237,224,0.6)';
-    ctx.font = '600 9px "JetBrains Mono"';
-    ctx.fillText('0–2 km  ·  sedimenti', 10, H * 0.08);
-    ctx.fillText('2–8 km  ·  calcari', 10, H * 0.33);
-    ctx.fillText('8–15 km  ·  roccia cristallina', 10, H * 0.75);
+    ctx.font = '600 9px "JetBrains Mono", monospace';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('0–2 km  ·  sedimenti', 10, H * 0.02);
+    ctx.fillText('2–8 km  ·  calcari', 10, H * 0.22);
+    ctx.fillText('8–15 km  ·  roccia cristallina', 10, H * 0.57);
   }
 
   function drawPagFault(ctx, W, H, solid, glowing) {
@@ -850,11 +852,13 @@ document.addEventListener('keydown', e => {
 
   function pagSetup(c) {
     const dpr = window.devicePixelRatio || 1;
-    const W = c.offsetWidth || 800, H = 320;
+    const cssW = c.parentElement ? c.parentElement.clientWidth || c.offsetWidth || 800 : (c.offsetWidth || 800);
+    const W = Math.max(cssW, 200), H = 320;
     c.width = W * dpr; c.height = H * dpr;
-    c.style.width = W + 'px'; c.style.height = '320px';
+    c.style.width = W + 'px'; c.style.height = H + 'px';
     const ctx = c.getContext('2d');
     ctx.scale(dpr, dpr);
+    ctx.textBaseline = 'top';
     return { ctx, W, H };
   }
 
