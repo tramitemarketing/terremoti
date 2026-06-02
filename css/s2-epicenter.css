@@ -454,19 +454,21 @@
 }
 
 .s2-anim-right {
-    width: 50%;
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 2rem;
+    justify-content: flex-start;
+    padding: 1.5rem 2rem 1.5rem;
     background: #050709;
     position: relative;
+    overflow-y: auto;
 }
 #s2-hypo-canvas {
     display: block;
     max-width: 100%;
-    max-height: 80vh;
+    max-height: 68vh;
+    flex-shrink: 0;
 }
 .s2-canvas-label {
     font-family: 'JetBrains Mono', monospace;
