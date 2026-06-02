@@ -740,13 +740,14 @@
     function drawSurface(depth) {
       const km = depthToKm(depth);
 
-      /* ── Griglia FISSA 500 km — non cambia mai ── */
-      const GRID_MAX_KM = 500;
+      /* ── Griglia FISSA 400 km — scala basata sull'altezza così 400km tocca top/bottom ── */
+      const GRID_MAX_KM = 400;
       const STEP_MAJOR  = 100;
       const STEP_MINOR  = 50;
 
       const cx = DW / 2, cy = DH / 2;
-      const pxPerKm = (DW / 2 - 20) / GRID_MAX_KM;
+      /* Usa DH (altezza) come riferimento: 400 km arriva vicino ai bordi sopra/sotto */
+      const pxPerKm = (DH / 2 - 10) / GRID_MAX_KM;
 
       /* — Sfondo — */
       dctx.fillStyle = '#050709';
