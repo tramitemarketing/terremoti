@@ -641,7 +641,14 @@
     const infoArea = document.getElementById('s2-info-area');
     const presets  = document.querySelectorAll('.s2-preset-btn');
     const SW = secEl.width, SH = secEl.height;
-    const DW = surEl.width, DH = surEl.height;
+    /* Legge la dimensione CSS reale del depth canvas per riempire il pannello */
+    const dpr = window.devicePixelRatio || 1;
+    const cssW = surEl.clientWidth  || surEl.offsetWidth  || 600;
+    const cssH = surEl.clientHeight || surEl.offsetHeight || 500;
+    surEl.width  = cssW * dpr;
+    surEl.height = cssH * dpr;
+    dctx.scale(dpr, dpr);
+    const DW = cssW, DH = cssH;
     const MAX_D  = 300;
     const S_SURF = 36; /* y linea di superficie nel canvas sezione */
 
