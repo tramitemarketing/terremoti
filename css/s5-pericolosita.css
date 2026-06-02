@@ -103,7 +103,7 @@
 /* Eyebrow tipografia comune */
 .s5-eyebrow {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     letter-spacing: 0.35em;
     color: var(--terracotta);
     text-transform: uppercase;

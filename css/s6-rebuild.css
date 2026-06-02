@@ -111,9 +111,9 @@
 /* Tipografia comune */
 .s6-eyebrow {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 3px;
-  color: var(--ochre);
+  font-size: 0.62rem;
+  letter-spacing: 0.35em;
+  color: var(--terracotta);
   text-transform: uppercase;
   margin: 0 0 16px;
 }
@@ -136,10 +136,10 @@
 
 .s6-h2 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 42px;
+  font-size: clamp(2rem, 3.5vw, 4rem);
   line-height: 1.15;
   color: var(--cream);
-  font-weight: normal;
+  font-weight: 300;
   margin: 0 0 24px;
 }
 
