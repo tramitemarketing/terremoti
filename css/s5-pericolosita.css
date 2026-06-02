@@ -491,11 +491,11 @@
 }
 
 .s5-s2-right {
-  flex: 0 0 min(440px, 40vw);
+  flex: 0 0 min(520px, 48vw);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: 2rem;
 }
 
 .s5-eyebrow {
@@ -750,13 +750,13 @@
 
 /* Pannello centrale di confronto */
 #s5-compare-panel {
-  flex: 0 0 180px;
+  flex: 0 0 140px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 0.6rem;
+  padding: 0.6rem;
 }
 
 #s5-compare-text {
@@ -1312,6 +1312,28 @@
 }
 
 /* Separatore */
+/* Spiegazione PGA */
+.s5-pga-explainer {
+    padding: 0.9rem 1rem;
+    background: rgba(245,237,224,0.03);
+    border-left: 2px solid var(--terracotta, #C4612A);
+    margin: 0.8rem 0;
+}
+.s5-pga-exp-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.22em;
+    color: var(--terracotta, #C4612A);
+    text-transform: uppercase;
+    margin-bottom: 0.45rem;
+}
+.s5-pga-exp-body {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: rgba(245,237,224,0.65);
+}
+
 .s5-legend-divider {
     height: 1px;
     background: rgba(245, 237, 224, 0.06);
