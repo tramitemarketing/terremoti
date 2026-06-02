@@ -537,15 +537,18 @@
     width: 100%;
     display: grid;
     grid-template-columns: 36% 1fr;
-    grid-template-rows: auto 1fr;
-    gap: 0.8rem 4rem;
+    gap: 0 4rem;
     padding: 3rem 5.5rem;
     align-items: center;
+    align-content: center;
     height: 100%;
 }
-#s1-s4 header         { grid-column: 1; grid-row: 1; }
-#s1-s4 .s1-slider-hint { grid-column: 1; grid-row: 2; margin-bottom: 0; align-self: start; }
-#s1-s4 .s1-tool-wrap  { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; align-self: center; }
+.s1-s4-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+}
+#s1-s4 .s1-tool-wrap  { margin-top: 0; align-self: center; }
 .s1-tool-wrap {
     display: flex;
     flex-direction: column;
