@@ -42,11 +42,84 @@
     <section class="slide" id="s-hero">
         <canvas id="hero-canvas"></canvas>
         <div class="hero-inner">
-            <p class="eyebrow">Sisma · Abruzzo · Italia</p>
-            <h1 class="hero-title">TERRE<em>MOTO</em></h1>
-            <p class="hero-sub">L'Aquila &mdash; 6 aprile 2009 &mdash; 03:32:39</p>
-            <div class="hero-cta">
-                <button class="btn-enter" id="btn-enter">↓ &nbsp;Scopri la storia</button>
+            <!-- Sinistra: titolo + guida navigazione -->
+            <div class="hero-left">
+                <p class="eyebrow">Sisma · Abruzzo · Italia</p>
+                <h1 class="hero-title">TERRE<em>MOTO</em></h1>
+                <p class="hero-sub">L'Aquila &mdash; 6 aprile 2009 &mdash; 03:32:39</p>
+
+                <div class="hero-nav-guide">
+                    <p class="nav-guide-label">Come navigare</p>
+                    <div class="nav-guide-items">
+                        <div class="nav-guide-item">
+                            <span class="nav-key">↑ ↓</span>
+                            <span class="nav-desc">Cambia sezione</span>
+                        </div>
+                        <div class="nav-guide-item">
+                            <span class="nav-key">← →</span>
+                            <span class="nav-desc">Sotto-sezioni (carousel interni)</span>
+                        </div>
+                        <div class="nav-guide-item">
+                            <span class="nav-key">F</span>
+                            <span class="nav-desc">Schermo intero</span>
+                        </div>
+                        <div class="nav-guide-item">
+                            <span class="nav-key">●</span>
+                            <span class="nav-desc">Puntini a destra = sezione corrente</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-cta">
+                    <button class="btn-enter" id="btn-enter">↓ &nbsp;Inizia</button>
+                </div>
+            </div>
+
+            <!-- Destra: indice -->
+            <div class="hero-toc">
+                <p class="toc-label">Indice</p>
+                <ol class="toc-list">
+                    <li class="toc-item" data-target="s-section1">
+                        <span class="toc-num">01</span>
+                        <span class="toc-text">La Fisica del Terremoto</span>
+                    </li>
+                    <li class="toc-item" data-target="s-section2">
+                        <span class="toc-num">02</span>
+                        <span class="toc-text">Dove Nasce il Terremoto</span>
+                    </li>
+                    <li class="toc-item" data-target="s-section3">
+                        <span class="toc-num">03</span>
+                        <span class="toc-text">Le Onde Sismiche</span>
+                    </li>
+                    <li class="toc-item" data-target="s-section4">
+                        <span class="toc-num">04</span>
+                        <span class="toc-text">Come si Misura un Terremoto</span>
+                    </li>
+                    <li class="toc-item" data-target="s-section5">
+                        <span class="toc-num">05</span>
+                        <span class="toc-text">Il Rischio Sismico in Italia</span>
+                    </li>
+                    <li class="toc-item" data-target="s-section6">
+                        <span class="toc-num">06</span>
+                        <span class="toc-text">La Difesa Possibile</span>
+                    </li>
+                    <li class="toc-item" data-target="s-city">
+                        <span class="toc-num">07</span>
+                        <span class="toc-text">L'Aquila: Impatto sulla Citt&agrave;</span>
+                    </li>
+                    <li class="toc-item" data-target="s-art">
+                        <span class="toc-num">08</span>
+                        <span class="toc-text">Il Patrimonio Culturale</span>
+                    </li>
+                    <li class="toc-item" data-target="s-rebuild">
+                        <span class="toc-num">09</span>
+                        <span class="toc-text">La Ricostruzione</span>
+                    </li>
+                    <li class="toc-item" data-target="s-end">
+                        <span class="toc-num">10</span>
+                        <span class="toc-text">Conclusioni</span>
+                    </li>
+                </ol>
             </div>
         </div>
         <div class="epicenter"><div class="pulse"></div></div>
@@ -3196,27 +3269,24 @@
         </button>
       </div>
 
-      <!-- BOX 3 — LastQuake -->
+      <!-- BOX 3 — LastQuake (più grande, due sotto-box arancioni) -->
       <div style=”background:var(--charcoal);border:1px solid rgba(196,97,42,0.2);padding:20px”>
         <p style=”font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ochre);letter-spacing:1px;margin:0 0 8px”>📱 APP · LASTQUAKE (EMSC)</p>
-        <p style=”font-size:13px;color:rgba(245,237,224,0.7);margin:0 0 14px;line-height:1.6”>L'app ufficiale EMSC per notifiche in tempo reale di terremoti nel Mediterraneo. Gratuita.</p>
-        <div style=”display:flex;gap:8px”>
-          <button onclick=”window.open('https://apps.apple.com/us/app/lastquake/id890799748','_blank')” style=”flex:1;background:rgba(196,97,42,0.15);border:1px solid var(--terracotta);color:var(--cream);padding:10px 8px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px”>
-            → iOS
-          </button>
-          <button onclick=”window.open('https://play.google.com/store/apps/details?id=org.emsc_csem.lastquake','_blank')” style=”flex:1;background:rgba(196,97,42,0.15);border:1px solid var(--terracotta);color:var(--cream);padding:10px 8px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px”>
-            → Android
-          </button>
+        <p style=”font-size:13px;color:rgba(245,237,224,0.7);margin:0 0 18px;line-height:1.6”>L'app ufficiale EMSC per notifiche in tempo reale di terremoti nel Mediterraneo e nel mondo. Gratuita, disponibile su iOS e Android.</p>
+        <div style=”display:grid;grid-template-columns:1fr 1fr;gap:10px”>
+          <div style=”background:rgba(196,97,42,0.12);border:1px solid var(--terracotta);padding:14px”>
+            <p style=”font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--terracotta);letter-spacing:1.5px;margin:0 0 8px;text-transform:uppercase”>iOS · App Store</p>
+            <button onclick=”window.open('https://apps.apple.com/us/app/lastquake/id890799748','_blank')” style=”background:var(--terracotta);color:#080808;padding:9px 0;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;border:none;width:100%”>
+              ⬇ Scarica
+            </button>
+          </div>
+          <div style=”background:rgba(196,97,42,0.12);border:1px solid var(--terracotta);padding:14px”>
+            <p style=”font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--terracotta);letter-spacing:1.5px;margin:0 0 8px;text-transform:uppercase”>Android · Play Store</p>
+            <button onclick=”window.open('https://play.google.com/store/apps/details?id=org.emsc_csem.lastquake','_blank')” style=”background:var(--terracotta);color:#080808;padding:9px 0;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;border:none;width:100%”>
+              ⬇ Scarica
+            </button>
+          </div>
         </div>
-      </div>
-
-      <!-- BOX 4 — Allerta Android -->
-      <div style=”background:var(--charcoal);border:1px solid rgba(58,126,196,0.3);padding:20px”>
-        <p style=”font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--blue);letter-spacing:1px;margin:0 0 8px”>🔔 ANDROID · ALLERTA SISMICA</p>
-        <p style=”font-size:13px;color:rgba(245,237,224,0.7);margin:0 0 14px;line-height:1.6”>Se hai un dispositivo Android, puoi attivare le allerte sismiche di Google nelle impostazioni.</p>
-        <button onclick=”window.open('https://support.google.com/android/answer/12464968','_blank')” style=”background:rgba(58,126,196,0.1);border:1px solid var(--blue);color:var(--cream);padding:10px 20px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;width:100%”>
-          → Istruzioni Google
-        </button>
       </div>
     </div>
   </div>

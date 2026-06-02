@@ -71,6 +71,13 @@ document.getElementById('fullscreen-btn').addEventListener('click', toggleFS);
 document.getElementById('btn-enter').addEventListener('click', () =>
     slides[1].scrollIntoView({ behavior: 'smooth' }));
 
+document.querySelectorAll('.toc-item').forEach(item => {
+    item.addEventListener('click', () => {
+        const t = document.getElementById(item.dataset.target);
+        if (t) t.scrollIntoView({ behavior: 'smooth' });
+    });
+});
+
 function toggleFS() {
     if (!document.fullscreenElement) document.documentElement.requestFullscreen();
     else document.exitFullscreen();
