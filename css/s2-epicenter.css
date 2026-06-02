@@ -500,9 +500,12 @@
     padding: 0.5rem 0.4rem;
     gap: 0.5rem;
     overflow: hidden;
+    border-left: 1px solid rgba(245,237,224,0.06);
 }
-.s3-panel:first-child { border-right: 1px solid rgba(245,237,224,0.06); }
-.s3-panel:last-child  { border-left:  1px solid rgba(245,237,224,0.06); }
+.s3-panel--map {
+    flex: 0 0 45%;
+    border-left: 1px solid rgba(245,237,224,0.06);
+}
 .s3-panel-title {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.44rem;
@@ -521,7 +524,6 @@
 }
 #s2-depth-canvas {
     display: block;
-    width: 400px;
     max-width: 100%;
     max-height: calc(100vh - 120px);
     flex-shrink: 1;
@@ -535,7 +537,6 @@
     align-items: center;
     justify-content: space-between;
     padding: 1.2rem 0.7rem;
-    border-left: 1px solid rgba(245,237,224,0.06);
     border-right: 1px solid rgba(245,237,224,0.06);
     background: rgba(8,8,8,0.5);
 }
@@ -676,8 +677,8 @@
 #s2-s4 {
     flex-direction: column;
     text-align: center;
-    gap: 1.5rem;
-    padding: 4rem;
+    gap: 1.2rem;
+    padding: 2rem;
 }
 .s2-transition-eyebrow {
     font-family: 'JetBrains Mono', monospace;
@@ -685,31 +686,34 @@
     letter-spacing: 0.35em;
     color: var(--terracotta);
     text-transform: uppercase;
+    display: block;
+    margin-bottom: 1rem;
 }
 .s2-transition-title {
     font-family: 'Cormorant Garamond', serif;
     font-size: clamp(2.2rem, 4vw, 4.5rem);
     font-weight: 300;
     color: var(--cream);
-    line-height: 1.15;
-    max-width: 700px;
+    line-height: 1.1;
+    max-width: 640px;
     margin: 0 auto;
 }
 .s2-transition-sub {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.25rem;
-    color: rgba(245,237,224,0.5);
-    font-style: italic;
-    max-width: 520px;
+    line-height: 1.7;
+    color: rgba(245,237,224,0.6);
+    max-width: 640px;
     margin: 0 auto;
 }
 .s2-bounce-arrow {
     font-size: 1.8rem;
     color: var(--terracotta);
-    animation: s2Bounce 1.5s ease-in-out infinite;
+    animation: s2Bounce 1.6s ease-in-out infinite;
     display: block;
+    margin-top: 1rem;
 }
 @keyframes s2Bounce {
     0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(10px); }
+    50%       { transform: translateY(14px); }
 }
