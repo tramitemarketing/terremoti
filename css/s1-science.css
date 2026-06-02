@@ -323,17 +323,17 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem 4rem 2rem 2rem;
+    padding: 2rem 2.5rem 2rem 1.5rem;
     gap: 1.5rem;
 }
-.s1-branch-svg-wrap { width: 100%; max-width: 340px; }
+.s1-branch-svg-wrap { width: 100%; max-width: none; }
 .s1-branch-svg { width: 100%; height: auto; overflow: visible; }
 .s1-branch-controls {
     display: flex;
     align-items: center;
     gap: 1rem;
     width: 100%;
-    max-width: 340px;
+    max-width: none;
 }
 
 /* ── Reid popup ── */
