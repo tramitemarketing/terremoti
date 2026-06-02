@@ -184,6 +184,7 @@ class SwipeSession extends _$SwipeSession {
   /// Must be called once before any swipe interactions, typically from
   /// [SwipePage.initState]. Safe to call again to restart with a new filter.
   Future<void> startSession(SwipeFilter filter) async {
+    if (kDebugMode) debugPrint('[Session] startSession called mode=${filter.mode}');
     // if (kDebugMode) await HiveService.clearAllDecisions();
     _disposeSession();
     _startedAt = DateTime.now();
@@ -196,50 +197,58 @@ class SwipeSession extends _$SwipeSession {
 
     state = SwipeSessionState.initial().copyWith(filter: filter);
 
-    // Init paginator (builds master list for entireLibrary/albums modes).
-    await _pager!.init(filter);
+    try {
+      // Init paginator (builds master list for entireLibrary/albums modes).
+      await _pager!.init(filter);
 
-    // Open a SessionRecord in Hive for crash-recovery and stats.
-    final record = SessionRecord()..startedAt = _startedAt!;
-    _sessionRecordId = await HiveService.saveSession(record);
+      // Open a SessionRecord in Hive for crash-recovery and stats.
+      final record = SessionRecord()..startedAt = _startedAt!;
+      _sessionRecordId = await HiveService.saveSession(record);
 
-    // Scan forward from page 0 until a non-empty page is found.
-    // Required when early pages are fully decided.
-    List<AssetEntity> firstAssets = [];
-    int startPage = 0;
-    final totalCount = await _pager!.getTotalCount();
-    final maxPages = (totalCount / 50).ceil() + 1;
+      // Scan forward from page 0 until a non-empty page is found.
+      // Required when early pages are fully decided.
+      List<AssetEntity> firstAssets = [];
+      int startPage = 0;
+      final totalCount = await _pager!.getTotalCount();
+      if (kDebugMode) debugPrint('[Session] totalCount=$totalCount mode=${filter.mode}');
 
-    while (firstAssets.isEmpty && startPage < maxPages) {
-      firstAssets = await _pager!.getPage(startPage);
-      if (firstAssets.isEmpty) startPage++;
+      final maxPages = (totalCount / 50).ceil() + 1;
+
+      while (firstAssets.isEmpty && startPage < maxPages) {
+        firstAssets = await _pager!.getPage(startPage);
+        if (kDebugMode) debugPrint('[Session] page $startPage → ${firstAssets.length} assets');
+        if (firstAssets.isEmpty) startPage++;
+      }
+
+      if (firstAssets.isEmpty) {
+        // All photos already decided — skip straight to result.
+        await _transitionToResult();
+        return;
+      }
+
+      _deck.addAll(firstAssets);
+      _nextPageToLoad = startPage + 1;
+
+      // Warm the cache for the first card BEFORE transitioning to ready.
+      // Poll until bytes land in cache (or 1.5 s timeout) — avoids first-card flash.
+      _preloader!.updateIndex(0, _deck);
+      const _maxWait = Duration(milliseconds: 1500);
+      const _checkInterval = Duration(milliseconds: 50);
+      final _stopwatch = Stopwatch()..start();
+      while (_stopwatch.elapsed < _maxWait) {
+        if (_preloader!.getBytesSync(_deck.first.id) != null) break;
+        await Future.delayed(_checkInterval);
+      }
+      _stopwatch.stop();
+      if (kDebugMode) debugPrint('[Session] ready after ${_stopwatch.elapsedMilliseconds}ms wait');
+
+      state = state.copyWith(
+        phase: SwipeSessionPhase.ready,
+        filter: filter,
+      );
+    } catch (e, s) {
+      if (kDebugMode) debugPrint('[Session] startSession error: $e\n$s');
     }
-
-    if (firstAssets.isEmpty) {
-      // All photos already decided — skip straight to result.
-      await _transitionToResult();
-      return;
-    }
-
-    _deck.addAll(firstAssets);
-    _nextPageToLoad = startPage + 1;
-
-    // Warm the cache for the first card BEFORE transitioning to ready.
-    // Poll until bytes land in cache (or 1.5 s timeout) — avoids first-card flash.
-    _preloader!.updateIndex(0, _deck);
-    const _maxWait = Duration(milliseconds: 1500);
-    const _checkInterval = Duration(milliseconds: 50);
-    final _stopwatch = Stopwatch()..start();
-    while (_stopwatch.elapsed < _maxWait) {
-      if (_preloader!.getBytesSync(_deck.first.id) != null) break;
-      await Future.delayed(_checkInterval);
-    }
-    _stopwatch.stop();
-
-    state = state.copyWith(
-      phase: SwipeSessionPhase.ready,
-      filter: filter,
-    );
   }
 
   // ── Public API: gesture flow ───────────────────────────────────────────────
