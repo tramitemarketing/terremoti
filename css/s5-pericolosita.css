@@ -480,14 +480,15 @@
 }
 
 .s5-s2-left {
-  flex: 0 0 30%;
+  flex: 0 0 50%;
   min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 1rem 0.5rem 1rem 3rem;
+  align-items: center;
+  padding: 3rem 4rem;
   overflow-y: auto;
-  gap: 0;
+  gap: 1rem;
   text-align: center;
 }
 
