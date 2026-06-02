@@ -729,74 +729,66 @@
       sctx.fillText('IPOCENTRO', hypoX + 9, hypoY + 3);
     }
 
-    /* ── Vista dall'alto (canvas destra) — griglia STATICA, cerchio variabile ── */
-    const GRID_MAX_KM = 30;   /* scala fissa: 30 km per semilato */
-    const GRID_STEP_MAJOR = 10; /* linea principale ogni 10 km */
-    const GRID_STEP_MINOR = 5;  /* linea secondaria ogni 5 km */
+    /* ── Vista dall'alto: formula km unificata + griglia dinamica ── */
 
-    function drawSurfaceGrid() {
+    function depthToKm(depth) {
+      /* Formula unica — usata sia per il testo che per il cerchio visivo */
+      return Math.round(10 + (depth / MAX_D) * 390);
+    }
+
+    function drawSurface(depth) {
+      const km = depthToKm(depth);
+      /* Scala dinamica: griglia sempre ~60% più larga del raggio, multiplo di 10 */
+      const GRID_MAX_KM = Math.max(40, Math.ceil(km * 1.6 / 10) * 10);
+      const STEP_MAJOR  = Math.max(10, Math.round(GRID_MAX_KM / 3 / 10) * 10);
+      const STEP_MINOR  = STEP_MAJOR / 2;
+
       const cx = DW / 2, cy = DH / 2;
       const pxPerKm = (DW / 2 - 20) / GRID_MAX_KM;
 
+      /* — Sfondo — */
       dctx.fillStyle = '#050709';
       dctx.fillRect(0, 0, DW, DH);
 
-      /* Linee secondarie ogni 5 km */
+      /* — Linee secondarie — */
       dctx.strokeStyle = 'rgba(245,237,224,0.06)';
       dctx.lineWidth = 0.5;
-      for (let km = GRID_STEP_MINOR; km <= GRID_MAX_KM; km += GRID_STEP_MINOR) {
-        const d = km * pxPerKm;
+      for (let k = STEP_MINOR; k <= GRID_MAX_KM; k += STEP_MINOR) {
+        const d = k * pxPerKm;
         dctx.beginPath(); dctx.moveTo(cx - d, 0); dctx.lineTo(cx - d, DH); dctx.stroke();
         dctx.beginPath(); dctx.moveTo(cx + d, 0); dctx.lineTo(cx + d, DH); dctx.stroke();
         dctx.beginPath(); dctx.moveTo(0, cy - d); dctx.lineTo(DW, cy - d); dctx.stroke();
         dctx.beginPath(); dctx.moveTo(0, cy + d); dctx.lineTo(DW, cy + d); dctx.stroke();
       }
 
-      /* Linee principali ogni 10 km + etichette */
-      dctx.strokeStyle = 'rgba(245,237,224,0.20)';
+      /* — Linee principali + etichette km — */
+      dctx.strokeStyle = 'rgba(245,237,224,0.18)';
       dctx.lineWidth = 1;
       dctx.font = '8px "JetBrains Mono", monospace';
-      dctx.fillStyle = 'rgba(245,237,224,0.40)';
-      dctx.textAlign = 'center';
+      dctx.fillStyle = 'rgba(245,237,224,0.35)';
       dctx.textBaseline = 'top';
-      for (let km = GRID_STEP_MAJOR; km <= GRID_MAX_KM; km += GRID_STEP_MAJOR) {
-        const d = km * pxPerKm;
+      for (let k = STEP_MAJOR; k <= GRID_MAX_KM; k += STEP_MAJOR) {
+        const d = k * pxPerKm;
         dctx.beginPath(); dctx.moveTo(cx + d, 0); dctx.lineTo(cx + d, DH); dctx.stroke();
         dctx.beginPath(); dctx.moveTo(cx - d, 0); dctx.lineTo(cx - d, DH); dctx.stroke();
         dctx.beginPath(); dctx.moveTo(0, cy + d); dctx.lineTo(DW, cy + d); dctx.stroke();
         dctx.beginPath(); dctx.moveTo(0, cy - d); dctx.lineTo(DW, cy - d); dctx.stroke();
-        /* Etichette sull'asse orizzontale */
-        dctx.fillText(km + ' km', cx + d, cy + 4);
-        dctx.fillText('-' + km + ' km', cx - d, cy + 4);
-        /* Etichette sull'asse verticale */
-        dctx.textAlign = 'left';
-        dctx.fillText(km + ' km', cx + 4, cy - d + 2);
         dctx.textAlign = 'center';
+        dctx.fillText(k + ' km', cx + d, cy + 4);
+        dctx.textAlign = 'left';
+        dctx.fillText(k + ' km', cx + 4, cy - d + 2);
       }
 
-      /* Asse centrale */
-      dctx.strokeStyle = 'rgba(245,237,224,0.15)';
+      /* — Assi centrali — */
+      dctx.strokeStyle = 'rgba(245,237,224,0.12)';
       dctx.lineWidth = 1;
       dctx.beginPath(); dctx.moveTo(cx, 0); dctx.lineTo(cx, DH); dctx.stroke();
       dctx.beginPath(); dctx.moveTo(0, cy); dctx.lineTo(DW, cy); dctx.stroke();
-    }
 
-    function drawSurfaceCircle(depth) {
+      /* — Cerchio — raggio coerente con la griglia — */
+      const rPx   = Math.min(km * pxPerKm, DW / 2 - 15);
       const color = lerpColor(depth);
-      const cx = DW / 2, cy = DH / 2;
-      const pxPerKm = (DW / 2 - 20) / GRID_MAX_KM;
-      /* più profondo → cerchio più grande (area scuotimento più diffusa) */
-      const minR = 8, maxR = DW * 0.40;
-      const rPx  = minR + (depth / MAX_D) * (maxR - minR);
-      const km   = Math.round(rPx / pxPerKm);
 
-      /* Crosshair epicentro */
-      dctx.strokeStyle = 'rgba(245,237,224,0.25)';
-      dctx.lineWidth = 1;
-      dctx.beginPath(); dctx.moveTo(cx - 10, cy); dctx.lineTo(cx + 10, cy); dctx.stroke();
-      dctx.beginPath(); dctx.moveTo(cx, cy - 10); dctx.lineTo(cx, cy + 10); dctx.stroke();
-
-      /* Gradiente radiale */
       const fillGrad = dctx.createRadialGradient(cx, cy, 0, cx, cy, rPx);
       fillGrad.addColorStop(0,    'rgba(139,26,26,0.70)');
       fillGrad.addColorStop(0.35, 'rgba(196,97,42,0.40)');
@@ -805,28 +797,26 @@
       dctx.fillStyle = fillGrad;
       dctx.beginPath(); dctx.arc(cx, cy, rPx, 0, Math.PI * 2); dctx.fill();
 
-      /* Bordo */
       dctx.strokeStyle = color;
       dctx.lineWidth = 2;
       dctx.beginPath(); dctx.arc(cx, cy, rPx, 0, Math.PI * 2); dctx.stroke();
 
-      /* Label raggio */
+      /* — Crosshair — */
+      dctx.strokeStyle = 'rgba(245,237,224,0.25)';
+      dctx.lineWidth = 1;
+      dctx.beginPath(); dctx.moveTo(cx - 10, cy); dctx.lineTo(cx + 10, cy); dctx.stroke();
+      dctx.beginPath(); dctx.moveTo(cx, cy - 10); dctx.lineTo(cx, cy + 10); dctx.stroke();
+
+      /* — Label raggio — */
       dctx.fillStyle = color;
       dctx.font = '8px "JetBrains Mono", monospace';
       dctx.textAlign = 'left';
       dctx.textBaseline = 'top';
-      dctx.fillText('r ≈ ' + km + ' km', cx + rPx * 0.6, cy - rPx * 0.6);
+      dctx.fillText('r ≈ ' + km + ' km', cx + rPx * 0.55 + 4, cy - rPx * 0.55);
 
-      /* Label epicentro */
+      /* — Label epicentro — */
       dctx.fillStyle = 'rgba(58,126,196,0.9)';
-      dctx.font = '8px "JetBrains Mono", monospace';
-      dctx.textAlign = 'left';
       dctx.fillText('EPICENTRO', cx + 12, cy + 4);
-    }
-
-    function drawSurface(depth) {
-      drawSurfaceGrid();
-      drawSurfaceCircle(depth);
     }
 
     function updateAll(depth) {
@@ -834,7 +824,7 @@
       drawSurface(depth);
       const ds = depth % 1 === 0 ? String(depth) : depth.toFixed(1);
       valLbl.textContent = ds.replace('.', ',') + ' km';
-      const km = Math.round(10 + (depth / MAX_D) * 390);
+      const km = depthToKm(depth);
       if (infoR)    infoR.textContent    = `~${km} km`;
       if (infoMCS)  infoMCS.textContent  = mcsLabel(depth);
       if (infoArea) infoArea.textContent = `~${Math.round(Math.PI * km * km).toLocaleString('it-IT')} km²`;
