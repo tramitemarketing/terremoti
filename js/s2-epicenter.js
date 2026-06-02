@@ -155,10 +155,11 @@
 
   /* Raggio marker per profondità (profondo = piccolo) */
   function s2DepthRadius(depth) {
-    if (depth < 10)  return 18;
-    if (depth < 30)  return 13;
-    if (depth < 70)  return 8;
-    return 5;
+    /* più profondo → cerchio più grande (scuotimento diffuso su area più larga) */
+    if (depth >= 70)  return 18;
+    if (depth >= 30)  return 13;
+    if (depth >= 10)  return 9;
+    return 6;
   }
 
   /* Formatta ISO in "HH:MM" UTC */

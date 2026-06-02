@@ -399,14 +399,14 @@
 }
 .s2-slide-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(1.8rem, 3vw, 3rem);
+    font-size: clamp(2.2rem, 4vw, 4.5rem);
     font-weight: 300;
     color: var(--cream);
-    line-height: 1.15;
+    line-height: 1.1;
 }
 .s2-body-text {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     line-height: 1.85;
     color: rgba(245,237,224,0.65);
 }
@@ -482,7 +482,7 @@
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    padding: 0 0 1.8rem; /* spazio per i nav dot in fondo */
+    padding: 0 0 1.8rem;
     gap: 0;
 }
 .s3-split {
@@ -497,7 +497,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
+    padding: 0.5rem 0.4rem;
     gap: 0.5rem;
     overflow: hidden;
 }
@@ -516,12 +516,13 @@
 #s2-section-canvas, #s2-depth-canvas {
     display: block;
     max-width: 100%;
-    max-height: calc(100vh - 170px);
+    max-height: calc(100vh - 120px);
+    height: calc(100vh - 120px);
     flex-shrink: 1;
 }
 /* Controlli centrali */
 .s3-ctrl {
-    width: 130px;
+    width: 110px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
@@ -674,30 +675,30 @@
 }
 .s2-transition-eyebrow {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 0.25em;
-    color: rgba(245,237,224,0.3);
+    font-size: 0.62rem;
+    letter-spacing: 0.35em;
+    color: var(--terracotta);
     text-transform: uppercase;
 }
 .s2-transition-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2rem, 4vw, 4rem);
+    font-size: clamp(2.2rem, 4vw, 4.5rem);
     font-weight: 300;
     color: var(--cream);
-    line-height: 1.2;
+    line-height: 1.15;
     max-width: 700px;
     margin: 0 auto;
 }
 .s2-transition-sub {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     color: rgba(245,237,224,0.5);
     font-style: italic;
-    max-width: 500px;
+    max-width: 520px;
     margin: 0 auto;
 }
 .s2-bounce-arrow {
-    font-size: 1.4rem;
+    font-size: 1.8rem;
     color: var(--terracotta);
     animation: s2Bounce 1.5s ease-in-out infinite;
     display: block;
