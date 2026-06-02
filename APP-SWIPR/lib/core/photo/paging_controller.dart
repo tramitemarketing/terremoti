@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../storage/isar_models.dart';
@@ -62,21 +61,14 @@ class PagingController {
   /// Returns an empty list when [init] has not been called, or when the
   /// requested page is beyond the end of the asset list.
   Future<List<AssetEntity>> getPage(int page) {
-    debugPrint('[Paging] getPage($page) called');
     final currentFilter = _filter;
     if (currentFilter == null) return Future.value([]);
 
     return _inFlight.putIfAbsent(
       page,
-      () {
-        debugPrint('[Paging] calling repository...');
-        return _repo
-            .getPage(page, currentFilter)
-            .whenComplete(() {
-              debugPrint('[Paging] repository returned');
-              _inFlight.remove(page);
-            });
-      },
+      () => _repo
+          .getPage(page, currentFilter)
+          .whenComplete(() => _inFlight.remove(page)),
     );
   }
 

@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show compute, debugPrint;
+import 'package:flutter/foundation.dart' show compute;
 import 'package:photo_manager/photo_manager.dart';
 
 import '../storage/hive_service.dart';
@@ -75,7 +75,6 @@ class PhotoRepository {
   /// For [CleanupMode.timeRange]: queries photo_manager directly via
   /// [FilterOptionGroup].
   Future<List<AssetEntity>> getPage(int page, SwipeFilter filter) async {
-    debugPrint('[Repo] getPage called, page: $page, filter: ${filter.mode}');
     return switch (filter.mode) {
       CleanupMode.entireLibrary => _getEntireLibraryPage(page),
       CleanupMode.albums => _getPageFromMasterList(page),
@@ -187,15 +186,10 @@ class PhotoRepository {
   /// Resolves and caches [_allPhotosPath] on first call, then paginates it
   /// directly — no upfront master-list build required.
   Future<List<AssetEntity>> _getEntireLibraryPage(int page) async {
-    debugPrint('[Repo] fetching from photo_manager...');
     final path = await _cachedAllPhotosPath();
-    debugPrint('[Repo] allPhotosPath: ${path?.id}');
     if (path == null) return [];
     final assets = await path.getAssetListPaged(page: page, size: _kPageSize);
-    debugPrint('[Repo] got ${assets.length} assets from photo_manager');
-    final filtered = assets.where((a) => !_decidedIds.contains(a.id)).toList();
-    debugPrint('[Repo] after filter: ${filtered.length} assets');
-    return filtered;
+    return assets.where((a) => !_decidedIds.contains(a.id)).toList();
   }
 
   Future<List<AssetEntity>> _getPageFromMasterList(int page) async {

@@ -184,86 +184,62 @@ class SwipeSession extends _$SwipeSession {
   /// Must be called once before any swipe interactions, typically from
   /// [SwipePage.initState]. Safe to call again to restart with a new filter.
   Future<void> startSession(SwipeFilter filter) async {
-    try {
-      debugPrint('[Session] startSession called, filter: ${filter.mode}');
-      // if (kDebugMode) await HiveService.clearAllDecisions();
-      _disposeSession();
-      _startedAt = DateTime.now();
+    // if (kDebugMode) await HiveService.clearAllDecisions();
+    _disposeSession();
+    _startedAt = DateTime.now();
 
-      // Rebuild infrastructure for this session.
-      _repo = PhotoRepository();
-      _cache = LruCacheStrategy();
-      _preloader = PreloadEngine(cache: _cache!);
-      _pager = PagingController(repository: _repo!);
+    // Rebuild infrastructure for this session.
+    _repo = PhotoRepository();
+    _cache = LruCacheStrategy();
+    _preloader = PreloadEngine(cache: _cache!);
+    _pager = PagingController(repository: _repo!);
 
-      state = SwipeSessionState.initial().copyWith(filter: filter);
+    state = SwipeSessionState.initial().copyWith(filter: filter);
 
-      debugPrint('[Session] initializing paging controller...');
-      // Init paginator (builds master list for entireLibrary/albums modes).
-      await _pager!.init(filter);
-      debugPrint('[Session] paging controller ready');
+    // Init paginator (builds master list for entireLibrary/albums modes).
+    await _pager!.init(filter);
 
-      debugPrint('[Session] saving session record...');
-      // Open a SessionRecord in Hive for crash-recovery and stats.
-      final record = SessionRecord()..startedAt = _startedAt!;
-      _sessionRecordId = await HiveService.saveSession(record);
-      debugPrint('[Session] session saved, id: $_sessionRecordId');
+    // Open a SessionRecord in Hive for crash-recovery and stats.
+    final record = SessionRecord()..startedAt = _startedAt!;
+    _sessionRecordId = await HiveService.saveSession(record);
 
-      debugPrint('[Session] loading decided ids...');
-      final decidedIds = HiveService.getAllDecidedIds();
-      debugPrint('[Session] decided ids loaded: ${decidedIds.length}');
+    // Scan forward from page 0 until a non-empty page is found.
+    // Required when early pages are fully decided.
+    List<AssetEntity> firstAssets = [];
+    int startPage = 0;
+    final totalCount = await _pager!.getTotalCount();
+    final maxPages = (totalCount / 50).ceil() + 1;
 
-      // Scan forward from page 0 until a non-empty page is found.
-      // Required when early pages are fully decided (e.g. 414 decided assets
-      // all fall in page 0 → page 0 returns [] after filtering).
-      debugPrint('[Session] scanning for first non-empty page...');
-      List<AssetEntity> firstAssets = [];
-      int startPage = 0;
-      final totalCount = await _pager!.getTotalCount();
-      final maxPages = (totalCount / 50).ceil() + 1;
-
-      while (firstAssets.isEmpty && startPage < maxPages) {
-        firstAssets = await _pager!.getPage(startPage);
-        if (firstAssets.isEmpty) startPage++;
-      }
-      debugPrint('[Session] first non-empty page: $startPage (${firstAssets.length} assets)');
-
-      if (firstAssets.isEmpty) {
-        // All photos already decided — skip straight to result.
-        debugPrint('[Session] all photos decided, transitioning to result');
-        await _transitionToResult();
-        return;
-      }
-
-      _deck.addAll(firstAssets);
-      _nextPageToLoad = startPage + 1;
-
-      // Warm the cache for the first card BEFORE transitioning to ready.
-      // Poll until the first asset's bytes land in cache (or 1.5 s timeout),
-      // so card 1 is guaranteed to render without a gray/black flash.
-      // In practice the decode finishes in 200-400 ms on device.
-      _preloader!.updateIndex(0, _deck);
-      const _maxWait = Duration(milliseconds: 1500);
-      const _checkInterval = Duration(milliseconds: 50);
-      final _stopwatch = Stopwatch()..start();
-      while (_stopwatch.elapsed < _maxWait) {
-        if (_preloader!.getBytesSync(_deck.first.id) != null) break;
-        await Future.delayed(_checkInterval);
-      }
-      _stopwatch.stop();
-
-      debugPrint('[Session] transitioning to ready state');
-      state = state.copyWith(
-        phase: SwipeSessionPhase.ready,
-        filter: filter,
-      );
-
-      debugPrint('[Session] startSession complete');
-    } catch (e, st) {
-      debugPrint('[Session] ERROR in startSession: $e');
-      debugPrint('[Session] stack: $st');
-      rethrow;
+    while (firstAssets.isEmpty && startPage < maxPages) {
+      firstAssets = await _pager!.getPage(startPage);
+      if (firstAssets.isEmpty) startPage++;
     }
+
+    if (firstAssets.isEmpty) {
+      // All photos already decided — skip straight to result.
+      await _transitionToResult();
+      return;
+    }
+
+    _deck.addAll(firstAssets);
+    _nextPageToLoad = startPage + 1;
+
+    // Warm the cache for the first card BEFORE transitioning to ready.
+    // Poll until bytes land in cache (or 1.5 s timeout) — avoids first-card flash.
+    _preloader!.updateIndex(0, _deck);
+    const _maxWait = Duration(milliseconds: 1500);
+    const _checkInterval = Duration(milliseconds: 50);
+    final _stopwatch = Stopwatch()..start();
+    while (_stopwatch.elapsed < _maxWait) {
+      if (_preloader!.getBytesSync(_deck.first.id) != null) break;
+      await Future.delayed(_checkInterval);
+    }
+    _stopwatch.stop();
+
+    state = state.copyWith(
+      phase: SwipeSessionPhase.ready,
+      filter: filter,
+    );
   }
 
   // ── Public API: gesture flow ───────────────────────────────────────────────
@@ -435,8 +411,6 @@ class SwipeSession extends _$SwipeSession {
   ///
   /// No-op if an animation is in progress or the session is not in [swiping].
   Future<void> endSession() async {
-    debugPrint('[Session] endSession called, phase: ${state.phase}');
-    debugPrint('[Session] trashQueue: ${state.trashQueue.length}');
     if (state.isAnimating) return;
     if (state.phase != SwipeSessionPhase.swiping &&
         state.phase != SwipeSessionPhase.ready) return;
@@ -522,9 +496,7 @@ class SwipeSession extends _$SwipeSession {
   /// The actual [PhotoManager.editor.deleteWithIds] call is made by the UI
   /// layer (SwipePage), which then calls [onDeleteComplete] with the result.
   void confirmBatchDelete() {
-    debugPrint('[Session] confirmBatchDelete called, phase: ${state.phase}');
     if (state.phase != SwipeSessionPhase.confirmDelete) return;
-    debugPrint('[Session] transitioning to processingDelete');
     state = state.copyWith(phase: SwipeSessionPhase.processingDelete);
   }
 
@@ -536,8 +508,6 @@ class SwipeSession extends _$SwipeSession {
   /// Persists final session stats to the open [SessionRecord] in Hive before
   /// transitioning.
   Future<void> onDeleteComplete({bool hasSmartFlags = false}) async {
-    debugPrint('[Delete] onDeleteComplete called, phase: ${state.phase}');
-    debugPrint('[Delete] ids count: ${state.trashQueue.length}');
     if (state.phase != SwipeSessionPhase.processingDelete) return;
 
     await _finaliseSessionRecord();

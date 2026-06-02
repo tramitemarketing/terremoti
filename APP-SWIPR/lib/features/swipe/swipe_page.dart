@@ -136,11 +136,7 @@ class _EndSessionButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
-      onTap: () {
-        final phase = ref.read(swipeSessionProvider).phase;
-        debugPrint('[UI] Fine button tapped, phase: $phase');
-        ref.read(swipeSessionProvider.notifier).endSession();
-      },
+      onTap: () => ref.read(swipeSessionProvider.notifier).endSession(),
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppTokens.spaceMD,
@@ -355,17 +351,12 @@ class _TrashReviewStub extends ConsumerWidget {
               const SizedBox(height: AppTokens.spaceLG),
               ElevatedButton(
                 onPressed: () async {
-                  debugPrint('[UI] Elimina tutto tapped');
                   final ids = session.trashQueue;
                   notifier.requestBatchDelete();
                   notifier.confirmBatchDelete();
-                  debugPrint('[Delete] calling PhotoManager.deleteWithIds, count: ${ids.length}');
                   try {
                     await PhotoManager.editor.deleteWithIds(ids);
-                    debugPrint('[Delete] deletion complete');
-                  } catch (e) {
-                    debugPrint('[Delete] deletion error: $e');
-                  }
+                  } catch (_) {}
                   await notifier.onDeleteComplete();
                 },
                 child: const Text('Elimina tutto'),

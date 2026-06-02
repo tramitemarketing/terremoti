@@ -6,12 +6,14 @@ import '../../../shared/theme/app_tokens.dart';
 import '../../../shared/theme/app_typography.dart';
 import '../../session/session_state/swipe_session_provider.dart';
 
-/// Floating heads-up display shown during the swipe session.
+/// Floating heads-up display shown during a swipe session.
 ///
-/// Displays:
-/// - MB queued for deletion ([SessionStats.mbFreed])
-/// - Trash count ([SessionStats.trashedCount])
-/// - Floating "+X MB" pop-up animation whenever the trash queue grows
+/// Three-column layout:
+/// - Left:   Trash count + "Trash" label (red)
+/// - Centre: Photos processed + MB to be freed
+/// - Right:  Decide-later count + "Saved" label (green)
+///
+/// A "+X MB" float-up animation fires whenever the trash queue grows.
 class SessionHud extends ConsumerStatefulWidget {
   const SessionHud({super.key});
 
@@ -50,7 +52,6 @@ class _SessionHudState extends ConsumerState<SessionHud>
 
   @override
   Widget build(BuildContext context) {
-    // Listen for mbFreed increases and trigger the pop-up animation.
     ref.listen(
       sessionStatsProvider.select((s) => s.mbFreed),
       (prev, next) {
@@ -60,6 +61,9 @@ class _SessionHudState extends ConsumerState<SessionHud>
     );
 
     final stats = ref.watch(sessionStatsProvider);
+    final photoCount = ref.watch(
+      swipeSessionProvider.select((s) => s.currentIndex),
+    );
 
     final mbLabel = stats.mbFreed >= 1024
         ? '${(stats.mbFreed / 1024).toStringAsFixed(2)} GB'
@@ -74,40 +78,68 @@ class _SessionHudState extends ConsumerState<SessionHud>
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Trash count pill
-            _HudPill(
-              icon: Icons.delete_outline_rounded,
-              label: '${stats.trashedCount}',
-            ),
-            const SizedBox(width: AppTokens.spaceSM),
-            // MB queued pill
-            _HudPill(
-              icon: Icons.storage_rounded,
-              label: mbLabel,
+            // ── Left: Trash count ─────────────────────────────────────────
+            _HudStat(
+              value: '${stats.trashedCount}',
+              label: 'Trash',
               color: AppColors.trashRed,
+              align: CrossAxisAlignment.start,
             ),
-            const Spacer(),
-            // "+X MB" float-up animation
-            AnimatedBuilder(
-              animation: _popup,
-              builder: (_, __) {
-                // Fade in fast (0→0.25), hold (0.25→0.65), fade out (0.65→1.0)
-                final t = _popup.value;
-                final opacity = t < 0.25
-                    ? t / 0.25
-                    : t > 0.65
-                        ? 1.0 - (t - 0.65) / 0.35
-                        : 1.0;
-                // Float 28px upward over the animation
-                final dy = -28.0 * t;
-                return Transform.translate(
-                  offset: Offset(0, dy),
-                  child: Opacity(
-                    opacity: opacity.clamp(0.0, 1.0),
-                    child: Text(_popupText, style: AppTypography.storageFreed),
+
+            // ── Centre: photo count + MB freed ────────────────────────────
+            Expanded(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '$photoCount foto',
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      Text(
+                        mbLabel,
+                        style: AppTypography.title.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              },
+                  // "+X MB" float-up animation
+                  AnimatedBuilder(
+                    animation: _popup,
+                    builder: (_, __) {
+                      final t = _popup.value;
+                      final opacity = t < 0.25
+                          ? t / 0.25
+                          : t > 0.65
+                              ? 1.0 - (t - 0.65) / 0.35
+                              : 1.0;
+                      return Transform.translate(
+                        offset: Offset(0, -28.0 * t),
+                        child: Opacity(
+                          opacity: opacity.clamp(0.0, 1.0),
+                          child: Text(
+                            _popupText,
+                            style: AppTypography.storageFreed,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+            // ── Right: Decide-later count ─────────────────────────────────
+            _HudStat(
+              value: '${stats.decideLaterCount}',
+              label: 'Saved',
+              color: AppColors.keepGreen,
+              align: CrossAxisAlignment.end,
             ),
           ],
         ),
@@ -116,36 +148,43 @@ class _SessionHudState extends ConsumerState<SessionHud>
   }
 }
 
-// ── Pill widget ───────────────────────────────────────────────────────────────
+// ── HUD stat column ───────────────────────────────────────────────────────────
 
-class _HudPill extends StatelessWidget {
-  const _HudPill({
-    required this.icon,
+class _HudStat extends StatelessWidget {
+  const _HudStat({
+    required this.value,
     required this.label,
-    this.color = AppColors.textSecondary,
+    required this.color,
+    required this.align,
   });
 
-  final IconData icon;
+  final String value;
   final String label;
   final Color color;
+  final CrossAxisAlignment align;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppTokens.spaceSM,
-        vertical: AppTokens.spaceXS,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.hudBackground,
-        borderRadius: BorderRadius.circular(AppTokens.radiusSM),
-      ),
-      child: Row(
+    return SizedBox(
+      width: 56,
+      child: Column(
+        crossAxisAlignment: align,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 13, color: color),
-          const SizedBox(width: 4),
-          Text(label, style: AppTypography.hudLabel),
+          Text(
+            value,
+            style: AppTypography.hudLabel.copyWith(
+              color: color,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Text(
+            label,
+            style: AppTypography.caption.copyWith(
+              color: color.withValues(alpha: 0.7),
+            ),
+          ),
         ],
       ),
     );

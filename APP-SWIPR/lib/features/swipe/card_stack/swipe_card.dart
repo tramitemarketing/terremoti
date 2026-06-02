@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
@@ -14,9 +15,10 @@ import '../../../shared/theme/app_tokens.dart';
 /// - Gradient overlay proportional to drag: 0.0 at center, max 0.6 at
 ///   commit threshold. [AppColors] only — no text labels.
 /// - Rotation capped at ±15°.
-/// - Transforms applied only when [isTop] is true. Background cards
-///   (isTop == false) render at Offset.zero, no rotation.
-class SwipeCard extends StatelessWidget {
+/// - Transforms applied only when [isTop] is true.
+/// - File size loaded async from the device and rendered as a monospace
+///   label at the bottom of the card.
+class SwipeCard extends StatefulWidget {
   const SwipeCard({
     super.key,
     required this.asset,
@@ -29,8 +31,8 @@ class SwipeCard extends StatelessWidget {
   final AssetEntity asset;
 
   /// Pre-decoded thumbnail bytes from [PreloadEngine].
-  /// Null when the asset has not yet been decoded — shows a placeholder.
-  /// No async loading happens inside this widget.
+  /// Null when the asset has not yet been decoded — top card renders
+  /// transparent; background cards show a placeholder.
   final Uint8List? cachedBytes;
 
   /// Current cumulative drag offset from the card's resting position.
@@ -42,41 +44,80 @@ class SwipeCard extends StatelessWidget {
   /// True only for the front-most (gesture-active) card in the stack.
   final bool isTop;
 
+  @override
+  State<SwipeCard> createState() => _SwipeCardState();
+}
+
+class _SwipeCardState extends State<SwipeCard> {
+  int? _fileSizeBytes;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFileSize();
+  }
+
+  @override
+  void didUpdateWidget(SwipeCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.asset.id != widget.asset.id) {
+      _fileSizeBytes = null;
+      _loadFileSize();
+    }
+  }
+
+  Future<void> _loadFileSize() async {
+    try {
+      final file = await widget.asset.file;
+      if (file != null && mounted) {
+        final size = await file.length();
+        if (mounted) setState(() => _fileSizeBytes = size);
+      }
+    } on FileSystemException {
+      // File inaccessible — no size label shown.
+    }
+  }
+
+  String _formatSize(int bytes) {
+    if (bytes < 1024 * 1024) {
+      return '${(bytes / 1024).toStringAsFixed(0)} KB';
+    }
+    return '${(bytes / 1024 / 1024).toStringAsFixed(1)} MB';
+  }
+
   // ── Derived visual values ─────────────────────────────────────────────────
 
   double get _angle {
-    if (!isTop) return 0;
-    // Scale 0→15° across the full screen width; clamp to ±15° hard cap.
-    return (dragOffset.dx / screenSize.width * 15 * math.pi / 180)
+    if (!widget.isTop) return 0;
+    return (widget.dragOffset.dx / widget.screenSize.width * 15 * math.pi / 180)
         .clamp(-15 * math.pi / 180, 15 * math.pi / 180);
   }
 
-  /// 0.0 → 0.6 proportional to how close the drag is to the commit threshold.
   double get _overlayOpacity {
-    if (!isTop) return 0;
-    final hRatio = dragOffset.dx.abs() /
-        (screenSize.width * AppTokens.swipeCommitThreshold);
-    final upDy = -dragOffset.dy; // positive when swiping upward
+    if (!widget.isTop) return 0;
+    final hRatio = widget.dragOffset.dx.abs() /
+        (widget.screenSize.width * AppTokens.swipeCommitThreshold);
+    final upDy = -widget.dragOffset.dy;
     final vRatio = upDy > 0
-        ? upDy / (screenSize.height * AppTokens.swipeUpThreshold)
+        ? upDy / (widget.screenSize.height * AppTokens.swipeUpThreshold)
         : 0.0;
     return math.max(hRatio, vRatio).clamp(0.0, 0.6);
   }
 
   Color get _overlayColor {
-    // Vertical-up takes priority when dominant axis is upward.
-    if (dragOffset.dy < 0 &&
-        dragOffset.dy.abs() > dragOffset.dx.abs()) {
+    if (widget.dragOffset.dy < 0 &&
+        widget.dragOffset.dy.abs() > widget.dragOffset.dx.abs()) {
       return AppColors.laterBlue;
     }
-    return dragOffset.dx >= 0 ? AppColors.keepGreen : AppColors.trashRed;
+    return widget.dragOffset.dx >= 0 ? AppColors.keepGreen : AppColors.trashRed;
   }
 
   _SwipeDir get _swipeDir {
-    if (dragOffset.dy < 0 && dragOffset.dy.abs() > dragOffset.dx.abs()) {
+    if (widget.dragOffset.dy < 0 &&
+        widget.dragOffset.dy.abs() > widget.dragOffset.dx.abs()) {
       return _SwipeDir.up;
     }
-    return dragOffset.dx >= 0 ? _SwipeDir.right : _SwipeDir.left;
+    return widget.dragOffset.dx >= 0 ? _SwipeDir.right : _SwipeDir.left;
   }
 
   // ── Build ──────────────────────────────────────────────────────────────────
@@ -84,8 +125,8 @@ class SwipeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Top card with no bytes: render nothing so the standby card shows through.
-    // The outer Container's backgroundCard color would flash gray otherwise.
-    if (isTop && cachedBytes == null) return const SizedBox.expand();
+    // The outer Container's backgroundCard color would cause a gray flash otherwise.
+    if (widget.isTop && widget.cachedBytes == null) return const SizedBox.expand();
 
     final card = Container(
       decoration: BoxDecoration(
@@ -105,27 +146,38 @@ class SwipeCard extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             // Image — BoxFit.contain is mandatory per §11.
-            // Bytes are pre-decoded by PreloadEngine; no async call here.
-            if (cachedBytes != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(AppTokens.radiusCard),
-                child: Image.memory(
-                  cachedBytes!,
-                  fit: BoxFit.contain,
-                  gaplessPlayback: true,
-                ),
+            if (widget.cachedBytes != null)
+              Image.memory(
+                widget.cachedBytes!,
+                fit: BoxFit.contain,
+                gaplessPlayback: true,
               )
-            else if (!isTop)
-              // Background cards show a placeholder while bytes are loading.
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColors.backgroundCard,
-                  borderRadius: BorderRadius.circular(AppTokens.radiusCard),
+            else
+              // isTop=false with no bytes: gray placeholder while loading.
+              Container(color: AppColors.backgroundCard),
+
+            // File size label — monospace, faint, bottom-centre.
+            if (_fileSizeBytes != null)
+              Positioned(
+                bottom: 16,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Text(
+                    _formatSize(_fileSizeBytes!),
+                    style: TextStyle(
+                      fontFamily: 'RobotoMono',
+                      fontFamilyFallback: const ['Courier', 'monospace'],
+                      color: AppColors.textSecondary.withValues(alpha: 0.5),
+                      fontSize: 12,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
                 ),
               ),
-            // isTop + no bytes → transparent so the standby card shows through.
+
             // Gradient overlay — only rendered on top card with non-zero drag.
-            if (isTop && _overlayOpacity > 0)
+            if (widget.isTop && _overlayOpacity > 0)
               _SwipeOverlay(
                 color: _overlayColor,
                 opacity: _overlayOpacity,
@@ -136,11 +188,11 @@ class SwipeCard extends StatelessWidget {
       ),
     );
 
-    if (!isTop) return card;
+    if (!widget.isTop) return card;
 
     // Top card: apply translation + rotation driven by drag.
     return Transform.translate(
-      offset: dragOffset,
+      offset: widget.dragOffset,
       child: Transform.rotate(
         angle: _angle,
         child: card,
