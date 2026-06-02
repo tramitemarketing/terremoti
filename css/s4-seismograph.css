@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════════════════
    SEZIONE 4 — "Come si misura un terremoto"
    CSS scoped: prefissi #s-section4, #s4-*, .s4-*
    NON ridefinisce :root — usa variabili del padre
@@ -50,46 +50,61 @@
    NAVIGAZIONE — frecce, dots, counter
    ═══════════════════════════════════════════════════════════════════ */
 
-/* Frecce prev/next */
+/* Frecce prev/next — visibili solo al hover del wrapper */
 #s4-prev,
 #s4-next {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   z-index: 20;
-  background: none;
-  border: 1px solid rgba(245, 237, 224, 0.3);
-  color: var(--cream);
-  width: 2.2rem;
-  height: 2.2rem;
+  width: 44px;
+  height: 44px;
+  background: rgba(8, 8, 8, 0.7);
+  border: 1px solid rgba(245, 237, 224, 0.1);
+  color: rgba(245, 237, 224, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border-radius: 50%;
   font-size: 1rem;
-  opacity: 0.5;
-  transition: opacity 0.25s, border-color 0.25s;
+  opacity: 0;
+  transition: border-color 0.25s, background 0.25s, color 0.25s, opacity 0.25s;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-#s4-prev { left: 1rem; }
-#s4-next { right: 1rem; }
+#s4-prev { left: 0.8rem; }
+#s4-next { right: 0.8rem; }
+
+#s4-wrap:hover #s4-prev,
+#s4-wrap:hover #s4-next { opacity: 1; }
 
 #s4-prev:hover,
 #s4-next:hover {
-  opacity: 1;
-  border-color: rgba(245, 237, 224, 1);
+  border-color: var(--terracotta);
+  background: rgba(196, 97, 42, 0.18);
+  color: var(--terracotta);
 }
 
-/* Dots container */
-#s4-dots {
+#s4-prev[disabled],
+#s4-next[disabled] { opacity: 0 !important; pointer-events: none; }
+
+/* Barra nav bottom (pattern identico a s1-nav / s3-nav) */
+.s4-nav {
   position: absolute;
-  bottom: 1.2rem;
+  bottom: 1.6rem;
   left: 50%;
   transform: translateX(-50%);
   z-index: 20;
   display: flex;
-  gap: 0.45rem;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+/* Dots row — inline flex dentro .s4-nav */
+#s4-dots {
+  display: flex;
+  gap: 0.55rem;
   align-items: center;
 }
 
@@ -98,33 +113,27 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: rgba(245, 237, 224, 0.25);
+  background: rgba(196, 97, 42, 0.2);
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
+  transition: all 0.35s ease;
 }
 
-.s4-dot:hover {
-  background: rgba(245, 237, 224, 0.5);
-  transform: scale(1.3);
-}
+.s4-dot:hover { background: rgba(245, 237, 224, 0.5); }
 
 /* Dot attivo */
 .s4-dot.s4-active {
   background: var(--terracotta);
-  transform: scale(1.2);
+  transform: scale(1.9);
 }
 
-/* Counter slide */
+/* Counter inline con i dots */
 #s4-counter {
-  position: absolute;
-  bottom: 0.8rem;
-  right: 1.2rem;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  opacity: 0.4;
-  color: var(--cream);
-  z-index: 20;
-  letter-spacing: 0.05em;
+  font-size: 0.56rem;
+  letter-spacing: 0.28em;
+  color: rgba(245, 237, 224, 0.2);
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -300,7 +309,7 @@
 #s4-seismo-canvas {
   display: block;
   width: 100%;
-  height: 300px;
+  height: 320px;
   background: #050505;
   cursor: crosshair;
   border: 1px solid rgba(245, 237, 224, 0.06);
@@ -445,11 +454,11 @@
 
 #s4-s2-inner {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 38% 1fr;
   height: 100%;
-  padding: 2rem 1.5rem 3.5rem 1.5rem;
+  padding: 2rem 3rem 3.5rem 4rem;
   box-sizing: border-box;
-  gap: 2rem;
+  gap: 3rem;
   align-items: center;
 }
 
@@ -516,121 +525,95 @@
    SLIDE 3 — STORIA DEL SISMOGRAFO
    ═══════════════════════════════════════════════════════════════════ */
 
-#s4-s3 {
+/* ─── SLIDE 3 — 2000 anni di sismologia ─── */
+#s4-s3-inner {
   display: flex;
   flex-direction: column;
-  padding: 2rem 1.5rem 3.5rem 1.5rem;
-  box-sizing: border-box;
-}
-
-#s4-s3-header {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  flex-shrink: 0;
-}
-
-/* Wrapper storia con overflow */
-#s4-hist-wrap {
-  overflow: hidden;
-  flex: 1;
-  position: relative;
-}
-
-/* Track storia scroll */
-#s4-hist-track {
-  display: flex;
-  flex-direction: row;
-  gap: 1.2rem;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   height: 100%;
-  align-items: center;
-  padding: 0 0.5rem;
+  padding: 1.2rem 1.2rem 3.8rem 1.2rem;
+  box-sizing: border-box;
+  gap: 0.55rem;
+}
+
+#s4-s3-inner > .s4-eyebrow { text-align: center; flex-shrink: 0; }
+#s4-s3-inner > .s4-title {
+  text-align: center; flex-shrink: 0;
+  font-size: clamp(1.4rem, 2.5vw, 2.2rem);
+  margin-bottom: 0.1rem;
+}
+
+/* Griglia 3×2 — tutte e 6 le card visibili senza scorrere
+   minmax(0, 1fr) è necessario per far funzionare 1fr dentro un flex-item */
+#s4-hist-track {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
 }
 
 /* Card storia */
 .s4-hcard {
-  flex-shrink: 0;
-  width: 280px;
-  min-height: 300px;
-  max-height: 340px;
-  background: var(--charcoal);
-  border: 1px solid rgba(196, 97, 42, 0.35);
-  border-radius: 3px;
-  padding: 1.2rem 1rem;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+  gap: 0.3rem;
+  background: var(--charcoal);
+  border: 1px solid rgba(196, 97, 42, 0.22);
+  border-radius: 3px;
+  padding: 0.85rem 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: border-color 0.25s, box-shadow 0.25s;
   cursor: default;
+  min-height: 0;
 }
 
 .s4-hcard:hover {
-  transform: scale(1.02);
   border-color: var(--terracotta);
-  box-shadow: 0 4px 24px rgba(196, 97, 42, 0.18);
+  box-shadow: 0 4px 16px rgba(196, 97, 42, 0.15);
 }
 
-/* Anno card storia */
+/* Anno */
 .s4-hcard-year {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1.2rem;
+  font-size: 0.85rem;
   color: var(--ochre);
-  font-weight: 400;
   letter-spacing: 0.05em;
-}
-
-/* SVG illustrazione card */
-.s4-hcard-svg {
-  width: 100%;
-  height: 120px;
   flex-shrink: 0;
 }
 
-.s4-hcard-svg svg {
+/* SVG illustrazione */
+.s4-hcard-svg {
   width: 100%;
-  height: 100%;
+  height: 52px;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
-/* Testo card storia */
+/* Autore */
+.s4-hcard-author {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.52rem;
+  color: var(--cream);
+  opacity: 0.5;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+/* Descrizione: overflow nascosto, si adatta all'altezza disponibile */
 .s4-hcard-text {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   color: var(--cream);
-  opacity: 0.8;
-  line-height: 1.55;
-  flex: 1;
+  opacity: 0.82;
+  line-height: 1.5;
   overflow: hidden;
-}
-
-/* Frecce sub-carousel storia */
-#s4-hist-prev,
-#s4-hist-next {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  background: rgba(8, 8, 8, 0.7);
-  border: 1px solid rgba(245, 237, 224, 0.25);
-  color: var(--cream);
-  width: 2rem;
-  height: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 50%;
-  font-size: 0.85rem;
-  opacity: 0.6;
-  transition: opacity 0.2s;
-}
-
-#s4-hist-prev { left: 0; }
-#s4-hist-next { right: 0; }
-
-#s4-hist-prev:hover,
-#s4-hist-next:hover {
-  opacity: 1;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -640,36 +623,40 @@
 #s4-s4 {
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1.5rem 3.5rem 1.5rem;
+  height: 100%;
+  padding: 2.5rem 3rem 3.5rem 3rem;
   box-sizing: border-box;
+  gap: 0.9rem;
+  justify-content: center;
 }
 
+/* Il canvas cresce per occupare tutto lo spazio disponibile */
 #s4-read-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
   flex: 1;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-/* Canvas sismogramma + marker */
+/* Canvas sismogramma: flex:1 invece di height fissa */
 #s4-read-canvas {
   display: block;
   width: 100%;
-  height: 280px;
+  flex: 1;
+  min-height: 0;
   background: #050505;
   border: 1px solid rgba(245, 237, 224, 0.06);
   cursor: ew-resize;
-  flex-shrink: 0;
 }
 
-/* Griglia risultati 3 colonne */
+/* Griglia risultati 3 colonne — altezza fissa, non cresce */
 #s4-read-results {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  flex: 1;
-  min-height: 0;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  height: 6.5rem;
 }
 
 /* Colonna risultato */
@@ -677,11 +664,11 @@
   background: var(--charcoal);
   border: 1px solid rgba(245, 237, 224, 0.07);
   border-radius: 2px;
-  padding: 0.8rem;
+  padding: 0.7rem 0.85rem;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  overflow-y: auto;
+  gap: 0.3rem;
+  overflow: hidden;
 }
 
 .s4-res-col h4 {
@@ -753,394 +740,614 @@
   z-index: 5;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   SLIDE 5 — COME SI CALCOLA LA MAGNITUDO
-   ═══════════════════════════════════════════════════════════════════ */
+
+/* === SLIDE 5 — COME SI CALCOLA LA MAGNITUDO === */
 
 #s4-s5-inner {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 42% 1fr;
   height: 100%;
-  padding: 2rem 1.5rem 3.5rem 1.5rem;
+  padding: 1.5rem 1.5rem 3.8rem 1.5rem;
   box-sizing: border-box;
-  gap: 2rem;
-  align-items: center;
+  gap: 1.8rem;
+  align-items: start;
 }
 
-/* Colonna testo sinistra */
-.s4-s5-text {
+#s4-s5-left {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  overflow-y: auto;
-  max-height: calc(100vh - 5.5rem);
-}
-
-/* Box formula dark */
-#s4-formula-box {
-  background: rgba(16, 16, 16, 0.9);
-  border: 1px solid rgba(196, 97, 42, 0.3);
-  border-radius: 3px;
-  padding: 0.9rem 1.1rem;
-  text-align: center;
-}
-
-#s4-formula-box .s4-formula-text {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(0.8rem, 1.2vw, 1rem);
-  color: var(--cream);
-  letter-spacing: 0.03em;
-}
-
-#s4-formula-box .s4-formula-sub {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.62rem;
-  color: var(--ochre);
-  opacity: 0.7;
-  margin-top: 0.3rem;
-}
-
-/* Canvas nomogramma */
-#s4-nomo-canvas {
-  display: block;
-  width: 340px;
-  height: 360px;
-  background: #050505;
-  border: 1px solid rgba(245, 237, 224, 0.07);
-  flex-shrink: 0;
-}
-
-/* Controlli nomogramma */
-.s4-nomo-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  margin-top: 0.8rem;
-}
-
-/* Toggle modalità libera */
-#s4-nomo-free {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.62rem;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  padding: 0.3rem 0.8rem;
-  background: none;
-  border: 1px solid rgba(245, 237, 224, 0.2);
-  color: rgba(245, 237, 224, 0.5);
-  cursor: pointer;
-  border-radius: 2px;
-  transition: border-color 0.2s, color 0.2s;
-  align-self: flex-start;
-}
-
-#s4-nomo-free.s4-active {
-  border-color: var(--terracotta);
-  color: var(--terracotta);
-}
-
-/* Input numerici nomogramma */
-#s4-nomo-gap,
-#s4-nomo-amp {
-  background: var(--charcoal);
-  border: 1px solid rgba(245, 237, 224, 0.15);
-  color: var(--cream);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  padding: 0.35rem 0.6rem;
-  border-radius: 2px;
-  width: 100%;
-  box-sizing: border-box;
-  outline: none;
-}
-
-#s4-nomo-gap:focus,
-#s4-nomo-amp:focus {
-  border-color: var(--terracotta);
-}
-
-/* Display ML grande */
-#s4-ml-display {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(1.8rem, 3vw, 2.5rem);
-  color: var(--terracotta);
-  letter-spacing: 0.05em;
-  text-align: center;
-  margin-top: 0.5rem;
-}
-
-/* Colonna destra nomogramma */
-.s4-s5-right {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  overflow-y: auto;
-  max-height: calc(100vh - 5.5rem);
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   SLIDE 6 — CALCOLO RICHTER LIVE
-   ═══════════════════════════════════════════════════════════════════ */
-
-#s4-s6-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  gap: 0.75rem;
+  overflow: hidden;
   height: 100%;
-  padding: 2rem 2rem 3.5rem 2rem;
-  box-sizing: border-box;
-  gap: 1.2rem;
-  max-width: 780px;
-  margin: 0 auto;
-  width: 100%;
 }
 
-/* Card step */
-.s4-step-card {
-  background: var(--charcoal);
-  border: 1px solid rgba(245, 237, 224, 0.07);
-  border-radius: 3px;
-  padding: 1rem 1.2rem;
-  width: 100%;
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+/* Box principio fondamentale */
+.s4-s5-key {
+  background: rgba(196,97,42,0.06);
+  border: 1px solid rgba(196,97,42,0.3);
+  border-left: 3px solid var(--terracotta);
+  border-radius: 0 3px 3px 0;
+  padding: 0.65rem 0.85rem;
 }
-
-.s4-step-card.s4-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.s4-step-card .s4-step-num {
+.s4-s5-key-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.55rem;
-  letter-spacing: 0.15em;
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+  color: var(--terracotta);
   text-transform: uppercase;
-  color: var(--ochre);
-  opacity: 0.6;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.3rem;
 }
-
-.s4-step-card .s4-step-title {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  color: var(--ochre);
-  margin-bottom: 0.4rem;
-}
-
-.s4-step-card p {
+.s4-s5-key p {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--cream);
   opacity: 0.85;
   line-height: 1.55;
   margin: 0;
 }
 
-.s4-step-card .s4-mono-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.78rem;
-  color: var(--cream);
-  opacity: 0.9;
-  line-height: 1.7;
-}
-
-.s4-step-card .s4-note-small {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.57rem;
-  color: var(--cream);
-  opacity: 0.4;
-  margin-top: 0.4rem;
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   SLIDE 7 — SCALA MCS: 12 GRADI
-   ═══════════════════════════════════════════════════════════════════ */
-
-#s4-s7-inner {
+/* 3 passi */
+.s4-s5-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  padding: 1.5rem 1.5rem 3.5rem 1.5rem;
-  box-sizing: border-box;
-  gap: 0.8rem;
+  gap: 0.35rem;
 }
-
-#s4-s7-header {
-  flex-shrink: 0;
-}
-
-/* Slider MCS */
-#s4-mcs-slider {
-  width: 100%;
-  margin: 0.5rem 0;
-}
-
-/* Numero romano grande */
-#s4-mcs-roman {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 5rem;
-  font-weight: 300;
-  line-height: 1;
-  color: var(--terracotta);
-  transition: color 0.4s, opacity 0.2s;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-/* Griglia tre zone MCS */
-.s4-mcs-zones {
-  display: grid;
-  grid-template-columns: 35% 40% 25%;
-  gap: 1rem;
-  flex: 1;
-  min-height: 0;
-}
-
-/* Zona illustrazione SVG */
-#s4-mcs-illus {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  overflow: hidden;
-}
-
-#s4-mcs-illus svg {
-  width: 100%;
-  max-height: 180px;
-  transition: opacity 0.3s;
-}
-
-/* Foto MCS (placeholder) */
-.s4-mcs-photo-wrap {
-  width: 100%;
-  border: 1px dashed rgba(245, 237, 224, 0.2);
-  border-radius: 2px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.s4-mcs-photo-wrap img.user-mcs-photo {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Zona testo effetti */
-#s4-mcs-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  overflow-y: auto;
-}
-
-#s4-mcs-text .s4-mcs-desc {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(0.9rem, 1.3vw, 1.05rem);
-  color: var(--cream);
-  opacity: 0.9;
-  line-height: 1.6;
-  transition: opacity 0.3s;
-}
-
-/* Zona confronto L'Aquila */
-#s4-mcs-compare {
-  background: rgba(16, 16, 16, 0.85);
-  border: 1px solid rgba(139, 26, 26, 0.5);
-  border-radius: 3px;
-  padding: 0.8rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  overflow-y: auto;
-}
-
-#s4-mcs-compare .s4-compare-header {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.58rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--blood);
-  opacity: 0.9;
-  line-height: 1.4;
-}
-
-#s4-mcs-compare .s4-compare-msg {
+.s4-s5-steps li {
   font-family: 'Cormorant Garamond', serif;
   font-size: 0.88rem;
   color: var(--cream);
   opacity: 0.8;
   line-height: 1.5;
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+.s4-s5-stepnum {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  color: var(--ochre);
+  flex-shrink: 0;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid rgba(212,137,58,0.4);
+  border-radius: 2px;
+}
+
+/* Calcolatore */
+#s4-s5-calc {
+  background: var(--charcoal);
+  border: 1px solid rgba(245,237,224,0.08);
+  border-radius: 3px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-top: auto;
+}
+.s4-s5-calc-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.48rem;
+  letter-spacing: 0.18em;
+  color: var(--ochre);
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+/* Riga calcolatore: label | slider | input number | unità | hint */
+.s4-calc-row {
+  display: grid;
+  grid-template-columns: 4.2rem 1fr 4.5rem auto auto;
+  align-items: center;
+  gap: 0.45rem;
+}
+.s4-calc-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--cream);
+  opacity: 0.6;
+  white-space: nowrap;
+}
+/* Slider nel calcolatore */
+.s4-calc-slider {
+  width: 100%;
+}
+.s4-calc-input {
+  background: rgba(8,8,8,0.8);
+  border: 1px solid rgba(245,237,224,0.2);
+  color: var(--cream);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  padding: 0.25rem 0.4rem;
+  border-radius: 2px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: right;
+}
+.s4-calc-input:focus { border-color: var(--terracotta); }
+.s4-calc-unit {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  color: var(--cream);
+  opacity: 0.4;
+}
+.s4-calc-hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.52rem;
+  color: var(--ochre);
+  opacity: 0.6;
+  white-space: nowrap;
+  grid-column: 2 / 6;
+  padding-left: 0.1rem;
+}
+
+/* Display ML */
+#s4-ml-display {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  padding: 0.4rem 0;
+}
+.s4-ml-eq {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--cream);
+  opacity: 0.5;
+}
+#s4-ml-number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 300;
+  color: var(--terracotta);
+  line-height: 1;
+}
+
+/* Colonna destra: canvas nomogramma */
+#s4-s5-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  height: 100%;
+  overflow: hidden;
+}
+.s4-s5-nomo-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.2em;
+  color: var(--cream);
+  opacity: 0.3;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+#s4-nomo-canvas {
+  display: block;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  background: #050505;
+  border: 1px solid rgba(245,237,224,0.07);
+}
+.s4-s5-nomo-caption {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.72rem;
+  color: var(--cream);
+  opacity: 0.4;
+  text-align: center;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+
+/* === SLIDE 6 — CALCOLO RICHTER LIVE INGV === */
+
+#s4-s6-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.3rem 2rem 3.8rem 2rem;
+  box-sizing: border-box;
+  gap: 0.9rem;
+}
+
+#s4-s6-header { flex-shrink: 0; }
+
+#s4-s6-intro {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  color: var(--cream);
+  opacity: 0.7;
+  line-height: 1.55;
+  margin: 0.3rem 0 0;
+}
+
+/* Layout 2 colonne */
+#s4-s6-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Pipeline sinistra */
+#s4-s6-pipeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+
+.s4-pipe-step {
+  background: var(--charcoal);
+  border: 1px solid rgba(245,237,224,0.06);
+  border-radius: 3px;
+  padding: 0.7rem 0.9rem;
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  opacity: 0;
+  transform: translateX(-12px);
+  transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.3s;
+  flex-shrink: 0;
+}
+
+.s4-pipe-step.s4-visible {
+  opacity: 1;
+  transform: translateX(0);
+  border-color: rgba(196,97,42,0.22);
+}
+
+/* Override: step 1 visibile subito */
+#s4-step1 { opacity: 1; transform: none; border-color: rgba(196,97,42,0.22); }
+
+.s4-pipe-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--terracotta);
+  opacity: 0.5;
+  flex-shrink: 0;
+  line-height: 1;
+  padding-top: 0.1rem;
+}
+
+.s4-pipe-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.s4-pipe-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ochre);
+  opacity: 0.8;
+}
+
+.s4-pipe-data {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.9rem;
+  color: var(--cream);
+  opacity: 0.85;
+  line-height: 1.5;
+}
+
+.s4-pipe-connector {
+  font-size: 0.9rem;
+  color: var(--terracotta);
+  opacity: 0.35;
+  text-align: left;
+  padding: 0.1rem 0 0.1rem 1.4rem;
+  flex-shrink: 0;
+}
+
+/* Pannello destra: formula + risultato */
+#s4-s6-result {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  overflow: hidden;
+}
+
+.s4-s6-formula-block {
+  background: rgba(8,8,8,0.7);
+  border: 1px solid rgba(196,97,42,0.25);
+  border-radius: 3px;
+  padding: 1.1rem;
+}
+
+.s4-formula-box-lg {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+  color: var(--cream);
+  opacity: 0.9;
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+.s4-s6-formula-vars {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--cream);
+  opacity: 0.45;
+  line-height: 1.8;
+  margin-top: 0.5rem;
+}
+
+#s4-s6-result-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  background: var(--charcoal);
+  border: 1px solid rgba(245,237,224,0.07);
+  border-radius: 3px;
+  padding: 1.5rem;
+}
+
+.s4-s6-res-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.2em;
+  color: var(--cream);
+  opacity: 0.35;
+  text-transform: uppercase;
+}
+
+#s4-ml-big {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 300;
+  color: var(--terracotta);
+  line-height: 1;
   transition: opacity 0.3s;
+}
+
+#s4-ml-compare-note {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.85rem;
+  color: var(--cream);
+  opacity: 0.55;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.s4-step-note {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem;
+  color: var(--cream);
+  opacity: 0.3;
+  line-height: 1.5;
+  margin-top: 0.15rem;
+}
+
+
+/* === SLIDE 7 — SCALA MCS: 12 GRADI === */
+
+#s4-s7-inner {
+  display: grid;
+  grid-template-columns: 38% 1fr;
+  height: 100%;
+  padding: 1.5rem 1.5rem 3.8rem 1.5rem;
+  box-sizing: border-box;
+  gap: 2rem;
+}
+
+/* Colonna sinistra: storia + scala */
+#s4-s7-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  overflow: hidden;
+  border-right: 1px solid rgba(245,237,224,0.06);
+  padding-right: 1.5rem;
+}
+
+#s4-s7-left .s4-eyebrow { flex-shrink: 0; }
+#s4-s7-left .s4-title { flex-shrink: 0; margin-bottom: 0; }
+
+/* Box storia MCS con bordo */
+#s4-s7-history {
+  background: rgba(245, 237, 224, 0.03);
+  border: 1px solid rgba(245, 237, 224, 0.08);
+  border-radius: 3px;
+  padding: 0.65rem 0.8rem;
+  flex-shrink: 0;
+}
+#s4-s7-history p {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(0.78rem, 1vw, 0.9rem);
+  color: var(--cream);
+  opacity: 0.65;
+  line-height: 1.6;
+  margin: 0 0 0.35rem;
+}
+#s4-s7-history p:last-child { margin-bottom: 0; }
+
+/* Scala verticale: 12 blocchi */
+#s4-mcs-scale-col {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.s4-mcs-bar-item {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: opacity 0.2s, transform 0.15s;
+  background: rgba(245,237,224,0.04);
+}
+
+.s4-mcs-bar-item:hover { opacity: 0.85; }
+
+.s4-mcs-bar-item.s4-active {
+  transform: translateX(3px);
+}
+
+.s4-bar-roman {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(0.6rem, 1vw, 0.78rem);
+  color: rgba(245,237,224,0.4);
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.s4-mcs-bar-item.s4-active .s4-bar-roman {
+  color: var(--black);
+  font-weight: 700;
+}
+
+/* Screen-reader only */
+.s4-sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
+/* Colonna destra: contenuto grado */
+#s4-s7-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow: hidden;
+  justify-content: center;
+}
+
+#s4-mcs-roman {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3.5rem, 7vw, 5.5rem);
+  font-weight: 300;
+  line-height: 1;
+  transition: color 0.35s;
+  flex-shrink: 0;
+}
+
+#s4-mcs-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  color: var(--cream);
+  opacity: 0.9;
+  line-height: 1.7;
+  transition: opacity 0.3s;
+  flex-shrink: 0;
+}
+
+#s4-mcs-illus {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+#s4-mcs-illus svg { transition: opacity 0.3s; }
+
+#s4-mcs-compare {
+  background: rgba(139,26,26,0.08);
+  border: 1px solid rgba(139,26,26,0.4);
+  border-radius: 3px;
+  padding: 0.65rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex-shrink: 0;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
    SLIDE 8 — RICHTER VS MCS
    ═══════════════════════════════════════════════════════════════════ */
 
+/* ─── SLIDE 8 — Richter vs MCS ─── */
 #s4-s8-inner {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  padding: 1.5rem 1.5rem 3.5rem 1.5rem;
+  padding: 1.5rem 2rem 3.5rem 2rem;
   box-sizing: border-box;
+  gap: 0.8rem;
+}
+
+#s4-s8-inner > .s4-eyebrow { flex-shrink: 0; }
+#s4-s8-inner > .s4-title   { flex-shrink: 0; text-align: center; margin-bottom: 0; }
+
+/* Layout comparativo: 2 colonne + separatore */
+.s4-s8-cols {
+  display: grid;
+  grid-template-columns: 1fr 40px 1fr;
   gap: 0;
-  align-items: stretch;
+  flex: 1;
+  min-height: 0;
 }
 
 /* Colonna confronto */
 .s4-compare-col {
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
+  gap: 0.55rem;
   padding: 1rem;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
-.s4-compare-col.s4-richter {
+.s4-col-richter {
   border: 1px solid rgba(196, 97, 42, 0.3);
   background: rgba(196, 97, 42, 0.04);
   border-radius: 3px 0 0 3px;
 }
 
-.s4-compare-col.s4-mcs {
+.s4-col-mcs {
   border: 1px solid rgba(58, 126, 196, 0.3);
   background: rgba(58, 126, 196, 0.04);
   border-radius: 0 3px 3px 0;
 }
 
-/* Header colonna confronto */
-.s4-compare-col-header {
+/* Header colonna */
+.s4-col-header {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  padding: 0.45rem 0.7rem;
+  padding: 0.4rem 0.6rem;
   border-radius: 2px;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.2rem;
+  flex-shrink: 0;
 }
 
-.s4-richter .s4-compare-col-header {
-  background: rgba(196, 97, 42, 0.15);
+.s4-col-richter .s4-col-header {
+  background: rgba(196, 97, 42, 0.12);
   color: var(--terracotta);
-  border: 1px solid rgba(196, 97, 42, 0.4);
+  border: 1px solid rgba(196, 97, 42, 0.35);
 }
 
-.s4-mcs .s4-compare-col-header {
-  background: rgba(58, 126, 196, 0.15);
+.s4-col-mcs .s4-col-header {
+  background: rgba(58, 126, 196, 0.12);
   color: var(--blue);
-  border: 1px solid rgba(58, 126, 196, 0.4);
+  border: 1px solid rgba(58, 126, 196, 0.35);
 }
 
-/* Riga icona + testo */
+/* Riga testo confronto (senza emoji) */
 .s4-compare-row {
-  display: flex;
-  gap: 0.6rem;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 3.5rem 1fr;
+  gap: 0.4rem;
+  align-items: baseline;
   font-family: 'Cormorant Garamond', serif;
   font-size: 0.9rem;
   color: var(--cream);
@@ -1148,96 +1355,93 @@
   line-height: 1.4;
 }
 
-.s4-compare-row .s4-row-icon {
-  font-size: 1rem;
-  flex-shrink: 0;
-  width: 1.4rem;
-}
-
-.s4-compare-row .s4-row-key {
+.s4-compare-row strong {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.58rem;
-  color: var(--ochre);
-  opacity: 0.7;
-  text-transform: uppercase;
+  font-size: 0.55rem;
   letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ochre);
+  opacity: 0.75;
+  font-weight: 400;
   display: block;
-  margin-bottom: 0.1rem;
+  line-height: 1.8;
 }
 
-/* Box formula in colonna confronto */
+/* Box formula in colonna */
 .s4-formula-box {
   background: rgba(8, 8, 8, 0.85);
   border: 1px solid rgba(245, 237, 224, 0.1);
   border-radius: 2px;
-  padding: 0.6rem 0.8rem;
+  padding: 0.55rem 0.7rem;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--cream);
-  opacity: 0.9;
+  opacity: 0.85;
   text-align: center;
+  flex-shrink: 0;
+}
+
+.s4-formula-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.52rem;
+  color: var(--cream);
+  opacity: 0.45;
+  display: block;
+  margin-top: 0.25rem;
 }
 
 /* Esempio in colonna */
-.s4-compare-example {
+.s4-col-example {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--cream);
-  opacity: 0.65;
+  opacity: 0.6;
   font-style: italic;
-  line-height: 1.45;
+  line-height: 1.4;
+  margin-top: auto;
 }
 
 /* Separatore centrale */
-.s4-s8-separator {
+.s4-s8-sep {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
-  padding: 0 0.8rem;
+  gap: 0.4rem;
+  padding: 0.5rem 0;
 }
 
-.s4-s8-separator::before {
+.s4-s8-sep::before,
+.s4-s8-sep::after {
   content: '';
   flex: 1;
   width: 1px;
-  background: rgba(245, 237, 224, 0.15);
-  border-left: 1px dashed rgba(245, 237, 224, 0.2);
+  border-left: 1px dashed rgba(245, 237, 224, 0.18);
 }
 
-.s4-s8-separator::after {
-  content: '';
-  flex: 1;
-  width: 1px;
-  background: rgba(245, 237, 224, 0.15);
-  border-left: 1px dashed rgba(245, 237, 224, 0.2);
-}
-
-.s4-s8-sep-label {
+.s4-sep-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.55rem;
-  letter-spacing: 0.08em;
+  font-size: 0.5rem;
+  letter-spacing: 0.07em;
   color: var(--cream);
-  opacity: 0.35;
+  opacity: 0.3;
   text-align: center;
   writing-mode: vertical-rl;
   white-space: nowrap;
 }
 
-/* Box riassuntivo */
+/* Box riassuntivo sotto le colonne */
 #s4-s8-summary {
   background: var(--charcoal);
-  border: 1px solid rgba(212, 137, 58, 0.4);
+  border: 1px solid rgba(212, 137, 58, 0.35);
   border-radius: 3px;
-  padding: 0.85rem 1rem;
+  padding: 0.75rem 1rem;
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  font-size: clamp(0.82rem, 1.1vw, 0.95rem);
   color: var(--cream);
-  opacity: 0.9;
-  line-height: 1.6;
-  margin-top: 0.5rem;
-  grid-column: 1 / 4;
+  opacity: 0.85;
+  line-height: 1.55;
+  flex-shrink: 0;
 }
 
 /* Tabella 2×2 */
@@ -1245,15 +1449,15 @@
   width: 100%;
   border-collapse: collapse;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   color: var(--cream);
-  opacity: 0.75;
-  margin-top: 0.5rem;
+  opacity: 0.72;
+  margin-top: 0.45rem;
 }
 
 .s4-s8-table td,
 .s4-s8-table th {
-  padding: 0.35rem 0.6rem;
+  padding: 0.3rem 0.55rem;
   border: 1px solid rgba(245, 237, 224, 0.1);
   text-align: center;
 }
@@ -1436,6 +1640,56 @@
   gap: 1rem;
 }
 
+/* Wrapper slider con label M0/M10 */
+.s4-richter-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.s4-richter-slider-inner {
+  flex: 1;
+  position: relative;
+}
+
+/* Label estremità slider (M 0, M 10, I, XII) */
+.s4-slider-label-sm {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--cream);
+  opacity: 0.4;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+/* Marker fisso L'Aquila */
+.s4-richter-fixed-marker {
+  position: absolute;
+  top: -1.4rem;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.s4-richter-marker-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem;
+  color: var(--blood);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+/* Nota di riferimento M6.3 */
+.s4-richter-ref-note {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  color: var(--blood);
+  opacity: 0.65;
+  letter-spacing: 0.08em;
+  text-align: center;
+  flex-shrink: 0;
+}
+
 /* Slider magnitudo Richter */
 #s4-richter-slider {
   width: 100%;
@@ -1549,12 +1803,16 @@
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
-  padding: 1.5rem 1rem 3.5rem 1.2rem;
+  padding: 1.5rem 1rem 2rem 1.2rem;
   box-sizing: border-box;
   overflow-y: auto;
   background: rgba(16, 16, 16, 0.6);
   border-right: 1px solid rgba(245, 237, 224, 0.06);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(196,97,42,0.4) transparent;
 }
+#s4-sim-controls::-webkit-scrollbar { width: 3px; }
+#s4-sim-controls::-webkit-scrollbar-thumb { background: rgba(196,97,42,0.4); border-radius: 2px; }
 
 /* Riga slider con label */
 .s4-sim-row {
@@ -1629,7 +1887,7 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  padding: 2rem 2rem 3.5rem 2rem;
+  padding: 2rem;
   box-sizing: border-box;
   overflow-y: auto;
 }
@@ -1824,22 +2082,22 @@
   margin-bottom: 0.3rem;
 }
 
+/* Title dimensione coerente con s1/s3 "fine sezione" (max 4.5rem) */
 #s4-s13-inner .s4-title {
-  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-size: clamp(2rem, 4vw, 4.5rem);
   font-weight: 300;
   max-width: 700px;
-  line-height: 1.35;
+  line-height: 1.15;
 }
 
-#s4-s13-inner .s4-subtitle {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  color: var(--cream);
-  opacity: 0.45;
-  letter-spacing: 0.1em;
-  max-width: 500px;
-  line-height: 1.6;
-  text-transform: uppercase;
+/* Sottotitolo fine sezione */
+.s4-s13-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(245, 237, 224, 0.4);
+  max-width: 520px;
+  margin: 0;
 }
 
 /* Freccia bounce animata */

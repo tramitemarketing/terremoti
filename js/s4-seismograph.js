@@ -86,21 +86,21 @@
     { name: 'VAGA', lat: 42.5620, lon: 13.7290, defaultDt: 5.1 }
   ];
 
-  // [5] Descrizioni MCS per ogni grado I–XII
+  // [5] Descrizioni MCS per ogni grado I–XII (arricchite)
   const S4_MCS_DESC = [
     '',
-    'Non percepito dall\'uomo — registrato solo dai sismografi.',
-    'Percepito da persone sensibili ai piani alti. Oscillazione oggetti appesi.',
-    'Percepito da più persone. Vibrazione simile a un camion.',
-    'Percepito da tutti. Tintinnio vetri, vibrazioni vasellame e pareti.',
-    'Sveglia chi dorme. Scricchiolii, tintinnii, spavento. Cadono calcinacci.',
-    'Fa fuggire le persone all\'aperto. Caduta oggetti pesanti. Lesioni edifici.',
-    'Panico. Caduta intonaci e tegole. Rottura vetri. Piccole frane.',
-    'Danni anche a murature buone. Caduta torri e palizzate. Crepacci.',
-    'Distrugge edifici non resistenti. Rompe tubazioni. Ampi crepacci nel suolo.',
-    'Distrugge buona parte degli edifici. Danneggia dighe. Grandi frane.',
-    'Rovina completa. Ogni tubazione rotta. Molte vittime.',
-    'Distrugge ogni opera umana. Sposta grandi masse rocciose. Migliaia di vittime.'
+    'Strumentale. Non percepito dall\'uomo in nessuna condizione. Registrato solo dagli strumenti sismografici più sensibili.',
+    'Molto leggero. Percepito soltanto da persone particolarmente sensibili, in stato di riposo e ai piani alti. Oscillazione lieve degli oggetti appesi.',
+    'Leggero. Avvertito da molte persone in casa, soprattutto ai piani superiori. Vibrazione simile al passaggio di un camion pesante. Oggetti appesi oscillano visibilmente.',
+    'Moderato. Avvertito chiaramente all\'interno degli edifici da molte persone. Tintinnio di stoviglie e vetri. Scricchiolio di porte e pareti. Qualche persona si sveglia di notte.',
+    'Abbastanza forte. Avvertito da quasi tutti; molte persone si svegliano dal sonno. Qualche caduta di intonaco. Gli alberi oscillano. Campanelli suonano. Pendoli degli orologi si arrestano.',
+    'Forte. Avvertito da tutti con spavento. Molte persone fuggono all\'aperto. Caduta di oggetti. Danni leggeri in edifici di cattiva costruzione. Lesioni a camini.',
+    'Molto forte. Panico generale. Caduta di intonaci e mattoni. Tegole scivolate. Rottura di vetri. Piccole frane su terreni in pendio. Danni a edifici di costruzione ordinaria.',
+    'Rovinoso. Danni anche a edifici ben costruiti. Caduta di comignoli, monumenti, colonne. Crepacci nel suolo. Gravi danni a dighe e argini. Rami di alberi spezzati.',
+    'Devastante. Distrugge edifici non resistenti. Gravi danni agli edifici ben costruiti. Fondamenta spostate. Tubazioni rotte. Ampie e profonde fratture nel terreno.',
+    'Completamente devastante. Rovina quasi tutti gli edifici. Grandi frane. L\'acqua dei laghi e dei fiumi tracima. Binari ferroviari piegati. Catastrofe.',
+    'Catastrofe. Rovina totale. Ogni opera umana distrutta. Vaste aree abbassano il suolo. Fenditure estese con rigetti verticali. Molte vittime.',
+    'Catastrofe massima. Modifica il paesaggio. Sposta grandi masse rocciose. Onde sulle superfici dei laghi e dei fiumi. Migliaia di vittime. Irreparabile.'
   ];
 
   // [6] Poligoni isosismici approssimati (slide 12)
@@ -240,15 +240,15 @@
       d.classList.toggle('s4-active', parseInt(d.dataset.dot) === idx);
     });
 
-    // Aggiorna counter
+    // Aggiorna counter (formato "01 · 13" come s1/s3)
     const counter = document.getElementById('s4-counter');
-    if (counter) counter.textContent = (idx + 1) + ' / ' + S4_TOTAL;
+    if (counter) counter.textContent = String(idx + 1).padStart(2, '0') + ' · ' + String(S4_TOTAL).padStart(2, '0');
 
-    // Aggiorna frecce
+    // Aggiorna frecce — disabled toggling, la visibilità è gestita via CSS :hover
     const prev = document.getElementById('s4-prev');
     const next = document.getElementById('s4-next');
-    if (prev) prev.style.opacity = idx === 0 ? '0.3' : '1';
-    if (next) next.style.opacity = idx === S4_TOTAL - 1 ? '0.3' : '1';
+    if (prev) { prev.disabled = idx === 0; }
+    if (next) { next.disabled = idx === S4_TOTAL - 1; }
 
     // Fine animazione
     setTimeout(function () {
@@ -329,10 +329,16 @@
       eventTimer: 0
     };
 
-    // Ridimensiona canvas
+    // Ridimensiona canvas con DPR support
     function resizeCanvas() {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight || 300;
+      const dpr = window.devicePixelRatio || 1;
+      const cssW = canvas.offsetWidth || 800;
+      const cssH = canvas.offsetHeight || 320;
+      canvas.width  = cssW * dpr;
+      canvas.height = cssH * dpr;
+      canvas.style.width  = cssW + 'px';
+      canvas.style.height = cssH + 'px';
+      ctx.scale(dpr, dpr);
     }
     resizeCanvas();
 
@@ -346,8 +352,9 @@
       return v;
     }
 
-    // Inizializza buffer live
-    for (let i = 0; i < 600; i++) {
+    // Inizializza buffer live con abbastanza campioni da riempire subito il canvas
+    const initBufSize = Math.max(canvas.offsetWidth || 800, 800);
+    for (let i = 0; i < initBufSize; i++) {
       s4SeismoState.liveBuffer.push(generateNoiseSample(s4SeismoState));
     }
 
@@ -415,8 +422,9 @@
       s4SeismoLastTime = ts;
       if (dt > 200) return; // primo frame o tab blur
 
-      const W = canvas.width;
-      const H = canvas.height;
+      const dpr = window.devicePixelRatio || 1;
+      const W = canvas.width / dpr;   // dimensioni CSS (non fisiche)
+      const H = canvas.height / dpr;
       const ctx2 = ctx;
 
       ctx2.clearRect(0, 0, W, H);
@@ -425,13 +433,38 @@
       ctx2.fillStyle = '#050505';
       ctx2.fillRect(0, 0, W, H);
 
+      // Scala ampiezza sinistra (0.5 mm, 1.0 mm illustrativi)
+      const SCALE_W = 40; // larghezza colonna scala
+      const ampLevels = [0.5, 1.0];
+      ctx2.strokeStyle = 'rgba(245,237,224,0.06)';
+      ctx2.setLineDash([2, 6]);
+      ctx2.lineWidth = 0.5;
+      ampLevels.forEach(function (a) {
+        const yp = H / 2 - a * (H / 2 - 8);
+        const yn = H / 2 + a * (H / 2 - 8);
+        ctx2.beginPath(); ctx2.moveTo(SCALE_W, yp); ctx2.lineTo(W, yp); ctx2.stroke();
+        ctx2.beginPath(); ctx2.moveTo(SCALE_W, yn); ctx2.lineTo(W, yn); ctx2.stroke();
+      });
+      ctx2.setLineDash([]);
+      ctx2.font = '8px "JetBrains Mono", monospace';
+      ctx2.fillStyle = 'rgba(245,237,224,0.30)';
+      ctx2.textAlign = 'right';
+      ctx2.textBaseline = 'middle';
+      ampLevels.forEach(function (a) {
+        const yp = H / 2 - a * (H / 2 - 8);
+        const yn = H / 2 + a * (H / 2 - 8);
+        ctx2.fillText('+' + a.toFixed(1), SCALE_W - 3, yp);
+        ctx2.fillText('-' + a.toFixed(1), SCALE_W - 3, yn);
+      });
+      ctx2.textBaseline = 'alphabetic';
+
       // Griglia orizzontale
       ctx2.strokeStyle = '#1a1a1a';
       ctx2.lineWidth = 1;
       const gridStep = H / 8;
       for (let y = 0; y < H; y += gridStep) {
         ctx2.beginPath();
-        ctx2.moveTo(0, y);
+        ctx2.moveTo(SCALE_W, y);
         ctx2.lineTo(W, y);
         ctx2.stroke();
       }
@@ -440,7 +473,7 @@
       ctx2.strokeStyle = '#2a2a2a';
       ctx2.setLineDash([4, 8]);
       ctx2.beginPath();
-      ctx2.moveTo(0, H / 2);
+      ctx2.moveTo(SCALE_W, H / 2);
       ctx2.lineTo(W, H / 2);
       ctx2.stroke();
       ctx2.setLineDash([]);
@@ -481,14 +514,15 @@
           }
         }
 
-        // Disegna tracciato live
+        // Disegna tracciato live — scala orizzontale su larghezza intera
         const lineColor = s4SeismoState.eventActive ? '#C4612A' : '#F5EDE0';
         ctx2.strokeStyle = lineColor;
-        ctx2.lineWidth = 1.2;
+        ctx2.lineWidth = 1.5;
         ctx2.beginPath();
         const pts = slice;
+        const traceW = W - SCALE_W;
         for (let i = 0; i < pts.length; i++) {
-          const x = i;
+          const x = SCALE_W + (i / Math.max(pts.length - 1, 1)) * traceW;
           const y = H / 2 - pts[i] * (H / 2 - 8);
           if (i === 0) ctx2.moveTo(x, y);
           else ctx2.lineTo(x, y);
@@ -624,8 +658,8 @@
 
   function initSlide2() {
     if (s4SlideInited[1] && s4AnimState) {
-      s4AnimState.playing = true;
-      requestAnimationFrame(animSismoLoop);
+      // rientro nella slide: non auto-avviare, mostra stato corrente
+      drawSismograph(0, 0);
       return;
     }
     s4SlideInited[1] = true;
@@ -638,7 +672,7 @@
     const H = canvas.height = canvas.offsetHeight || 380;
 
     s4AnimState = {
-      playing: true,
+      playing: false,
       phase: 0,       // 0=silenzio, 1=scossa, 2=lettura
       phaseT: 0,      // tempo dentro la fase (ms)
       totalT: 0,      // tempo totale
@@ -649,14 +683,17 @@
       lastTs: 0
     };
 
-    const PHASE_DUR = [2000, 3000, 1500]; // ms per fase
+    const VSCALE = 0.85;
 
     const playBtn = document.getElementById('s4-anim-play');
-    if (playBtn) playBtn.addEventListener('click', function () {
-      s4AnimState.playing = !s4AnimState.playing;
-      playBtn.textContent = s4AnimState.playing ? '⏸' : '▶';
-      if (s4AnimState.playing) requestAnimationFrame(animSismoLoop);
-    });
+    if (playBtn) {
+      playBtn.textContent = '▶ Avvia';
+      playBtn.addEventListener('click', function () {
+        s4AnimState.playing = !s4AnimState.playing;
+        playBtn.textContent = s4AnimState.playing ? '⏸ Pausa' : '▶ Avvia';
+        if (s4AnimState.playing) requestAnimationFrame(animSismoLoop);
+      });
+    }
 
     function drawSismograph(supportOscY, massOscY) {
       ctx.clearRect(0, 0, W, H);
@@ -671,7 +708,7 @@
       // ── Layout: supporto + rullo oscillano verticalmente con il suolo ──
       const cx      = 148;
       const supW    = 74;  const supH = 160;
-      const baseY   = H - 40 + supportOscY;
+      const baseY   = H - 40 + supportOscY * 0.50;
       const supLeft = cx - supW / 2;
       const supTop  = baseY - supH;
 
@@ -773,11 +810,10 @@
         ctx.beginPath();
         const newestT    = s4AnimState.trace[s4AnimState.trace.length - 1].t;
         const traceRight = rollX + rollW - 3;
-        const PPU        = 0.5;
-        const YSCALE     = 1.4;
+        const PPU = 1.0;
         s4AnimState.trace.forEach(function(pt, i) {
           const tx = traceRight - (newestT - pt.t) * PPU;
-          const ty = rollTop + rollH / 2 + pt.y * YSCALE;
+          const ty = rollTop + rollH / 2 + pt.y;
           if (i === 0) ctx.moveTo(tx, ty);
           else         ctx.lineTo(tx, ty);
         });
@@ -822,61 +858,44 @@
       s4AnimState.phaseT += dt;
       s4AnimState.totalT += dt;
 
-      const phase = s4AnimState.phase;
+      const t = s4AnimState.totalT / 1000;
 
-      let supportOscY = 0;
-      let massOscY = 0;
+      // Loop: dopo 22 s riparte
+      if (t > 22) { s4AnimState.totalT = 0; s4AnimState.trace = []; traceScroll = 0; }
 
-      if (phase === 0) {
-        // Silenzio — massa decade a zero
-        s4AnimState.massV *= 0.94;
-        s4AnimState.massX += s4AnimState.massV;
-        massOscY = s4AnimState.massX;
+      // ── Envelope ampiezza — profilo L'Aquila (P → S → superficiali → decay) ──
+      let amp;
+      if      (t < 1.5)  amp = 0;
+      else if (t < 3.5)  amp = 2  * (t - 1.5) / 2;
+      else if (t < 6.5)  amp = 2  + 18 * (t - 3.5) / 3;
+      else if (t < 9.5)  amp = 20;
+      else               amp = 20 * Math.exp(-(t - 9.5) * 0.42);
 
-        traceScroll += dt * 0.02;
-        s4AnimState.trace.push({ t: traceScroll, y: s4AnimState.massX });
+      const massOscY    = amp * Math.sin(t * 6.5) * VSCALE;
+      // terreno oscilla SOLO durante le onde superficiali al picco
+      const supportOscY = (t > 6.5 && t < 9.5) ? amp * 0.30 * Math.sin(t * 6.5) : 0;
 
-      } else if (phase === 1) {
-        // Scossa — singola frequenza → picchi uguali
-        const t = s4AnimState.phaseT / 1000;
-        const env = Math.min(1, t * 3) * Math.max(0, 1 - (t - 2.6) * 4);
-        supportOscY = env * 12 * Math.sin(t * 7.5);
-        const force = (supportOscY - s4AnimState.massX) * 0.12;
-        s4AnimState.massV = s4AnimState.massV * 0.90 + force;
-        s4AnimState.massX += s4AnimState.massV;
-        massOscY = s4AnimState.massX;
+      traceScroll += dt * 0.014;
+      s4AnimState.trace.push({ t: traceScroll, y: massOscY });
+      if (s4AnimState.trace.length > 1100) s4AnimState.trace.shift();
 
-        traceScroll += dt * 0.025;
-        const diff = supportOscY - s4AnimState.massX;
-        s4AnimState.trace.push({ t: traceScroll, y: diff });
-
-      } else if (phase === 2) {
-        // Lettura — smorzamento
-        s4AnimState.massV *= 0.90;
-        s4AnimState.massX *= 0.94;
-        massOscY = s4AnimState.massX;
-
-        traceScroll += dt * 0.015;
-        s4AnimState.trace.push({ t: traceScroll, y: s4AnimState.massX });
-      }
-
-      // Limita traccia
-      if (s4AnimState.trace.length > 400) s4AnimState.trace.shift();
-
-      // Avanza fase
-      if (s4AnimState.phaseT > PHASE_DUR[phase]) {
-        s4AnimState.phaseT = 0;
-        s4AnimState.phase = (phase + 1) % 3;
-        if (s4AnimState.phase === 0) { s4AnimState.trace = []; traceScroll = 0; }
-        const labels = ['Terreno fermo — traccia piatta', 'Il suolo oscilla — la massa no — il pennino registra', 'Lettura del sismogramma'];
-        const lbl = document.getElementById('s4-anim-label');
-        if (lbl) lbl.textContent = labels[s4AnimState.phase];
+      // Label dinamica per ogni fase
+      const lbl = document.getElementById('s4-anim-label');
+      if (lbl) {
+        let msg;
+        if      (t < 1.5)  msg = 'Terreno fermo — il pendolo è in quiete';
+        else if (t < 3.5)  msg = 'Onde P in arrivo — prime piccole oscillazioni';
+        else if (t < 6.5)  msg = 'Onde S — ampiezza in crescita';
+        else if (t < 9.5)  msg = 'Onde superficiali — scossa principale · il terreno si muove';
+        else               msg = 'Smorzamento — il pendolo torna lentamente alla quiete';
+        if (lbl.textContent !== msg) lbl.textContent = msg;
       }
 
       drawSismograph(supportOscY, massOscY);
     }
 
-    requestAnimationFrame(animSismoLoop);
+    // Mostra stato fermo in attesa del click
+    drawSismograph(0, 0);
   }
 
   // ════════════════════════════════════════
@@ -886,61 +905,8 @@
   let s4HistIdx = 0;
 
   function initSlide3() {
-    if (s4SlideInited[2]) return;
+    // Le card sono ora in una grid 3×2 sempre visibile — nessun sub-carosello
     s4SlideInited[2] = true;
-
-    const track = document.getElementById('s4-hist-track');
-    if (!track) return;
-
-    const HIST_TOTAL = 6;
-    s4HistIdx = 0;
-
-    function goHist(idx) {
-      if (idx < 0) idx = 0;
-      if (idx >= HIST_TOTAL) idx = HIST_TOTAL - 1;
-      s4HistIdx = idx;
-      track.style.transition = 'transform 0.35s ease';
-      track.style.transform = 'translateX(-' + (idx * 280) + 'px)';
-      const prev = document.getElementById('s4-hist-prev');
-      const next = document.getElementById('s4-hist-next');
-      if (prev) prev.style.opacity = idx === 0 ? '0.3' : '1';
-      if (next) next.style.opacity = idx === HIST_TOTAL - 1 ? '0.3' : '1';
-    }
-
-    const prevBtn = document.getElementById('s4-hist-prev');
-    const nextBtn = document.getElementById('s4-hist-next');
-    if (prevBtn) prevBtn.addEventListener('click', function () { goHist(s4HistIdx - 1); });
-    if (nextBtn) nextBtn.addEventListener('click', function () { goHist(s4HistIdx + 1); });
-
-    // Drag/touch sul track
-    let histDragStartX = 0;
-    let histDragging = false;
-
-    track.addEventListener('mousedown', function (e) {
-      histDragStartX = e.clientX;
-      histDragging = true;
-    });
-    document.addEventListener('mousemove', function (e) {
-      if (!histDragging) return;
-    });
-    document.addEventListener('mouseup', function (e) {
-      if (!histDragging) return;
-      histDragging = false;
-      const dx = e.clientX - histDragStartX;
-      if (dx < -40) goHist(s4HistIdx + 1);
-      else if (dx > 40) goHist(s4HistIdx - 1);
-    });
-
-    track.addEventListener('touchstart', function (e) {
-      histDragStartX = e.touches[0].clientX;
-    }, { passive: true });
-    track.addEventListener('touchend', function (e) {
-      const dx = e.changedTouches[0].clientX - histDragStartX;
-      if (dx < -40) goHist(s4HistIdx + 1);
-      else if (dx > 40) goHist(s4HistIdx - 1);
-    }, { passive: true });
-
-    goHist(0);
   }
 
   // ════════════════════════════════════════
@@ -957,8 +923,9 @@
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
+    // Canvas fills its flex parent — read rendered size
     const W = canvas.width = canvas.offsetWidth || 800;
-    const H = canvas.height = canvas.offsetHeight || 280;
+    const H = canvas.height = Math.max(canvas.offsetHeight, 200) || 280;
 
     // Posizioni iniziali dei marker (in pixel X, non corrette)
     s4ReadState = {
@@ -1168,46 +1135,48 @@
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    const W = canvas.width = canvas.offsetWidth || 340;
-    const H = canvas.height = canvas.offsetHeight || 360;
+    // Size canvas to its CSS-rendered dimensions (flex container)
+    const rect = canvas.getBoundingClientRect();
+    const W = canvas.width = Math.max(rect.width || canvas.offsetWidth || 340, 200);
+    const H = canvas.height = Math.max(rect.height || canvas.offsetHeight || 360, 200);
 
-    // Valori L'Aquila per animazione automatica
-    const defaultGap = 0.8;   // secondi → 6.7 km
-    const defaultAmp = 23;    // mm
-    const defaultML = (Math.log10(defaultAmp) + 3 * Math.log10(6.7) - 2.92).toFixed(1);
+    // Valori L'Aquila 2009 — stazione AQU, gap P-S osservato 8s → ~72km, ML 6.3
+    // Per ML=6.3 a 72km: A = 10^(6.3 - 3·log10(72) + 2.92) ≈ 5000 mm
+    const defaultGap = 8.0;   // secondi → ~72 km
+    const defaultAmp = 5000;  // mm (Wood-Anderson, scala reale)
 
     s4NomoState = {
       freeMode: false,
       gap: defaultGap,
       amp: defaultAmp,
-      animProgress: 0,   // 0→1
+      animProgress: 0,
       animDone: false
     };
 
     // Scala assi
-    // Asse SX: distanza km, 0–500 (log approssimato)
-    // Asse CX: magnitudo 0–7
-    // Asse DX: ampiezza mm, log 0.1–100
+    // Asse SX: distanza km, log 1–500
+    // Asse CX: magnitudo 0–8
+    // Asse DX: ampiezza mm, log 0.1–10000
 
     const leftX = 50, centerX = W / 2, rightX = W - 50;
     const topY = 30, bottomY = H - 30;
     const axisH = bottomY - topY;
 
     function distToY(km) {
-      // Scala lineare 0–500
-      return bottomY - (km / 500) * axisH;
+      // Scala log 1–500
+      const logMin = Math.log10(1), logMax = Math.log10(500);
+      return bottomY - ((Math.log10(Math.max(1, km)) - logMin) / (logMax - logMin)) * axisH;
     }
     function magToY(ml) {
-      return bottomY - (ml / 7) * axisH;
+      return bottomY - (Math.max(0, Math.min(ml, 8)) / 8) * axisH;
     }
     function ampToY(mm) {
-      // Log 0.1 → 100
-      const logMin = Math.log10(0.1), logMax = Math.log10(100);
+      // Log 0.1 → 10000
+      const logMin = Math.log10(0.1), logMax = Math.log10(10000);
       return bottomY - ((Math.log10(Math.max(0.01, mm)) - logMin) / (logMax - logMin)) * axisH;
     }
 
     function gapToDist(gapS) {
-      // distanza = Δt × 9.0 km/s (formula slide 9, approssimata)
       return gapS * 9.0;
     }
 
@@ -1247,11 +1216,11 @@
         ctx.stroke();
       });
 
-      // Tick asse SX (distanza)
+      // Tick asse SX (distanza log 1–500)
       ctx.fillStyle = cream;
       ctx.font = '9px JetBrains Mono, monospace';
       ctx.textAlign = 'right';
-      [10, 50, 100, 200, 500].forEach(function (km) {
+      [1, 5, 10, 50, 100, 300, 500].forEach(function (km) {
         const y = distToY(km);
         ctx.beginPath();
         ctx.moveTo(leftX - 4, y);
@@ -1262,10 +1231,10 @@
         ctx.fillText(km + ' km', leftX - 6, y + 3);
       });
 
-      // Tick asse centro (magnitudo)
+      // Tick asse centro (magnitudo 0–8)
       ctx.textAlign = 'center';
       ctx.fillStyle = terra;
-      for (let m = 0; m <= 7; m++) {
+      for (let m = 0; m <= 8; m++) {
         const y = magToY(m);
         ctx.beginPath();
         ctx.moveTo(centerX - 5, y);
@@ -1276,10 +1245,10 @@
         ctx.fillText(m, centerX, y + 3);
       }
 
-      // Tick asse DX (ampiezza log)
+      // Tick asse DX (ampiezza log 0.1–10000)
       ctx.textAlign = 'left';
       ctx.fillStyle = cream;
-      [0.1, 0.5, 1, 5, 10, 50, 100].forEach(function (mm) {
+      [0.1, 1, 10, 100, 1000, 10000].forEach(function (mm) {
         const y = ampToY(mm);
         ctx.beginPath();
         ctx.moveTo(rightX - 4, y);
@@ -1287,15 +1256,16 @@
         ctx.strokeStyle = cream;
         ctx.lineWidth = 1;
         ctx.stroke();
-        ctx.fillText(mm + ' mm', rightX + 6, y + 3);
+        const label = mm >= 1000 ? (mm / 1000) + 'k' : mm;
+        ctx.fillText(label + ' mm', rightX + 6, y + 3);
       });
 
       // Calcola riga
       const dist = gapToDist(gap);
       const ml = computeML(gap, amp);
       const yLeft = distToY(Math.min(dist, 500));
-      const yRight = ampToY(Math.min(amp, 100));
-      const yCenter = magToY(Math.max(0, Math.min(ml, 7)));
+      const yRight = ampToY(Math.min(amp, 10000));
+      const yCenter = magToY(Math.max(0, Math.min(ml, 8)));
 
       // Disegna riga animata
       if (lineProgress > 0) {
@@ -1314,24 +1284,26 @@
           y2 = yCenter + (yRight - yCenter) * t;
         }
 
-        // Linea parziale SX→CX
+        // Linea UNICA retta da asse sx a asse dx (come si usa il nomogramma reale)
         ctx.strokeStyle = terra;
         ctx.lineWidth = 2;
         ctx.beginPath();
         if (p <= 0.5) {
+          // Prima metà animazione: sx → centro
+          const t = p * 2;
           ctx.moveTo(leftX, yLeft);
-          ctx.lineTo(x2, y2);
+          ctx.lineTo(leftX + (centerX - leftX) * t, yLeft + (yCenter - yLeft) * t);
         } else {
+          // Seconda metà: disegna la linea completa sx → dx come retta unica
+          const t = (p - 0.5) * 2;
+          const xEnd = centerX + (rightX - centerX) * t;
+          const yEnd = yCenter + (yRight - yCenter) * t;
           ctx.moveTo(leftX, yLeft);
-          ctx.lineTo(centerX, yCenter);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(centerX, yCenter);
-          ctx.lineTo(x2, y2);
+          ctx.lineTo(xEnd, yEnd);
         }
         ctx.stroke();
 
-        // Pallino su asse centro
+        // Pallino colorato sull'asse magnitudo (il punto di lettura)
         if (p >= 0.5) {
           ctx.beginPath();
           ctx.arc(centerX, yCenter, 5, 0, Math.PI * 2);
@@ -1339,17 +1311,18 @@
           ctx.fill();
         }
 
-        // Label ML
+        // Label ML — "L'Aquila 2009" solo quando ML ≈ 6.3
         if (p >= 1 && showLabel) {
           const mlDisp = ml.toFixed(1);
           ctx.fillStyle = terra;
           ctx.font = 'bold 13px JetBrains Mono, monospace';
           ctx.textAlign = 'center';
-          ctx.fillText('ML = ' + mlDisp + ' ✓', centerX, yCenter - 14);
-          if (!freeMode) {
-            ctx.font = '10px Cormorant Garamond, serif';
+          ctx.fillText('ML = ' + mlDisp, centerX, yCenter - 14);
+          // Solo se il valore calcolato è vicino a quello reale di L'Aquila
+          if (ml >= 5.8 && ml <= 6.8) {
+            ctx.font = '9px JetBrains Mono, monospace';
             ctx.fillStyle = ochre;
-            ctx.fillText("L'Aquila 2009 · Stazione AQU", centerX, bottomY + 18);
+            ctx.fillText("L'Aquila 2009 ≈ 6.3", centerX, yCenter - 26);
           }
         }
       }
@@ -1375,36 +1348,62 @@
 
     function updateMLDisplay() {
       const ml = computeML(s4NomoState.gap, s4NomoState.amp);
-      const disp = document.getElementById('s4-ml-display');
-      if (disp) disp.textContent = 'ML = ' + ml.toFixed(1);
+      const num = document.getElementById('s4-ml-number');
+      if (num) num.textContent = ml.toFixed(1);
+      const dist = gapToDist(s4NomoState.gap);
+      const distEl = document.getElementById('s4-dist-display');
+      if (distEl) distEl.textContent = dist.toFixed(1);
     }
 
-    function redrawFree() {
+    function redrawNomo() {
       drawNomo(1, s4NomoState.gap, s4NomoState.amp, true, true);
       updateMLDisplay();
     }
 
     requestAnimationFrame(nomoAnimLoop);
 
-    // Toggle modalità libera
-    const freeToggle = document.getElementById('s4-nomo-free');
-    if (freeToggle) freeToggle.addEventListener('change', function () {
-      s4NomoState.freeMode = freeToggle.checked;
-      const inputs = document.getElementById('s4-nomo-inputs');
-      if (inputs) inputs.style.display = s4NomoState.freeMode ? 'flex' : 'none';
-      redrawFree();
+    // Inputs + sliders sincronizzati — aggiornano nomogramma e ML in tempo reale
+    const gapInput = document.getElementById('s4-nomo-gap');
+    const gapSlider = document.getElementById('s4-gap-slider');
+    const ampInput = document.getElementById('s4-nomo-amp');
+    const ampSlider = document.getElementById('s4-amp-slider');
+
+    function onGapChange(val) {
+      s4NomoState.gap = parseFloat(val) || 8.0;
+      if (gapInput) gapInput.value = s4NomoState.gap.toFixed(1);
+      if (gapSlider) gapSlider.value = Math.min(30, s4NomoState.gap);
+      redrawNomo();
+    }
+    function onAmpChange(val) {
+      s4NomoState.amp = parseFloat(val) || 5000;
+      if (ampInput) ampInput.value = s4NomoState.amp;
+      // Slider range 1-200: map logarithmically (log10)
+      if (ampSlider) {
+        const logVal = Math.log10(Math.max(1, s4NomoState.amp));
+        const logMin = 0, logMax = Math.log10(10000);
+        ampSlider.value = Math.round(((logVal - logMin) / (logMax - logMin)) * 200);
+      }
+      redrawNomo();
+    }
+
+    if (gapInput) gapInput.addEventListener('input', function () { onGapChange(gapInput.value); });
+    if (gapSlider) gapSlider.addEventListener('input', function () { onGapChange(gapSlider.value); });
+    if (ampInput) ampInput.addEventListener('input', function () { onAmpChange(ampInput.value); });
+    if (ampSlider) ampSlider.addEventListener('input', function () {
+      // Converte slider 0-200 → amp 1-10000 in scala logaritmica
+      const logMin = 0, logMax = Math.log10(10000);
+      const ampVal = Math.round(Math.pow(10, logMin + (parseInt(ampSlider.value) / 200) * (logMax - logMin)));
+      onAmpChange(ampVal);
     });
 
-    const gapInput = document.getElementById('s4-nomo-gap');
-    const ampInput = document.getElementById('s4-nomo-amp');
-    if (gapInput) gapInput.addEventListener('input', function () {
-      s4NomoState.gap = parseFloat(gapInput.value) || 0.8;
-      redrawFree();
-    });
-    if (ampInput) ampInput.addEventListener('input', function () {
-      s4NomoState.amp = parseFloat(ampInput.value) || 23;
-      redrawFree();
-    });
+    // Resize canvas when slide becomes active
+    const nomoCanvas = document.getElementById('s4-nomo-canvas');
+    if (nomoCanvas && nomoCanvas.parentElement) {
+      const observer = new ResizeObserver(function () {
+        if (s4NomoState.animDone) redrawNomo();
+      });
+      observer.observe(nomoCanvas.parentElement);
+    }
   }
 
   // ════════════════════════════════════════
@@ -1423,16 +1422,23 @@
       place: 'Onna, L\'Aquila'
     };
 
+    function showStep(id) {
+      const el = document.getElementById(id);
+      if (el) { el.classList.add('s4-visible'); el.removeAttribute('aria-hidden'); }
+    }
+
     function runCalcWithData(ev) {
       // Step 1 — evento
-      const step1 = document.getElementById('s4-step1');
-      if (step1) {
+      const evDesc = document.getElementById('s4-ev-desc');
+      if (evDesc) {
         const d = new Date(ev.time);
         const dateStr = d.toLocaleDateString('it-IT') + ' ' + d.toLocaleTimeString('it-IT');
-        const evDesc = document.getElementById('s4-ev-desc');
-        if (evDesc) evDesc.innerHTML = '<strong>' + dateStr + ' &middot; ' + ev.place + '</strong><br>Magnitudo INGV: M ' + ev.mag.toFixed(1) + '<br>Coordinate: ' + ev.lat.toFixed(4) + '&deg;N ' + ev.lon.toFixed(4) + '&deg;E<br>Profondità: ' + ev.depth.toFixed(1) + ' km';
-        step1.style.opacity = '1';
+        evDesc.innerHTML = '<strong>' + dateStr + ' &middot; ' + ev.place + '</strong><br>' +
+          'Magnitudo INGV: M ' + ev.mag.toFixed(1) + '<br>' +
+          'Coordinate: ' + ev.lat.toFixed(4) + '&deg;N ' + ev.lon.toFixed(4) + '&deg;E<br>' +
+          'Profondità: ' + ev.depth.toFixed(1) + ' km';
       }
+      showStep('s4-step1');
 
       setTimeout(function () {
         // Step 2 — stazione più vicina
@@ -1442,53 +1448,53 @@
           const d = haversineKm(ev.lat, ev.lon, st.lat, st.lon);
           if (d < nearDist) { nearDist = d; nearest = st; }
         });
-
-        const step2 = document.getElementById('s4-step2');
-        if (step2) {
-          const staDesc = document.getElementById('s4-sta-desc');
-          if (staDesc) staDesc.innerHTML = 'Stazione più vicina: <strong>' + nearest.name + '</strong> &middot; ' + nearDist.toFixed(1) + ' km<br><small>(calcolata con formula Haversine)</small>';
-          step2.style.opacity = '1';
-        }
+        const staDesc = document.getElementById('s4-sta-desc');
+        if (staDesc) staDesc.innerHTML = 'Stazione più vicina: <strong>' + nearest.name + '</strong> &middot; ' + nearDist.toFixed(1) + ' km<br><small>calcolata con formula Haversine</small>';
+        showStep('s4-step2');
 
         setTimeout(function () {
           // Step 3 — calcolo
           const dtPS = Math.max(0.5, nearDist / 9.0);
           const ampEst = Math.pow(10, (ev.mag - 2.5) / 2);
-          const step3 = document.getElementById('s4-step3');
-          if (step3) {
-            const calcDesc = document.getElementById('s4-calc-desc');
-            if (calcDesc) calcDesc.innerHTML = 'Gap P-S stimato: <strong>' + dtPS.toFixed(1) + ' s</strong><br>Ampiezza stimata: <strong>' + ampEst.toFixed(2) + ' mm</strong><br><small>Stima didattica dalla magnitudo + distanza</small>';
-            step3.style.opacity = '1';
-          }
+          const calcDesc = document.getElementById('s4-calc-desc');
+          if (calcDesc) calcDesc.innerHTML = 'Gap P-S stimato: <strong>' + dtPS.toFixed(1) + ' s</strong><br>' +
+            'Ampiezza stimata: <strong>' + ampEst.toFixed(0) + ' mm</strong>';
+          showStep('s4-step3');
 
           setTimeout(function () {
-            // Step 4 — verifica
+            // Step 4 — verifica + aggiorna display grande
             const logA = Math.log10(Math.max(0.01, ampEst));
             const logD = 3 * Math.log10(Math.max(0.1, nearDist));
             const mlCalc = logA + logD - 2.92;
             const diff = Math.abs(mlCalc - ev.mag).toFixed(1);
-
-            const step4 = document.getElementById('s4-step4');
-            if (step4) {
-              const verDesc = document.getElementById('s4-verify-desc');
-              if (verDesc) verDesc.innerHTML =
-                'ML = log₁₀(' + ampEst.toFixed(2) + ') + 3&middot;log₁₀(' + nearDist.toFixed(1) + ') &minus; 2.92<br>' +
-                '&nbsp;&nbsp;&nbsp; = ' + logA.toFixed(2) + ' + ' + logD.toFixed(2) + ' &minus; 2.92<br>' +
-                '&nbsp;&nbsp;&nbsp; &asymp; <strong>' + mlCalc.toFixed(1) + '</strong><br>' +
-                'Magnitudo INGV: M ' + ev.mag.toFixed(1) + '<br>' +
-                'Differenza: &plusmn;' + diff + ' unit&agrave;';
-              step4.style.opacity = '1';
+            const verDesc = document.getElementById('s4-verify-desc');
+            if (verDesc) verDesc.innerHTML =
+              'ML = log₁₀(' + ampEst.toFixed(0) + ') + 3·log₁₀(' + nearDist.toFixed(1) + ') − 2.92<br>' +
+              '&nbsp;&nbsp;&nbsp; ≈ <strong>' + mlCalc.toFixed(1) + '</strong><br>' +
+              'INGV: M ' + ev.mag.toFixed(1) + ' · Δ = ±' + diff;
+            showStep('s4-step4');
+            // Mostra il risultato grande a destra
+            const mlBig = document.getElementById('s4-ml-big');
+            if (mlBig) mlBig.textContent = 'M ' + mlCalc.toFixed(1);
+            const cmpNote = document.getElementById('s4-ml-compare-note');
+            if (cmpNote) {
+              const diff2 = Math.abs(mlCalc - ev.mag);
+              cmpNote.textContent = diff2 <= 0.3 ? 'Ottima stima — in linea con INGV' :
+                diff2 <= 0.7 ? 'Stima ragionevole (errore ' + diff + ' unità)' :
+                'Stima approssimativa — valori esatti dal sismogramma grezzo';
             }
-          }, 800);
-        }, 800);
-      }, 800);
+          }, 700);
+        }, 700);
+      }, 700);
     }
 
-    // Reset steps
-    ['s4-step1', 's4-step2', 's4-step3', 's4-step4'].forEach(function (id) {
+    // Reset: step1 rimane visibile (carica subito), 2-4 nascosti
+    ['s4-step2', 's4-step3', 's4-step4'].forEach(function (id) {
       const el = document.getElementById(id);
-      if (el) el.style.opacity = '0';
+      if (el) { el.classList.remove('s4-visible'); el.setAttribute('aria-hidden', 'true'); }
     });
+    const mlBig = document.getElementById('s4-ml-big');
+    if (mlBig) mlBig.textContent = '—';
 
     // Fetch INGV
     const controller = new AbortController();
@@ -1526,36 +1532,61 @@
     if (s4SlideInited[6]) return;
     s4SlideInited[6] = true;
 
-    const slider = document.getElementById('s4-mcs-slider');
-    if (!slider) return;
+    // Colori per i chip (intensità crescente)
+    const chipColors = [
+      '#4CAF50', '#6BBF50', '#9fc92d', '#D4893A', '#d07030',
+      '#C4612A', '#b84020', '#a03010', '#8B1A1A', '#701010',
+      '#550a0a', '#4a0000'
+    ];
 
     function updateMCS(grade) {
       const roman = document.getElementById('s4-mcs-roman');
       const illus = document.getElementById('s4-mcs-illus');
       const textEl = document.getElementById('s4-mcs-text');
       const compareEl = document.getElementById('s4-mcs-compare-label');
-
       const color = mcsColor(grade);
+
+      // Aggiorna barra verticale: blocco attivo colorato
+      document.querySelectorAll('.s4-mcs-bar-item').forEach(function (btn) {
+        const g = parseInt(btn.dataset.grade);
+        const isActive = g === grade;
+        btn.classList.toggle('s4-active', isActive);
+        btn.setAttribute('aria-pressed', String(isActive));
+        btn.style.background = isActive ? chipColors[g - 1] : 'rgba(245,237,224,0.04)';
+        btn.style.borderColor = isActive ? chipColors[g - 1] : 'transparent';
+        const roman = btn.querySelector('.s4-bar-roman');
+        if (roman) roman.style.color = isActive ? '#080808' : 'rgba(245,237,224,0.35)';
+      });
 
       if (roman) { roman.textContent = toRoman(grade); roman.style.color = color; }
       if (textEl) textEl.textContent = S4_MCS_DESC[grade] || '';
       if (illus) illus.innerHTML = generateMCSIllus(grade, color);
 
-      // Confronto L'Aquila
       let compareText;
       if (grade < 6) compareText = 'Non ancora il livello raggiunto a Roma quel giorno.';
       else if (grade <= 7) compareText = 'Come la periferia de L\'Aquila (Pile, Pettino).';
       else if (grade <= 9) compareText = 'Come i quartieri semicentrali.';
-      else if (grade === 10) compareText = '← Centro storico e Onna.';
-      else compareText = 'Più intenso di L\'Aquila.';
+      else if (grade === 10) compareText = 'Centro storico e Onna — L\'Aquila 2009.';
+      else compareText = 'Più intenso di L\'Aquila 2009.';
       if (compareEl) compareEl.textContent = compareText;
     }
 
-    slider.addEventListener('input', function () {
-      updateMCS(parseInt(slider.value));
+    // Barra verticale: click su ciascun blocco
+    document.querySelectorAll('.s4-mcs-bar-item').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        updateMCS(parseInt(btn.dataset.grade));
+        const slider = document.getElementById('s4-mcs-slider');
+        if (slider) slider.value = btn.dataset.grade;
+      });
     });
 
-    updateMCS(parseInt(slider.value) || 6);
+    // Slider fallback (accessibilità keyboard)
+    const slider = document.getElementById('s4-mcs-slider');
+    if (slider) {
+      slider.addEventListener('input', function () { updateMCS(parseInt(slider.value)); });
+    }
+
+    updateMCS(6);
   }
 
   function generateMCSIllus(grade, color) {
