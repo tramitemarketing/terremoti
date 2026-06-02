@@ -2119,10 +2119,10 @@
 }
 
 #s4-s13-inner .s4-title {
-  font-size: clamp(2.2rem, 4vw, 4.5rem);
+  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
   font-weight: 300;
   max-width: 640px;
-  line-height: 1.1;
+  line-height: 1.25;
 }
 
 .s4-s13-sub {
