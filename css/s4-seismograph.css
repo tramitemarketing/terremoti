@@ -603,11 +603,11 @@
 .s4-hcard {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.25rem;
   background: var(--charcoal);
   border: 1px solid rgba(196, 97, 42, 0.22);
   border-radius: 3px;
-  padding: 0.85rem 1rem;
+  padding: 0.55rem 0.75rem;
   box-sizing: border-box;
   overflow: hidden;
   transition: border-color 0.25s, box-shadow 0.25s;
@@ -632,17 +632,17 @@
 /* SVG illustrazione */
 .s4-hcard-svg {
   width: 100%;
-  height: 52px;
-  overflow: hidden;
+  height: 90px;
+  overflow: visible;
   flex-shrink: 0;
 }
 
 /* Autore */
 .s4-hcard-author {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.52rem;
+  font-size: 0.62rem;
   color: var(--cream);
-  opacity: 0.5;
+  opacity: 0.6;
   letter-spacing: 0.07em;
   text-transform: uppercase;
   flex-shrink: 0;
@@ -651,10 +651,10 @@
 /* Descrizione: overflow nascosto, si adatta all'altezza disponibile */
 .s4-hcard-text {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 0.92rem;
+  font-size: 1.02rem;
   color: var(--cream);
-  opacity: 0.82;
-  line-height: 1.5;
+  opacity: 0.85;
+  line-height: 1.55;
   overflow: hidden;
   flex: 1;
   display: -webkit-box;
