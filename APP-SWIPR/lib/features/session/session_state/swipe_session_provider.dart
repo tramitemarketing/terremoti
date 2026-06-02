@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/foundation.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -161,6 +163,12 @@ class SwipeSession extends _$SwipeSession {
   /// Wall-clock time when the session started. Used for [SessionStats.sessionDuration].
   DateTime? _startedAt;
 
+  /// Index of the next photo_manager page to request in [_loadMoreIfNeeded].
+  ///
+  /// Tracked separately from [_deck.length] so that sessions starting mid-library
+  /// (after skipping fully-decided pages) load the correct continuation page.
+  int _nextPageToLoad = 0;
+
   // ── Riverpod build ─────────────────────────────────────────────────────────
 
   @override
@@ -205,18 +213,44 @@ class SwipeSession extends _$SwipeSession {
       final decidedIds = HiveService.getAllDecidedIds();
       debugPrint('[Session] decided ids loaded: ${decidedIds.length}');
 
-      // Load first deck page.
-      debugPrint('[Session] loading first page...');
-      final firstPage = await _pager!.getPage(0);
-      debugPrint('[Session] first page loaded: ${firstPage.length} assets');
-      _deck.addAll(firstPage);
+      // Scan forward from page 0 until a non-empty page is found.
+      // Required when early pages are fully decided (e.g. 414 decided assets
+      // all fall in page 0 → page 0 returns [] after filtering).
+      debugPrint('[Session] scanning for first non-empty page...');
+      List<AssetEntity> firstAssets = [];
+      int startPage = 0;
+      final totalCount = await _pager!.getTotalCount();
+      final maxPages = (totalCount / 50).ceil() + 1;
 
-      if (_deck.isEmpty) {
-        // Empty library edge case — skip straight to result.
-        debugPrint('[Session] deck empty, transitioning to result');
+      while (firstAssets.isEmpty && startPage < maxPages) {
+        firstAssets = await _pager!.getPage(startPage);
+        if (firstAssets.isEmpty) startPage++;
+      }
+      debugPrint('[Session] first non-empty page: $startPage (${firstAssets.length} assets)');
+
+      if (firstAssets.isEmpty) {
+        // All photos already decided — skip straight to result.
+        debugPrint('[Session] all photos decided, transitioning to result');
         await _transitionToResult();
         return;
       }
+
+      _deck.addAll(firstAssets);
+      _nextPageToLoad = startPage + 1;
+
+      // Warm the cache for the first card BEFORE transitioning to ready.
+      // Poll until the first asset's bytes land in cache (or 1.5 s timeout),
+      // so card 1 is guaranteed to render without a gray/black flash.
+      // In practice the decode finishes in 200-400 ms on device.
+      _preloader!.updateIndex(0, _deck);
+      const _maxWait = Duration(milliseconds: 1500);
+      const _checkInterval = Duration(milliseconds: 50);
+      final _stopwatch = Stopwatch()..start();
+      while (_stopwatch.elapsed < _maxWait) {
+        if (_preloader!.getBytesSync(_deck.first.id) != null) break;
+        await Future.delayed(_checkInterval);
+      }
+      _stopwatch.stop();
 
       debugPrint('[Session] transitioning to ready state');
       state = state.copyWith(
@@ -224,7 +258,6 @@ class SwipeSession extends _$SwipeSession {
         filter: filter,
       );
 
-      _preloader!.updateIndex(0, _deck);
       debugPrint('[Session] startSession complete');
     } catch (e, st) {
       debugPrint('[Session] ERROR in startSession: $e');
@@ -423,6 +456,44 @@ class SwipeSession extends _$SwipeSession {
 
   // ── Public API: review flow ────────────────────────────────────────────────
 
+  /// Moves an asset from the decide-later queue to kept.
+  ///
+  /// Overwrites the existing 'later' Hive record with 'keep'.
+  Future<void> keepFromLater(String assetId) async {
+    await HiveService.saveDecision(
+      AssetDecisionRecord()
+        ..assetId = assetId
+        ..decision = 'keep'
+        ..decidedAt = DateTime.now()
+        ..sessionId = _sessionRecordId ?? 0
+        ..smartFlags = []
+        ..smartFlagReviewed = false,
+    );
+    final newLater = List<String>.from(state.decideLaterQueue)..remove(assetId);
+    ref.read(decideLaterProvider.notifier).remove(assetId);
+    state = state.copyWith(decideLaterQueue: newLater);
+  }
+
+  /// Moves an asset from the decide-later queue to the trash queue.
+  ///
+  /// Overwrites the existing 'later' Hive record with 'trash'.
+  Future<void> trashFromLater(String assetId) async {
+    await HiveService.saveDecision(
+      AssetDecisionRecord()
+        ..assetId = assetId
+        ..decision = 'trash'
+        ..decidedAt = DateTime.now()
+        ..sessionId = _sessionRecordId ?? 0
+        ..smartFlags = []
+        ..smartFlagReviewed = false,
+    );
+    final newLater = List<String>.from(state.decideLaterQueue)..remove(assetId);
+    final newTrash = List<String>.from(state.trashQueue)..add(assetId);
+    ref.read(decideLaterProvider.notifier).remove(assetId);
+    ref.read(trashQueueProvider.notifier).add(assetId);
+    state = state.copyWith(decideLaterQueue: newLater, trashQueue: newTrash);
+  }
+
   /// Transitions reviewDecideLater → reviewTrash.
   /// If the trash queue is empty, proceeds directly to result.
   Future<void> finishDecideLaterReview() async {
@@ -490,7 +561,8 @@ class SwipeSession extends _$SwipeSession {
     if (_pager == null) return;
     final remaining = _deck.length - currentIndex;
     if (remaining <= AppTokens.preloadAhead) {
-      final nextPageIndex = (_deck.length / 50).floor();
+      final nextPageIndex = _nextPageToLoad;
+      _nextPageToLoad++;
       final newAssets = await _pager!.getPage(nextPageIndex);
       if (newAssets.isNotEmpty) {
         _deck.addAll(newAssets);
@@ -597,6 +669,22 @@ class SwipeSession extends _$SwipeSession {
 
   // ── Public: deck access (used by CardStackWidget) ────────────────────────
 
+  /// Returns cached thumbnail bytes for [assetId] synchronously.
+  ///
+  /// Delegates to [PreloadEngine.getBytesSync] — zero platform-channel cost.
+  /// Returns null when the preloader has not yet decoded the asset.
+  /// Used by [CardStackWidget] to pass pre-decoded bytes to [SwipeCard].
+  Uint8List? getBytesSync(String assetId) =>
+      _preloader?.getBytesSync(assetId);
+
+  /// Awaits the in-flight decode for [assetId] and returns the bytes.
+  ///
+  /// Zero cost when bytes are already cached. Awaits the exact in-flight
+  /// [Future] otherwise — no polling. Used by [CardStackWidget._commitAndReset]
+  /// to hold back the card reveal until the new top asset is decoded.
+  Future<Uint8List?> waitForBytes(String assetId) =>
+      _preloader?.waitForBytes(assetId) ?? Future.value(null);
+
   /// Returns the [AssetEntity] at absolute deck [index], or null if out of
   /// range. Used by [CardStackWidget] to resolve which assets to display
   /// without exposing the full deck list.
@@ -613,6 +701,7 @@ class SwipeSession extends _$SwipeSession {
     _assetSizesBytes.clear();
     _sessionRecordId = null;
     _startedAt = null;
+    _nextPageToLoad = 0;
     _repo = null;
     _pager = null;
     _cache = null;

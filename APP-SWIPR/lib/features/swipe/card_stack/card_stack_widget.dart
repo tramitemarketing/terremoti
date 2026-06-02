@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,19 +10,21 @@ import '../../session/session_state/swipe_session_provider.dart';
 import '../gesture_engine/swipe_gesture_detector.dart';
 import 'swipe_card.dart';
 
-/// Three-card swipe stack.
+/// Three-card swipe stack — double-buffer layout.
 ///
 /// Performance contract (§11 non-negotiable):
-/// - Background cards (card 2 and card 3) are plain [StatelessWidget]s that
-///   do NOT listen to the drag [ValueNotifier]. They rebuild only when
-///   [currentIndex] changes (i.e. once per swipe), never per frame.
-/// - Only the top card wraps a [ValueListenableBuilder] on [_drag], so only
-///   the top card rebuilds during a pan gesture.
+/// - Background cards are plain [StatelessWidget]s that do NOT listen to the
+///   drag [ValueNotifier]. They rebuild only when [currentIndex] changes
+///   (i.e. once per swipe), never per frame.
+/// - Only the active card wraps a [ListenableBuilder] on [_drag] and
+///   [_topAssetId], so only it rebuilds during a pan gesture.
 ///
 /// Card visual hierarchy:
-/// - Card 3 (deepest):  scale 0.92, opacity 0.4
-/// - Card 2 (middle):   scale 0.96, opacity 0.7
-/// - Card 1 (top):      scale 1.0,  opacity 1.0, gesture-active
+/// - Card 3 (deepest):  scale 0.92, opacity 0.4  — depth cue only
+/// - Standby (middle):  scale 1.0,  opacity 1.0  — next card, always visible
+/// - Active (top):      scale 1.0,  opacity 1.0  — gesture-driven; transparent
+///                                                   when bytes not yet ready,
+///                                                   revealing the standby card
 class CardStackWidget extends ConsumerStatefulWidget {
   const CardStackWidget({super.key});
 
@@ -34,15 +37,33 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
   // Drives both the fly-off animation and the snap-back animation.
   late final AnimationController _anim;
 
-  // Only the top-card [ValueListenableBuilder] subscribes to this.
+  // Only the top-card ListenableBuilder subscribes to this.
   // Background cards never read it.
   final _drag = ValueNotifier<Offset>(Offset.zero);
+
+  // ID of the asset the top slot is authorised to render.
+  // null → suppressed (transitioning); builder passes null bytes → transparent.
+  // id   → show bytes only when top.id matches exactly.
+  // Initialised to the first top asset via _topAssetInitialized flag on first build.
+  final _topAssetId = ValueNotifier<String?>(null);
+
+  // Guards the one-time initialisation so suppress-to-null during a later
+  // commit cannot retrigger the init path.
+  bool _topAssetInitialized = false;
 
   // Accumulated pan delta from the current gesture start.
   Offset _accumulated = Offset.zero;
 
   // Decision captured at threshold-cross, consumed on animation completion.
   String _pendingDecision = '';
+
+  // Guards early-commit: true once _commitAndReset has been called for the
+  // current fly-off so the 85%-threshold listener doesn't fire twice.
+  bool _committed = false;
+
+  // At most one gesture queued while a fly-off is running.
+  // Processed immediately after _commitAndReset completes.
+  String? _queuedDecision; // 'keep' | 'trash' | 'later'
 
   @override
   void initState() {
@@ -57,6 +78,7 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
   void dispose() {
     _anim.dispose();
     _drag.dispose();
+    _topAssetId.dispose();
     super.dispose();
   }
 
@@ -68,8 +90,6 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
   }
 
   void _onDragEnd(Offset velocityPxPerSec) {
-    if (_anim.isAnimating) return;
-
     final size = MediaQuery.sizeOf(context);
     final dx = _accumulated.dx;
     final dy = _accumulated.dy;
@@ -80,18 +100,37 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
     final distThresholdH = size.width * AppTokens.swipeCommitThreshold;
     final distThresholdV = size.height * AppTokens.swipeUpThreshold;
 
+    String? decision;
     if (dx > distThresholdH || vx > velThreshold) {
-      _triggerSwipe('keep', size);
+      decision = 'keep';
     } else if (dx < -distThresholdH || vx < -velThreshold) {
-      _triggerSwipe('trash', size);
+      decision = 'trash';
     } else if (dy < -distThresholdV || vy < -velThreshold) {
-      _triggerSwipe('later', size);
+      decision = 'later';
+    }
+
+    if (_anim.isAnimating) {
+      // A fly-off is already running — queue the decision (if any) and
+      // consume the accumulated delta so it doesn't bleed into the next card.
+      if (decision != null) _queuedDecision = decision;
+      _accumulated = Offset.zero;
+      return;
+    }
+
+    if (decision != null) {
+      _triggerSwipe(decision, size);
     } else {
       _snapBack();
     }
   }
 
-  void _onDragCancel() => _snapBack();
+  void _onDragCancel() {
+    if (_anim.isAnimating) {
+      _accumulated = Offset.zero;
+      return;
+    }
+    _snapBack();
+  }
 
   // ── Snap-back animation ───────────────────────────────────────────────────
 
@@ -127,6 +166,7 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
   void _triggerSwipe(String decision, Size screenSize) {
     ref.read(swipeSessionProvider.notifier).lockForAnimation();
     _pendingDecision = decision;
+    _committed = false;
 
     final targetX = switch (decision) {
       'keep'  => screenSize.width * 1.6,
@@ -142,24 +182,30 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
     ).animate(CurvedAnimation(parent: _anim, curve: Curves.easeIn));
 
     late VoidCallback frameListener;
-    late AnimationStatusListener statusListener;
 
-    frameListener = () => _drag.value = flyAnim.value;
-    statusListener = (status) {
-      if (status == AnimationStatus.completed) {
+    frameListener = () {
+      _drag.value = flyAnim.value;
+      // At 85% the card is already off-screen visually. Commit early so the
+      // standby card is revealed before the animation officially completes,
+      // eliminating the residual ~50 ms flash at the end of the fly-off.
+      if (_anim.value >= 0.92 && !_committed) {
+        _committed = true;
         _anim.removeListener(frameListener);
-        _anim.removeStatusListener(statusListener);
         _commitAndReset();
       }
     };
 
     _anim.addListener(frameListener);
-    _anim.addStatusListener(statusListener);
     _anim.forward();
   }
 
   Future<void> _commitAndReset() async {
+    _committed = false;
     final decision = _pendingDecision;
+
+    // Suppress the top card during the transition window so the standby card
+    // (assetAt(index+1)) shows through — it is already visible behind the top.
+    _topAssetId.value = null;
 
     // Reset drag before commitSwipe so the incoming card enters at Offset.zero.
     _anim.reset();
@@ -185,6 +231,23 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
       decision: decision,
       sizeInBytes: sizeBytes,
     );
+
+    // Wait for the new top card's bytes before authorising the top slot.
+    // Zero cost when already cached (standby pre-rendered it). Awaits the
+    // exact in-flight future otherwise so we never show the app background.
+    final newIndex = ref.read(swipeSessionProvider).currentIndex;
+    final newAsset = notifier.assetAt(newIndex);
+    if (newAsset != null) {
+      await notifier.waitForBytes(newAsset.id);
+    }
+    _topAssetId.value = newAsset?.id;
+
+    // Fire any gesture that arrived while the previous fly-off was running.
+    if (_queuedDecision != null) {
+      final queued = _queuedDecision!;
+      _queuedDecision = null;
+      _triggerSwipe(queued, MediaQuery.sizeOf(context));
+    }
   }
 
   // ── Build ──────────────────────────────────────────────────────────────────
@@ -203,6 +266,16 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
 
     if (top == null) return const SizedBox.shrink();
 
+    // One-time init: set _topAssetId to the first top asset after the first
+    // frame so the initial card shows its image.  The _topAssetInitialized flag
+    // prevents this from re-firing during later suppress-to-null windows.
+    if (!_topAssetInitialized) {
+      _topAssetInitialized = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _topAssetId.value = top.id;
+      });
+    }
+
     final screenSize = MediaQuery.sizeOf(context);
 
     return Padding(
@@ -210,31 +283,64 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // ── Card 3 — static, deepest ───────────────────────────────────────
+          // ── Card 3 — depth cue (small, faint) ────────────────────────────
           if (third != null)
-            _BackgroundCard(asset: third, scale: 0.92, opacity: 0.4,
-                screenSize: screenSize),
+            _BackgroundCard(
+              asset: third,
+              cachedBytes: notifier.getBytesSync(third.id),
+              scale: 0.92,
+              opacity: 0.4,
+              screenSize: screenSize,
+            ),
 
-          // ── Card 2 — static, middle ────────────────────────────────────────
+          // ── Standby card — full size, always visible behind the active card.
+          // When the active card flies off, this is immediately revealed with no
+          // gap, eliminating the app-background flash.
           if (second != null)
-            _BackgroundCard(asset: second, scale: 0.96, opacity: 0.7,
-                screenSize: screenSize),
+            _BackgroundCard(
+              asset: second,
+              cachedBytes: notifier.getBytesSync(second.id),
+              scale: 1.0,
+              opacity: 1.0,
+              screenSize: screenSize,
+            ),
 
-          // ── Card 1 — top, only this rebuilds per drag frame ────────────────
-          SwipeGestureDetector(
-            onDragUpdate: _onDragUpdate,
-            onDragEnd: _onDragEnd,
-            onDragCancel: _onDragCancel,
-            child: ValueListenableBuilder<Offset>(
-              valueListenable: _drag,
-              builder: (context, offset, child) {
-                return SwipeCard(
+          // ── Active card — transparent when bytes not yet authorised so the
+          // standby card shows through during the _topAssetId=null window.
+          ListenableBuilder(
+            listenable: Listenable.merge([_drag, _topAssetId, _anim]),
+            builder: (context, _) {
+              final bytes = top.id == _topAssetId.value
+                  ? notifier.getBytesSync(top.id)
+                  : null;
+              // Fade out the active card over the last 20% of the fly-off
+              // so the crossfade to the standby card is gradual rather than
+              // a hard cut — eliminates the flash on bright images.
+              final opacity = _anim.value < 0.80
+                  ? 1.0
+                  : (1.0 - (_anim.value - 0.80) / 0.20).clamp(0.0, 1.0);
+              return Opacity(
+                opacity: opacity,
+                child: SwipeCard(
                   asset: top,
-                  dragOffset: offset,
+                  cachedBytes: bytes,
+                  dragOffset: _drag.value,
                   screenSize: screenSize,
                   isTop: true,
-                );
-              },
+                ),
+              );
+            },
+          ),
+
+          // ── Gesture layer — always on top, never removed from the tree.
+          // Keeping it separate from the active card guarantees touch events
+          // are received even during the _topAssetId=null transparency window.
+          Positioned.fill(
+            child: SwipeGestureDetector(
+              onDragUpdate: _onDragUpdate,
+              onDragEnd: _onDragEnd,
+              onDragCancel: _onDragCancel,
+              child: const SizedBox.expand(),
             ),
           ),
         ],
@@ -250,12 +356,14 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
 class _BackgroundCard extends StatelessWidget {
   const _BackgroundCard({
     required this.asset,
+    required this.cachedBytes,
     required this.scale,
     required this.opacity,
     required this.screenSize,
   });
 
   final AssetEntity asset;
+  final Uint8List? cachedBytes;
   final double scale;
   final double opacity;
   final Size screenSize;
@@ -270,6 +378,7 @@ class _BackgroundCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppTokens.radiusCard),
           child: SwipeCard(
             asset: asset,
+            cachedBytes: cachedBytes,
             dragOffset: Offset.zero,
             screenSize: screenSize,
             isTop: false,

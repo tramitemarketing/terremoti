@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -54,12 +56,23 @@ class _SwipePageState extends ConsumerState<SwipePage> {
         SwipeSessionPhase.animating ||
         SwipeSessionPhase.paused =>
           const _SwipingView(),
+        SwipeSessionPhase.reviewDecideLater => _DecideLaterReviewStub(
+          assets: ref.watch(
+            swipeSessionProvider.select((s) => s.decideLaterQueue),
+          ),
+          onKeep: (id) =>
+              ref.read(swipeSessionProvider.notifier).keepFromLater(id),
+          onTrash: (id) =>
+              ref.read(swipeSessionProvider.notifier).trashFromLater(id),
+          onDone: () =>
+              ref.read(swipeSessionProvider.notifier).finishDecideLaterReview(),
+        ),
         SwipeSessionPhase.reviewTrash ||
         SwipeSessionPhase.confirmDelete ||
         SwipeSessionPhase.processingDelete =>
           const _TrashReviewStub(),
         SwipeSessionPhase.result => const _ResultPlaceholder(),
-        // reviewDecideLater, smartReview — wired in steps 7+
+        // smartReview — wired in a later step
         _ => const _LoadingView(),
       },
     );
@@ -165,6 +178,159 @@ class _UndoButton extends ConsumerWidget {
   }
 }
 
+// ── Decide-later review stub ──────────────────────────────────────────────────
+
+class _DecideLaterReviewStub extends StatelessWidget {
+  const _DecideLaterReviewStub({
+    required this.assets,
+    required this.onKeep,
+    required this.onTrash,
+    required this.onDone,
+  });
+
+  final List<String> assets;
+  final void Function(String id) onKeep;
+  final void Function(String id) onTrash;
+  final VoidCallback onDone;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(AppTokens.spaceMD),
+              child: Text(
+                'Rivedi le foto "Decidi dopo"',
+                style: AppTypography.displayMedium,
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: assets.length,
+                itemBuilder: (context, index) {
+                  final id = assets[index];
+                  return _DecideLaterRow(
+                    assetId: id,
+                    onKeep: () => onKeep(id),
+                    onTrash: () => onTrash(id),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(AppTokens.spaceMD),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: onDone,
+                  child: const Text('Fine'),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DecideLaterRow extends StatelessWidget {
+  const _DecideLaterRow({
+    required this.assetId,
+    required this.onKeep,
+    required this.onTrash,
+  });
+
+  final String assetId;
+  final VoidCallback onKeep;
+  final VoidCallback onTrash;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<AssetEntity?>(
+      future: AssetEntity.fromId(assetId),
+      builder: (context, snap) {
+        final asset = snap.data;
+        return Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTokens.spaceMD,
+            vertical: AppTokens.spaceSM,
+          ),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(AppTokens.radiusSM),
+                child: asset != null
+                    ? FutureBuilder<Uint8List?>(
+                        future: asset.thumbnailDataWithSize(
+                          const ThumbnailSize(80, 80),
+                        ),
+                        builder: (context, thumbSnap) {
+                          final bytes = thumbSnap.data;
+                          if (bytes == null) {
+                            return const _ThumbPlaceholder();
+                          }
+                          return Image.memory(
+                            bytes,
+                            width: 64,
+                            height: 64,
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      )
+                    : const _ThumbPlaceholder(),
+              ),
+              const SizedBox(width: AppTokens.spaceMD),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: onKeep,
+                      child: Text(
+                        'Tieni',
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.keepGreen,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppTokens.spaceSM),
+                    TextButton(
+                      onPressed: onTrash,
+                      child: Text(
+                        'Cestina',
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.trashRed,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ThumbPlaceholder extends StatelessWidget {
+  const _ThumbPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 64,
+      height: 64,
+      color: AppColors.backgroundCard,
+    );
+  }
+}
+
 // ── Trash review stub ─────────────────────────────────────────────────────────
 
 class _TrashReviewStub extends ConsumerWidget {
@@ -224,15 +390,58 @@ class _TrashReviewStub extends ConsumerWidget {
 
 // ── Placeholder / loading views ───────────────────────────────────────────────
 
-class _LoadingView extends StatelessWidget {
+/// Skeleton shown while startSession() warms the preload cache.
+///
+/// Renders a pulsing card-shaped placeholder that matches the real card
+/// dimensions — avoids the jarring jump from a center spinner to a full card.
+class _LoadingView extends StatefulWidget {
   const _LoadingView();
 
   @override
+  State<_LoadingView> createState() => _LoadingViewState();
+}
+
+class _LoadingViewState extends State<_LoadingView>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse;
+  late final Animation<double> _opacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulse = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+    _opacity = Tween<double>(begin: 0.35, end: 0.65).animate(
+      CurvedAnimation(parent: _pulse, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(
-        color: AppColors.textSecondary,
-        strokeWidth: 1.5,
+    final size = MediaQuery.sizeOf(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppTokens.spaceMD),
+      child: AnimatedBuilder(
+        animation: _opacity,
+        builder: (_, __) => Opacity(
+          opacity: _opacity.value,
+          child: Container(
+            width: size.width - AppTokens.spaceMD * 2,
+            height: size.height * 0.72,
+            decoration: BoxDecoration(
+              color: AppColors.backgroundCard,
+              borderRadius: BorderRadius.circular(AppTokens.radiusCard),
+            ),
+          ),
+        ),
       ),
     );
   }

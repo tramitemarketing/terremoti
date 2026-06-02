@@ -20,12 +20,18 @@ class SwipeCard extends StatelessWidget {
   const SwipeCard({
     super.key,
     required this.asset,
+    required this.cachedBytes,
     required this.dragOffset,
     required this.screenSize,
     required this.isTop,
   });
 
   final AssetEntity asset;
+
+  /// Pre-decoded thumbnail bytes from [PreloadEngine].
+  /// Null when the asset has not yet been decoded — shows a placeholder.
+  /// No async loading happens inside this widget.
+  final Uint8List? cachedBytes;
 
   /// Current cumulative drag offset from the card's resting position.
   /// [Offset.zero] for background cards.
@@ -77,6 +83,10 @@ class SwipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Top card with no bytes: render nothing so the standby card shows through.
+    // The outer Container's backgroundCard color would flash gray otherwise.
+    if (isTop && cachedBytes == null) return const SizedBox.expand();
+
     final card = Container(
       decoration: BoxDecoration(
         color: AppColors.backgroundCard,
@@ -95,32 +105,25 @@ class SwipeCard extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             // Image — BoxFit.contain is mandatory per §11.
-            FutureBuilder<Uint8List?>(
-              future: asset.thumbnailDataWithSize(
-                const ThumbnailSize(540, 960),
+            // Bytes are pre-decoded by PreloadEngine; no async call here.
+            if (cachedBytes != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(AppTokens.radiusCard),
+                child: Image.memory(
+                  cachedBytes!,
+                  fit: BoxFit.contain,
+                  gaplessPlayback: true,
+                ),
+              )
+            else if (!isTop)
+              // Background cards show a placeholder while bytes are loading.
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.backgroundCard,
+                  borderRadius: BorderRadius.circular(AppTokens.radiusCard),
+                ),
               ),
-              builder: (context, snap) {
-                final bytes = snap.data;
-                if (bytes == null) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.backgroundCard,
-                      borderRadius:
-                          BorderRadius.circular(AppTokens.radiusCard),
-                    ),
-                  );
-                }
-                return ClipRRect(
-                  borderRadius:
-                      BorderRadius.circular(AppTokens.radiusCard),
-                  child: Image.memory(
-                    bytes,
-                    fit: BoxFit.contain,
-                    gaplessPlayback: true,
-                  ),
-                );
-              },
-            ),
+            // isTop + no bytes → transparent so the standby card shows through.
             // Gradient overlay — only rendered on top card with non-zero drag.
             if (isTop && _overlayOpacity > 0)
               _SwipeOverlay(

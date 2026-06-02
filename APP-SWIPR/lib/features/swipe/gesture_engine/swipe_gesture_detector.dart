@@ -3,12 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../session/session_state/swipe_session_provider.dart';
 
-/// Wraps [child] with a pan gesture recogniser that respects the session's
-/// [SwipeSessionState.isAnimating] lock.
+/// Wraps [child] with a pan gesture recogniser.
 ///
-/// When [isAnimating] is true, no gesture recogniser is attached — input is
-/// silently dropped without propagating to the child. This satisfies the §11
-/// non-negotiable: "Gesture detector checks isAnimating before any input."
+/// The GestureDetector is **always** present in the tree regardless of
+/// animation state — [HitTestBehavior.opaque] ensures the transparent
+/// gesture layer intercepts touches even when no visible card is beneath it.
+/// Animation-gating (queuing during fly-off) is handled by the callbacks in
+/// [_CardStackWidgetState], not here.
 ///
 /// Transitions [SwipeSessionPhase.ready] → [SwipeSessionPhase.swiping] on
 /// the very first [onDragUpdate] call.
@@ -33,16 +34,8 @@ class SwipeGestureDetector extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Rebuild only when isAnimating changes — avoids rebuilding on every
-    // session state update unrelated to the gesture lock.
-    final isAnimating = ref.watch(
-      swipeSessionProvider.select((s) => s.isAnimating),
-    );
-
-    // When animating, return child bare — no gesture recogniser attached.
-    if (isAnimating) return child;
-
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onPanUpdate: (details) {
         // Transition ready → swiping on first gesture contact.
         final phase = ref.read(swipeSessionProvider).phase;

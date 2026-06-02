@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:photo_manager/photo_manager.dart';
 
 import '../photo/cache_strategy.dart';
@@ -90,6 +92,35 @@ class PreloadEngine {
         _inFlight[asset.id] = _decode(asset);
       }
     }
+  }
+
+  /// Returns cached thumbnail bytes for [assetId] synchronously.
+  ///
+  /// Returns null if the asset has not yet been decoded by [updateIndex].
+  /// This is the zero-async read path used by [SwipeCard] at build time.
+  Uint8List? getBytesSync(String assetId) => _cache.get(assetId);
+
+  /// Awaits the in-flight decode for [assetId] and returns the bytes.
+  ///
+  /// - If bytes are already in cache: returns immediately (zero cost).
+  /// - If a decode is in flight: awaits that exact [Future] — no polling.
+  /// - If neither: returns null immediately (caller should handle gracefully).
+  ///
+  /// A [timeout] guards against a stalled decode. After the timeout the method
+  /// returns whatever is (or is not) in cache at that point.
+  Future<Uint8List?> waitForBytes(
+    String assetId, {
+    Duration timeout = const Duration(milliseconds: 600),
+  }) async {
+    final cached = _cache.get(assetId);
+    if (cached != null) return cached;
+
+    final inflight = _inFlight[assetId];
+    if (inflight != null) {
+      await inflight.timeout(timeout, onTimeout: () {});
+    }
+
+    return _cache.get(assetId);
   }
 
   /// Cancels all in-flight decodes and clears the cache.
