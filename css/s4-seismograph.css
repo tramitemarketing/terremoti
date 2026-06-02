@@ -287,14 +287,23 @@
 }
 
 #s4-s1-inner {
-  display: grid;
-  grid-template-columns: 1fr 20%;
-  grid-template-rows: auto 1fr;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
-  padding: 2rem 1.5rem 3.5rem 1.5rem;
+  padding: 1.5rem;
   box-sizing: border-box;
-  gap: 0;
+  gap: 1.5rem;
+}
+
+#s4-s1-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
 }
 
 /* Header sezione sismografo */
@@ -325,6 +334,7 @@
   gap: 0.5rem;
   border-left: 1px solid rgba(245, 237, 224, 0.08);
   overflow-y: auto;
+  align-self: center;
 }
 
 /* Toggle pill modale */
@@ -372,6 +382,15 @@
 @keyframes s4DotBlink {
   0%,100% { opacity: 1; }
   50%      { opacity: 0.25; }
+}
+#s4-2009-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--terracotta, #C4612A);
+  margin-right: 4px;
+  vertical-align: middle;
 }
 #s4-iris-status {
   font-family: 'JetBrains Mono', monospace;
@@ -1795,16 +1814,16 @@
 
 /* Zona illustrazione SVG (con fade) */
 #s4-richter-illus {
-  min-height: 150px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  min-height: 180px;
   overflow: hidden;
 }
 
 #s4-richter-illus svg {
-  max-height: 150px;
+  max-height: 180px;
   width: auto;
   transition: opacity 0.3s ease;
 }
