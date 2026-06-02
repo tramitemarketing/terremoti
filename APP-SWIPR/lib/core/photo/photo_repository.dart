@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show compute;
+import 'package:flutter/foundation.dart' show compute, defaultTargetPlatform, TargetPlatform;
 import 'package:photo_manager/photo_manager.dart';
 
 import '../storage/hive_service.dart';
@@ -27,11 +27,11 @@ class PhotoRepository {
   /// Never rebuilt per-asset — checked as O(1) Set lookup.
   Set<String> _decidedIds = {};
 
-  /// Ordered master ID list for albums mode.
-  /// null for entireLibrary / timeRange modes.
+  /// Ordered master ID list for albums / Android-entireLibrary modes.
+  /// null for iOS entireLibrary / timeRange modes.
   List<String>? _masterIdList;
 
-  /// Cached "all photos" path for [CleanupMode.entireLibrary] direct pagination.
+  /// Cached "all photos" path for iOS [CleanupMode.entireLibrary] direct pagination.
   AssetPathEntity? _allPhotosPath;
 
   // ── Public API ────────────────────────────────────────────────────────────
@@ -48,8 +48,11 @@ class PhotoRepository {
 
   /// Builds and caches the ordered master ID list for the given [filter].
   ///
-  /// - [CleanupMode.entireLibrary]: cluster semi-random sort (§7), runs in
-  ///   [compute].
+  /// - [CleanupMode.entireLibrary] on Android: builds master list from
+  ///   individual album bucket paths to avoid the Samsung/Android-14 hang on
+  ///   the virtual `hasAll: true` path. Runs in [compute].
+  /// - [CleanupMode.entireLibrary] on iOS: no-op — [getPage] paginates the
+  ///   `hasAll` path directly (faster, no upfront cost).
   /// - [CleanupMode.albums]: deduplicated union of selected albums, sorted by
   ///   createdAt DESC, runs in [compute].
   /// - [CleanupMode.timeRange]: no-op — [getPage] queries photo_manager
@@ -59,8 +62,15 @@ class PhotoRepository {
   Future<void> buildMasterList(SwipeFilter filter) async {
     switch (filter.mode) {
       case CleanupMode.entireLibrary:
-        // No master list — getPage() paginates directly via _allPhotosPath.
-        _masterIdList = null;
+        if (defaultTargetPlatform == TargetPlatform.android) {
+          // Android: the virtual 'hasAll: true' path hangs on Samsung One UI 6+
+          // (and possibly other Android 14 devices) when calling getAssetListPaged.
+          // Individual bucket paths work correctly — use them instead.
+          _masterIdList = await _buildEntireLibraryMasterList();
+        } else {
+          // iOS: direct pagination via _allPhotosPath is fast, no upfront cost.
+          _masterIdList = null;
+        }
       case CleanupMode.albums:
         _masterIdList = await _buildAlbumsList(filter.albumIds);
       case CleanupMode.timeRange:
@@ -76,7 +86,9 @@ class PhotoRepository {
   /// [FilterOptionGroup].
   Future<List<AssetEntity>> getPage(int page, SwipeFilter filter) async {
     return switch (filter.mode) {
-      CleanupMode.entireLibrary => _getEntireLibraryPage(page),
+      CleanupMode.entireLibrary => _masterIdList != null
+          ? _getPageFromMasterList(page)
+          : _getEntireLibraryPage(page),
       CleanupMode.albums => _getPageFromMasterList(page),
       CleanupMode.timeRange => _getTimeRangePage(page, filter),
     };
@@ -89,6 +101,9 @@ class PhotoRepository {
   Future<int> getTotalCount(SwipeFilter filter) async {
     switch (filter.mode) {
       case CleanupMode.entireLibrary:
+        // Use master list length when available (Android path).
+        if (_masterIdList != null) return _masterIdList!.length;
+        // iOS fallback: fast assetCountAsync on the hasAll path.
         final allPath = await _cachedAllPhotosPath();
         if (allPath == null) return 0;
         return allPath.assetCountAsync;
@@ -146,6 +161,53 @@ class PhotoRepository {
 
   // ── Master list builders ──────────────────────────────────────────────────
 
+  /// Builds the master list for [CleanupMode.entireLibrary] on Android.
+  ///
+  /// Uses individual bucket paths (`hasAll: false`) to avoid the virtual
+  /// "all photos" path that hangs on Samsung Android 14.
+  /// Fetches all buckets in parallel, deduplicates, then sorts by createdAt DESC.
+  Future<List<String>> _buildEntireLibraryMasterList() async {
+    final paths = await PhotoManager.getAssetPathList(
+      type: RequestType.image,
+      hasAll: false, // Individual bucket paths — avoids hasAll hang
+    );
+    if (paths.isEmpty) return [];
+
+    // Fetch all album buckets in parallel. Each bucket is a filesystem directory;
+    // a photo lives in exactly one bucket on Android, so deduplication is minimal
+    // in practice but required for safety (virtual albums can overlap).
+    final bucketPairs = await Future.wait(paths.map(_fetchPairsFromPath));
+
+    final seen = <String>{};
+    final allPairs = <(String, int)>[];
+    for (final pairs in bucketPairs) {
+      for (final pair in pairs) {
+        if (!seen.contains(pair.$1) && !_decidedIds.contains(pair.$1)) {
+          seen.add(pair.$1);
+          allPairs.add(pair);
+        }
+      }
+    }
+
+    return compute(_sortByCreatedDesc, allPairs);
+  }
+
+  /// Fetches all (assetId, createdAtMs) pairs from a single [AssetPathEntity].
+  Future<List<(String, int)>> _fetchPairsFromPath(AssetPathEntity path) async {
+    final pairs = <(String, int)>[];
+    var page = 0;
+    while (true) {
+      final assets = await path.getAssetListPaged(page: page, size: _kPageSize);
+      if (assets.isEmpty) break;
+      for (final a in assets) {
+        pairs.add((a.id, a.createDateTime.millisecondsSinceEpoch));
+      }
+      if (assets.length < _kPageSize) break;
+      page++;
+    }
+    return pairs;
+  }
+
   Future<List<String>> _buildAlbumsList(List<String> albumIds) async {
     final paths = await PhotoManager.getAssetPathList(
       type: RequestType.image,
@@ -181,7 +243,7 @@ class PhotoRepository {
 
   // ── Page fetchers ─────────────────────────────────────────────────────────
 
-  /// Direct pagination for [CleanupMode.entireLibrary].
+  /// Direct pagination for iOS [CleanupMode.entireLibrary].
   ///
   /// Resolves and caches [_allPhotosPath] on first call, then paginates it
   /// directly — no upfront master-list build required.
