@@ -1595,7 +1595,7 @@ function s6InitTimeline() {
   });
 
   // Altezze dal centro (in px) in base alla dimensione del nodo
-  var heights = { xlarge: 90, large: 65, normal: 45 };
+  var heights = { xlarge: 140, large: 105, normal: 80 };
 
   TIMELINE_NODES.forEach(function(node, i) {
     var side = (i % 2 === 0) ? 'above' : 'below';
@@ -1630,8 +1630,8 @@ function s6InitTimeline() {
 
     // Contenuto
     var content = document.createElement('div');
-    content.style.cssText = side === 'above' ? 'position:absolute;bottom:' + (dotSize/2+4) + 'px;left:50%;transform:translateX(-50%);width:120px;text-align:center' :
-                                               'position:absolute;top:' + (dotSize/2+4) + 'px;left:50%;transform:translateX(-50%);width:120px;text-align:center';
+    content.style.cssText = side === 'above' ? 'position:absolute;bottom:' + (dotSize/2+4) + 'px;left:50%;transform:translateX(-50%);width:160px;text-align:center' :
+                                               'position:absolute;top:' + (dotSize/2+4) + 'px;left:50%;transform:translateX(-50%);width:160px;text-align:center';
 
     var dateEl = document.createElement('div');
     dateEl.className = 's6-htl-date';
@@ -1641,8 +1641,7 @@ function s6InitTimeline() {
 
     var textEl = document.createElement('div');
     textEl.className = 's6-htl-text';
-    var shortText = node.text.length > 60 ? node.text.substring(0, 58) + '…' : node.text;
-    textEl.textContent = shortText;
+    textEl.textContent = node.text;
     if (node.isMain) textEl.style.color = 'rgba(245,237,224,0.95)';
     content.appendChild(textEl);
 

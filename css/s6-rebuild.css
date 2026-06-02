@@ -314,7 +314,7 @@
 .s6-htl-wrap {
   position: relative;
   width: 100%;
-  height: 220px;
+  height: 320px;
   margin: 8px 0 4px;
   flex-shrink: 0;
 }
@@ -359,7 +359,7 @@
 .s6-htl-event.below .s6-htl-connector { top: 0; }
 .s6-htl-date {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   line-height: 1.3;
@@ -367,7 +367,7 @@
 }
 .s6-htl-text {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 11px;
-  line-height: 1.45;
+  font-size: 13px;
+  line-height: 1.5;
   color: rgba(245,237,224,0.75);
 }
