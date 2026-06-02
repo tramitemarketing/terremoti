@@ -365,7 +365,7 @@ function s5_initSlide2() {
   /* Stato ingranaggi — variabili mutabili per le transizioni */
   let gearP = { x: 150, y: 195, r: 90,  teeth: 11, angle: 0, color: '#8B1A1A', label: 'PERICOLOSITÀ',   fixed: true  };
   let gearV = { x: 315, y: 125, r: 80,  teeth: 10, angle: 0, color: '#C4612A', label: 'VULNERABILITÀ',  fixed: false };
-  let gearE = { x: 320, y: 255, r: 75,  teeth: 9,  angle: 0, color: '#3A7EC4', label: 'VALORE ESPOSTO', fixed: false };
+  let gearE = { x: 320, y: 290, r: 75,  teeth: 9,  angle: 0, color: '#3A7EC4', label: 'VALORE ESPOSTO', fixed: false };
 
   /* Target dei raggi per le transizioni smooth */
   let gearVTarget = 80;
