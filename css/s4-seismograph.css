@@ -359,14 +359,27 @@
 /* Pallino live pulsante */
 #s4-live-dot {
   display: inline-block;
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: #e04040;
-  animation: s4-pulse 1.8s ease-in-out infinite;
-  vertical-align: middle;
+  background: #32CD32;
   margin-right: 4px;
+  animation: s4DotBlink 1.4s ease-in-out infinite;
 }
+#s4-live-dot.simulated { background: rgba(245,237,224,0.35); animation: none; }
+@keyframes s4DotBlink {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.25; }
+}
+#s4-iris-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.06em;
+  color: var(--terracotta, #C4612A);
+  margin-top: 0.4rem;
+  display: none;
+}
+#s4-iris-status.visible { display: block; }
 
 /* Label evento rilevato */
 #s4-event-label {
@@ -452,21 +465,34 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 #s4-s2-inner {
-  display: grid;
-  grid-template-columns: 38% 1fr;
-  height: 100%;
-  padding: 2rem 3rem 3.5rem 4rem;
-  box-sizing: border-box;
-  gap: 3rem;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 1.5rem 3rem;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 /* Colonna testo sinistra */
 .s4-s2-text {
+  flex: 0 0 46%;
+  align-self: center;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
   overflow-y: auto;
+}
+
+/* Colonna animazione destra */
+.s4-s2-anim {
+  flex: 0 0 46%;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Canvas animazione sismografo */
@@ -1128,29 +1154,49 @@
 }
 
 
-/* === SLIDE 7 — SCALA MCS: 12 GRADI === */
+/* === SLIDE 7 — SCALA MCS: 3 COLONNE === */
 
 #s4-s7-inner {
   display: grid;
-  grid-template-columns: 38% 1fr;
+  grid-template-columns: 18% 50% 32%;
   height: 100%;
-  padding: 1.5rem 1.5rem 3.8rem 1.5rem;
+  padding: 0;
   box-sizing: border-box;
-  gap: 2rem;
+  gap: 0;
 }
 
-/* Colonna sinistra: storia + scala */
-#s4-s7-left {
+/* Colonna 1: scala verticale I–XII */
+#s4-s7-scale {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  overflow: hidden;
+  height: 100%;
+  padding: 1.5rem 0.8rem 3.8rem;
+  box-sizing: border-box;
   border-right: 1px solid rgba(245,237,224,0.06);
-  padding-right: 1.5rem;
 }
 
-#s4-s7-left .s4-eyebrow { flex-shrink: 0; }
-#s4-s7-left .s4-title { flex-shrink: 0; margin-bottom: 0; }
+/* Colonna 2: numero romano + descrizione + illustrazione */
+#s4-s7-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem 2.5rem 3.8rem;
+  box-sizing: border-box;
+  border-right: 1px solid rgba(245,237,224,0.06);
+  overflow: hidden;
+}
+
+/* Colonna 3: eyebrow + titolo + storia */
+#s4-s7-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.2rem;
+  padding: 2rem 2.5rem 3.8rem 2rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
 
 /* Box storia MCS con bordo */
 #s4-s7-history {
@@ -1298,6 +1344,7 @@
 #s4-s8-inner {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   height: 100%;
   padding: 1.2rem 2rem 3.5rem 2rem;
   box-sizing: border-box;
@@ -1311,7 +1358,7 @@
 .s4-s8-cols {
   display: grid;
   grid-template-columns: 1fr 40px 1fr;
-  gap: 0;
+  gap: 0.8rem;
   flex: 1;
   min-height: 0;
 }
@@ -1321,7 +1368,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
-  padding: 1rem;
+  padding: 0.75rem 0.9rem;
   overflow: hidden;
 }
 
@@ -1368,7 +1415,8 @@
   gap: 0.4rem;
   align-items: baseline;
   font-family: 'Cormorant Garamond', serif;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  padding: 0.18rem 0;
   color: var(--cream);
   opacity: 0.85;
   line-height: 1.4;
@@ -1461,6 +1509,9 @@
   opacity: 0.85;
   line-height: 1.55;
   flex-shrink: 0;
+  text-align: center;
+  margin: 0.5rem auto 0;
+  max-width: 560px;
 }
 
 /* Tabella 2×2 */
@@ -1471,7 +1522,8 @@
   font-size: 0.62rem;
   color: var(--cream);
   opacity: 0.72;
-  margin-top: 0.45rem;
+  margin: 0.5rem auto;
+  min-width: 300px;
 }
 
 .s4-s8-table td,
@@ -1493,21 +1545,26 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 #s4-s9-inner {
-  display: grid;
-  grid-template-columns: 35% 65%;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 1rem 1.5rem 1rem 1.5rem;
   height: 100%;
+  box-sizing: border-box;
 }
 
 /* Pannello controlli sinistra */
 #s4-s9-controls {
+  flex: 0 0 28%;
+  align-self: flex-start;
+  padding-top: 2.5rem;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
-  padding: 1.5rem 1rem 3.5rem 1.2rem;
   box-sizing: border-box;
   overflow-y: auto;
   background: rgba(16, 16, 16, 0.6);
-  border-right: 1px solid rgba(245, 237, 224, 0.06);
 }
 
 /* Card stazione sismica */
@@ -1627,8 +1684,10 @@
 
 /* Div mappa Leaflet slide 9 */
 #s4-map9 {
-  width: 100%;
-  height: 100%;
+  flex: 1;
+  max-width: 70%;
+  height: calc(100vh - 2rem);
+  max-height: 80vh;
 }
 
 /* Risultato epicentro */
@@ -1670,9 +1729,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 2rem 4rem 3.5rem 4rem;
+  padding: 1.2rem 2.5rem 3.5rem 2.5rem;
   box-sizing: border-box;
-  gap: 1.2rem;
+  gap: 0.6rem;
 }
 
 /* Wrapper slider con label M0/M10 */
@@ -1734,8 +1793,8 @@
 /* Visualizzazione tre zone */
 .s4-richter-viz {
   display: grid;
-  grid-template-columns: 35% 12% 1fr;
-  gap: 2rem;
+  grid-template-columns: 38% 8% 1fr;
+  gap: 1.2rem;
   flex: 1;
   min-height: 0;
   align-items: center;
@@ -1743,15 +1802,16 @@
 
 /* Zona illustrazione SVG (con fade) */
 #s4-richter-illus {
+  min-height: 150px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
   overflow: hidden;
 }
 
 #s4-richter-illus svg {
-  max-height: 200px;
+  max-height: 150px;
   width: auto;
   transition: opacity 0.3s ease;
 }
@@ -2020,27 +2080,41 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 #s4-s12-inner {
-  display: grid;
-  grid-template-columns: 70% 30%;
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+  gap: 0.4rem;
+}
+
+/* Layout 70/30 dentro s12 */
+.s4-s12-layout {
+  display: flex;
+  gap: 1.2rem;
+  height: calc(100% - 4rem);
+  padding: 0.5rem 0;
+  align-items: stretch;
 }
 
 /* Div mappa Leaflet slide 12 */
 #s4-map12 {
-  width: 100%;
+  flex: 0 0 68%;
   height: 100%;
+  min-height: 300px;
 }
 
 /* Legenda laterale */
 #s4-s12-legend {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding: 1.5rem 1rem 3.5rem 1rem;
+  overflow-y: auto;
+  min-width: 0;
+  padding-right: 0.5rem;
   box-sizing: border-box;
   background: rgba(16, 16, 16, 0.7);
-  border-left: 1px solid rgba(245, 237, 224, 0.06);
-  overflow-y: auto;
 }
 
 #s4-s12-legend .s4-legend-title {
@@ -2095,13 +2169,6 @@
   line-height: 1.6;
   padding-top: 0.8rem;
   border-top: 1px solid rgba(245, 237, 224, 0.06);
-}
-
-/* Mappa Leaflet — altezza/larghezza nei container */
-#s4-map9,
-#s4-map12 {
-  height: 100%;
-  width: 100%;
 }
 
 /* Override Leaflet dentro sezione 4 per dark theme */

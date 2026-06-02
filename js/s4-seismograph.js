@@ -300,10 +300,20 @@
 
   function initSlide1() {
     if (s4SlideInited[0]) {
-      // Riavvia il loop
       if (s4SeismoState) {
+        // Ridimensiona il canvas prima di riavviare
+        const cvs = document.getElementById('s4-seismo-canvas');
+        if (cvs && cvs.offsetWidth > 0) {
+          const dpr2 = window.devicePixelRatio || 1;
+          if (cvs.width !== Math.round(cvs.offsetWidth * dpr2)) {
+            cvs.width = Math.round(cvs.offsetWidth * dpr2);
+            cvs.height = Math.round(cvs.offsetHeight * dpr2) || 300 * dpr2;
+          }
+        }
         s4SeismoState.running = true;
-        requestAnimationFrame(seismoLoop);
+        if (!s4Loops['slide0']) {
+          requestAnimationFrame(seismoLoop);
+        }
       }
       return;
     }
@@ -311,6 +321,14 @@
 
     const canvas = document.getElementById('s4-seismo-canvas');
     if (!canvas) return;
+    // Inizializza dimensioni canvas con DPR corretto
+    (function resizeSeismoCanvas() {
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.offsetWidth || 800;
+      const h = canvas.offsetHeight || 300;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+    })();
     const ctx = canvas.getContext('2d');
 
     // Stato sismografo
@@ -388,6 +406,10 @@
             if (mx === 0) mx = 1;
             s4SeismoState.liveBuffer = vals.map(function (v) { return v / mx; });
             s4SeismoState.liveSimulated = false;
+            const irisStatus = document.getElementById('s4-iris-status');
+            const liveDot = document.getElementById('s4-live-dot');
+            if (irisStatus) irisStatus.classList.remove('visible');
+            if (liveDot) liveDot.classList.remove('simulated');
             const lbl = document.getElementById('s4-sim-label');
             if (lbl) lbl.style.display = 'none';
             const lu = document.getElementById('s4-last-update');
@@ -397,6 +419,10 @@
         .catch(function () {
           clearTimeout(timeout);
           // Fallback: continua con rumore sintetico
+          const irisStatus = document.getElementById('s4-iris-status');
+          const liveDot = document.getElementById('s4-live-dot');
+          if (irisStatus) irisStatus.classList.add('visible');
+          if (liveDot) liveDot.classList.add('simulated');
           const lbl = document.getElementById('s4-sim-label');
           if (lbl) lbl.style.display = 'block';
         });
@@ -423,8 +449,9 @@
       if (dt > 200) return; // primo frame o tab blur
 
       const dpr = window.devicePixelRatio || 1;
-      const W = canvas.width / dpr;   // dimensioni CSS (non fisiche)
-      const H = canvas.height / dpr;
+      const W = Math.round(canvas.width / dpr);
+      const H = Math.round(canvas.height / dpr);
+      if (W < 10 || H < 10) { s4Loops['slide0'] = requestAnimationFrame(seismoLoop); return; }
       const ctx2 = ctx;
 
       ctx2.clearRect(0, 0, W, H);
@@ -456,6 +483,11 @@
         ctx2.fillText('+' + a.toFixed(1), SCALE_W - 3, yp);
         ctx2.fillText('-' + a.toFixed(1), SCALE_W - 3, yn);
       });
+      // Label unità μm
+      ctx2.font = '8px "JetBrains Mono", monospace';
+      ctx2.fillStyle = 'rgba(245,237,224,0.40)';
+      ctx2.textAlign = 'left';
+      ctx2.fillText('μm', 2, 14);
       ctx2.textBaseline = 'alphabetic';
 
       // Griglia orizzontale
@@ -1090,18 +1122,26 @@
       const errS = Math.abs(tS - realS);
       const errAvg = (errP + errS) / 2;
 
-      let giudizio;
-      if (errAvg < 1) giudizio = 'Precisione da sismologo!';
-      else if (errAvg < 3) giudizio = 'Buona approssimazione.';
-      else giudizio = 'Riprova — cerca il cambio brusco di ampiezza.';
+      let giudizio, verIcon, verColor;
+      if (errAvg < 1) {
+        giudizio = 'Precisione da sismologo!';
+        verIcon = '✓';  verColor = '#32CD32';
+      } else if (errAvg < 3) {
+        giudizio = 'Buona approssimazione.';
+        verIcon = '≈';  verColor = '#D4893A';
+      } else {
+        giudizio = 'Riprova — cerca il cambio brusco di ampiezza.';
+        verIcon = '✗';  verColor = '#8B1A1A';
+      }
 
       const r2 = document.getElementById('s4-res2');
       if (r2) {
         r2.style.display = 'block';
-        r2.innerHTML = '<div class="s4-verify-box"><p><strong>P reale:</strong> 03:32:41 UTC</p><p><strong>S reale:</strong> 03:32:49 UTC</p><p><strong>Gap reale:</strong> 8 s</p><p><strong>Distanza reale:</strong> ~65 km</p></div>';
+        r2.innerHTML = '<div style="font-size:2.4rem;text-align:center;color:' + verColor + ';line-height:1;margin-bottom:0.5rem;font-family:\'JetBrains Mono\',monospace">' + verIcon + '</div>' +
+          '<div class="s4-verify-box"><p><strong>P reale:</strong> 03:32:41 UTC</p><p><strong>S reale:</strong> 03:32:49 UTC</p><p><strong>Gap reale:</strong> 8 s</p><p><strong>Distanza reale:</strong> ~65 km</p></div>';
       }
       const r2j = document.getElementById('s4-res2-judge');
-      if (r2j) { r2j.textContent = giudizio; r2j.style.display = 'block'; }
+      if (r2j) { r2j.textContent = giudizio; r2j.style.color = verColor; r2j.style.display = 'block'; }
     });
 
     // Reset
@@ -1303,10 +1343,13 @@
         }
         ctx.stroke();
 
+        // Punto di intersezione geometrica della retta con l'asse centrale
+        const yGeom = yLeft + (yRight - yLeft) * (centerX - leftX) / (rightX - leftX);
+
         // Pallino colorato sull'asse magnitudo (il punto di lettura)
         if (p >= 0.5) {
           ctx.beginPath();
-          ctx.arc(centerX, yCenter, 5, 0, Math.PI * 2);
+          ctx.arc(centerX, yGeom, 6, 0, Math.PI * 2);
           ctx.fillStyle = terra;
           ctx.fill();
         }
@@ -1317,12 +1360,12 @@
           ctx.fillStyle = terra;
           ctx.font = 'bold 13px JetBrains Mono, monospace';
           ctx.textAlign = 'center';
-          ctx.fillText('ML = ' + mlDisp, centerX, yCenter - 14);
+          ctx.fillText('ML = ' + mlDisp, centerX, yGeom - 14);
           // Solo se il valore calcolato è vicino a quello reale di L'Aquila
           if (ml >= 5.8 && ml <= 6.8) {
             ctx.font = '9px JetBrains Mono, monospace';
             ctx.fillStyle = ochre;
-            ctx.fillText("L'Aquila 2009 ≈ 6.3", centerX, yCenter - 26);
+            ctx.fillText("L'Aquila 2009 ≈ 6.3", centerX, yGeom - 26);
           }
         }
       }
