@@ -1588,59 +1588,72 @@ function s6InitTimeline() {
   var container = document.getElementById('s6-timeline');
   if (!container) return;
 
-  TIMELINE_NODES.forEach(function(node, i) {
-    var div = document.createElement('div');
-    div.style.cssText = 'position:relative;margin-bottom:' + (node.size==='xlarge'?18:11) + 'px;opacity:0;transform:translateX(-10px);transition:opacity 0.5s,transform 0.5s;transition-delay:' + (i*80) + 'ms';
+  var n = TIMELINE_NODES.length;
+  // Distribuzione orizzontale: primo a 3%, ultimo a 97%
+  var positions = TIMELINE_NODES.map(function(_, i) {
+    return 3 + (i / (n - 1)) * 94;
+  });
 
-    // Dot
+  // Altezze dal centro (in px) in base alla dimensione del nodo
+  var heights = { xlarge: 90, large: 65, normal: 45 };
+
+  TIMELINE_NODES.forEach(function(node, i) {
+    var side = (i % 2 === 0) ? 'above' : 'below';
+    var h = heights[node.size] || 45;
+    var dotSize = node.size === 'xlarge' ? 14 : node.size === 'large' ? 11 : 8;
+
+    var ev = document.createElement('div');
+    ev.className = 's6-htl-event ' + side;
+    ev.style.left = positions[i] + '%';
+    if (side === 'above') {
+      ev.style.bottom = 'calc(50% + 10px)';
+      ev.style.height = h + 'px';
+    } else {
+      ev.style.top = 'calc(50% + 10px)';
+      ev.style.height = h + 'px';
+    }
+
+    // Connettore verticale
+    var conn = document.createElement('div');
+    conn.className = 's6-htl-connector';
+    conn.style.height = h + 'px';
+    if (side === 'above') conn.style.bottom = '0';
+    else conn.style.top = '0';
+    ev.appendChild(conn);
+
+    // Pallino sull'asse
     var dot = document.createElement('div');
-    var dotSize = node.size==='xlarge' ? 18 : node.size==='large' ? 14 : 10;
-    dot.style.cssText = 'position:absolute;left:-' + (40 - 12 - dotSize/2) + 'px;top:4px;width:' + dotSize + 'px;height:' + dotSize + 'px;border-radius:50%;background:' + node.color + ';border:2px solid rgba(8,8,8,0.8)';
-    if (node.isMain) dot.style.boxShadow = '0 0 12px rgba(139,26,26,0.8)';
+    dot.className = 's6-htl-dot';
+    dot.style.cssText = 'width:' + dotSize + 'px;height:' + dotSize + 'px;background:' + node.color + ';border:2px solid rgba(8,8,8,0.8)';
+    if (node.isMain) dot.style.boxShadow = '0 0 8px rgba(139,26,26,0.9)';
+    ev.appendChild(dot);
 
     // Contenuto
     var content = document.createElement('div');
-    var border = node.isMain ? 'border-left:3px solid var(--blood);background:rgba(139,26,26,0.08)' :
-                 node.isKey ? 'border-left:3px solid var(--blood);background:rgba(139,26,26,0.05)' :
-                 node.isResolution ? 'border-left:3px solid var(--blue);background:rgba(58,126,196,0.05)' : '';
-    content.style.cssText = 'padding:' + (node.size==='xlarge'?'11px 14px':'8px 12px') + ';' + border;
+    content.style.cssText = side === 'above' ? 'position:absolute;bottom:' + (dotSize/2+4) + 'px;left:50%;transform:translateX(-50%);width:120px;text-align:center' :
+                                               'position:absolute;top:' + (dotSize/2+4) + 'px;left:50%;transform:translateX(-50%);width:120px;text-align:center';
 
-    var dateEl = document.createElement('p');
-    dateEl.style.cssText = 'font-family:\'JetBrains Mono\',monospace;font-size:10px;letter-spacing:1px;color:' + node.color + ';margin:0 0 4px;text-transform:uppercase';
-    dateEl.textContent = node.date;
-
-    var textEl = document.createElement('p');
-    textEl.style.cssText = 'font-size:' + (node.size==='xlarge'?'17px':node.size==='large'?'15px':'14px') + ';line-height:1.7;color:rgba(245,237,224,' + (node.isMain||node.isKey?'0.95':'0.8') + ');margin:0';
-    textEl.textContent = node.text;
-
+    var dateEl = document.createElement('div');
+    dateEl.className = 's6-htl-date';
+    dateEl.style.color = node.color;
+    dateEl.textContent = node.date.replace(' 2009','').replace('2009','\'09').replace('Dicembre 2008','Dic.\'08');
     content.appendChild(dateEl);
+
+    var textEl = document.createElement('div');
+    textEl.className = 's6-htl-text';
+    var shortText = node.text.length > 60 ? node.text.substring(0, 58) + '…' : node.text;
+    textEl.textContent = shortText;
+    if (node.isMain) textEl.style.color = 'rgba(245,237,224,0.95)';
     content.appendChild(textEl);
-    div.appendChild(dot);
-    div.appendChild(content);
-    container.appendChild(div);
+
+    ev.appendChild(content);
+    container.appendChild(ev);
 
     // Animazione entrata
-    setTimeout(function() {
-      div.style.opacity = '1';
-      div.style.transform = 'translateX(0)';
-    }, 100 + i * 80);
+    ev.style.opacity = '0';
+    ev.style.transition = 'opacity 0.5s ' + (i * 80) + 'ms';
+    setTimeout(function() { ev.style.opacity = '1'; }, 120 + i * 80);
   });
-
-  // Scroll indicator — mostra/nascondi in base allo scroll
-  var tl   = document.getElementById('s6-timeline');
-  var btn  = document.getElementById('s6-tl-scroll-btn');
-  var fade = document.getElementById('s6-tl-fade');
-  if (tl && btn) {
-    function updateScrollHint() {
-      var atBottom = tl.scrollHeight - tl.scrollTop <= tl.clientHeight + 8;
-      btn.style.opacity  = atBottom ? '0' : '1';
-      btn.style.pointerEvents = atBottom ? 'none' : 'auto';
-      if (fade) fade.style.opacity = atBottom ? '0' : '1';
-    }
-    tl.addEventListener('scroll', updateScrollHint);
-    // Controlla dopo che i nodi vengono animati
-    setTimeout(updateScrollHint, 800);
-  }
 }
 
 function s6InitEngineering() {
