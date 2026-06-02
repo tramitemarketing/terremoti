@@ -496,7 +496,7 @@
     align-items: stretch;
 }
 .s3-panel {
-    flex: 0 0 22%;
+    flex: 0 0 30%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -507,7 +507,7 @@
     border-left: 1px solid rgba(245,237,224,0.06);
 }
 .s3-panel--map {
-    flex: 1;
+    flex: 0 0 55%;
     border-left: 1px solid rgba(245,237,224,0.06);
 }
 .s3-panel-title {
@@ -534,7 +534,7 @@
 }
 /* Controlli centrali */
 .s3-ctrl {
-    width: 110px;
+    flex: 0 0 15%;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;

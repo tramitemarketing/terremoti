@@ -747,8 +747,8 @@
     function drawSurface(depth) {
       const km = depthToKm(depth);
 
-      /* ── Griglia FISSA 400 km — scala basata sull'altezza così 400km tocca top/bottom ── */
-      const GRID_MAX_KM = 400;
+      /* ── Griglia FISSA 300 km — scala basata sull'altezza così 300km tocca top/bottom ── */
+      const GRID_MAX_KM = 300;
       const STEP_MAJOR  = 100;
       const STEP_MINOR  = 50;
 
