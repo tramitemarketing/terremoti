@@ -2243,7 +2243,7 @@
     const section = document.getElementById('s-section4');
     if (!section) return;
 
-    // Wheel event
+    // Wheel event — capture:true intercetta PRIMA degli elementi overflow-y:auto interni
     section.addEventListener('wheel', function (e) {
       if (s4IsAnimating) return;
       const goingDown = e.deltaY > 0;
@@ -2254,7 +2254,7 @@
       e.preventDefault();
       e.stopPropagation();
       goTo(s4CurrentSlide + (goingDown ? 1 : -1));
-    }, { passive: false });
+    }, { passive: false, capture: true });
 
     // Keyboard ← →
     document.addEventListener('keydown', function (e) {
