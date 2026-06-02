@@ -46,9 +46,9 @@
 
     /* ── Typography comune ── */
     .s3-eyebrow {
-      font-family:'JetBrains Mono',monospace; font-size:0.65rem;
+      font-family:'JetBrains Mono',monospace; font-size:0.62rem;
       letter-spacing:0.35em; color:var(--terracotta); text-transform:uppercase;
-      display:block; margin-bottom:0.8rem;
+      display:block; margin-bottom:1rem;
     }
     .s3-title {
       font-size:clamp(1.8rem,3vw,3.2rem); font-weight:300; line-height:1.15;
@@ -269,20 +269,23 @@
     /* ── SLIDE 10 ── */
     .s3-end-wrap {
       display:flex; flex-direction:column; align-items:center;
-      justify-content:center; width:100%; height:100%; gap:1.5rem; padding:4rem;
+      justify-content:center; width:100%; height:100%; gap:1.2rem; padding:2rem;
       text-align:center;
     }
     .s3-end-title {
-      font-size:clamp(2rem,4vw,4.5rem); font-weight:300; line-height:1.15;
-      color:var(--cream); max-width:700px;
+      font-family:'Cormorant Garamond',Georgia,serif;
+      font-size:clamp(2.2rem,4vw,4.5rem); font-weight:300; line-height:1.1;
+      color:var(--cream); max-width:640px;
     }
     .s3-end-sub {
-      font-size:1.05rem; line-height:1.7;
-      color:rgba(245,237,224,0.4); max-width:520px;
+      font-family:'Cormorant Garamond',Georgia,serif;
+      font-size:1.25rem; line-height:1.7;
+      color:rgba(245,237,224,0.6); max-width:640px;
     }
     .s3-end-arrow {
       font-size:1.8rem; color:var(--terracotta);
       animation:s3-bounce 1.6s ease-in-out infinite;
+      margin-top:1rem; display:block;
     }
     @keyframes s3-bounce {
       0%,100% { transform:translateY(0); }

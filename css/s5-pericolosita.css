@@ -1379,16 +1379,16 @@
 
 /* Freccia bounce in basso */
 .s5-bounce-arrow {
-    font-size: 2rem;
-    color: rgba(196, 97, 42, 0.6);
-    margin-top: 2rem;
-    animation: s5-bounce 2s ease-in-out infinite;
+    font-size: 1.8rem;
+    color: var(--terracotta);
+    margin-top: 1rem;
+    animation: s5-bounce 1.6s ease-in-out infinite;
     display: block;
 }
 
 @keyframes s5-bounce {
     0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(12px); }
+    50%       { transform: translateY(14px); }
 }
 /* ── Mappa zone sismiche (slide 5) ── */
 #s5-zone-map { background: #080808; }

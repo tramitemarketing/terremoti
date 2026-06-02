@@ -262,8 +262,7 @@
 
 @keyframes s4-bounce {
   0%, 100% { transform: translateY(0); }
-  40%       { transform: translateY(10px); }
-  60%       { transform: translateY(4px); }
+  50%       { transform: translateY(14px); }
 }
 
 @keyframes s4-fade-in {
@@ -2109,44 +2108,38 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  padding: 2rem 3rem 3.5rem 3rem;
+  padding: 2rem;
   box-sizing: border-box;
   gap: 1.2rem;
   text-align: center;
 }
 
 #s4-s13-inner .s4-eyebrow {
-  margin-bottom: 0.3rem;
+  margin-bottom: 1rem;
 }
 
-/* Title dimensione coerente con s1-s7 transizione */
 #s4-s13-inner .s4-title {
   font-size: clamp(2.2rem, 4vw, 4.5rem);
   font-weight: 300;
-  max-width: 680px;
-  line-height: 1.15;
+  max-width: 640px;
+  line-height: 1.1;
 }
 
-/* Sottotitolo fine sezione */
 .s4-s13-sub {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 1.05rem;
+  font-size: 1.25rem;
   line-height: 1.7;
-  color: rgba(245, 237, 224, 0.4);
-  max-width: 520px;
+  color: rgba(245, 237, 224, 0.6);
+  max-width: 640px;
   margin: 0;
 }
 
-/* Freccia bounce animata */
 .s4-bounce-arrow {
   margin-top: 1rem;
   color: var(--terracotta);
-  font-size: 1.6rem;
-  opacity: 0.7;
-  animation: s4-bounce 1.8s ease-in-out infinite;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 1.8rem;
+  animation: s4-bounce 1.6s ease-in-out infinite;
+  display: block;
   cursor: default;
   user-select: none;
 }
