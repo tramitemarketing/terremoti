@@ -1765,14 +1765,20 @@
 
     const mapEl = document.getElementById('s4-map9');
     if (!mapEl || typeof L === 'undefined') {
-      // Riprova dopo un attimo (Leaflet potrebbe non essere ancora carico)
       setTimeout(initSlide9, 500);
       s4Map9Inited = false;
       return;
     }
 
+    const EPICENTRO = [42.342, 13.380]; // Paganica
+    const STAZIONI = [
+      { name: 'AQU', lat: 42.354, lon: 13.403, rKm: 3,  color: '#C4612A' },
+      { name: 'SULM', lat: 42.050, lon: 13.930, rKm: 35, color: '#3A7EC4' },
+      { name: 'TERO', lat: 42.661, lon: 13.704, rKm: 55, color: '#D4893A' }
+    ];
+
     const map = L.map('s4-map9', {
-      center: [42.2, 13.1],
+      center: [42.35, 13.45],
       zoom: 8,
       scrollWheelZoom: false
     });
@@ -1783,156 +1789,70 @@
       maxZoom: 18
     }).addTo(map);
 
-    // Colori stazioni
-    const staColors = ['#C4612A', '#3A7EC4', '#D4893A', '#F5EDE0'];
-    const staMarkers = [];
-    const dtValues = S4_TRIA_STA.map(function (s) { return s.defaultDt; });
-    let sta4Enabled = false;
-    let circlesOnMap = [];
+    const circlesDrawn = [false, false, false];
+    const circlesOnMap = [null, null, null];
     let epiMarker = null;
-    let realEpiMarker = null;
 
-    // Crea marker stazioni
-    S4_TRIA_STA.forEach(function (sta, i) {
+    // Marker stazioni
+    STAZIONI.forEach(function (sta) {
       const icon = L.divIcon({
         className: '',
-        html: '<div style="width:12px;height:12px;background:' + staColors[i] + ';clip-path:polygon(50% 0%,0% 100%,100% 100%);transform:translateX(-6px) translateY(-6px)"></div>',
+        html: '<div style="width:12px;height:12px;background:' + sta.color + ';clip-path:polygon(50% 0%,0% 100%,100% 100%);transform:translate(-6px,-6px)"></div>',
         iconSize: [1, 1]
       });
-      const mk = L.marker([sta.lat, sta.lon], { icon: icon }).addTo(map);
-      mk.bindTooltip(sta.name, { permanent: true, direction: 'top', offset: [0, -8], className: 's4-map-tooltip' });
-      staMarkers.push(mk);
-    });
-    // Nasconde stazione 4 inizialmente
-    staMarkers[3].remove();
-
-    // Slider stazioni
-    document.querySelectorAll('.s4-sta-slider').forEach(function (sl, i) {
-      sl.value = S4_TRIA_STA[i].defaultDt;
-      sl.addEventListener('input', function () {
-        dtValues[i] = parseFloat(sl.value);
-        const lbl = document.getElementById('s4-sta-val-' + i);
-        if (lbl) lbl.textContent = dtValues[i].toFixed(1) + ' s → ' + (dtValues[i] * 9.0).toFixed(0) + ' km';
-      });
-      const lbl = document.getElementById('s4-sta-val-' + i);
-      if (lbl) lbl.textContent = dtValues[i].toFixed(1) + ' s → ' + (dtValues[i] * 9.0).toFixed(0) + ' km';
+      L.marker([sta.lat, sta.lon], { icon: icon }).addTo(map)
+        .bindTooltip(sta.name, { permanent: true, direction: 'top', offset: [0, -8], className: 's4-map-tooltip' });
     });
 
-    // Toggle stazione 4
-    const togSta4 = document.getElementById('s4-sta4-toggle');
-    if (togSta4) togSta4.addEventListener('change', function () {
-      sta4Enabled = togSta4.checked;
-      if (sta4Enabled) staMarkers[3].addTo(map);
-      else staMarkers[3].remove();
-      const sta4row = document.getElementById('s4-sta4-row');
-      if (sta4row) sta4row.style.display = sta4Enabled ? 'block' : 'none';
-    });
-
-    // Calcola epicentro
-    function calcEpicenter() {
-      const nSta = sta4Enabled ? 4 : 3;
-      const usedSta = S4_TRIA_STA.slice(0, nSta);
-      const radii = dtValues.slice(0, nSta).map(function (dt) { return dt * 9.0; });
-
-      // Griglia least squares: area 41-44N, 11-16E, passo 0.05°
-      let bestLat = 42.3, bestLon = 13.3, bestErr = Infinity;
-      for (let lat = 41.0; lat <= 44.0; lat += 0.05) {
-        for (let lon = 11.0; lon <= 16.0; lon += 0.05) {
-          let err = 0;
-          usedSta.forEach(function (sta, i) {
-            const d = haversineKm(lat, lon, sta.lat, sta.lon);
-            err += (d - radii[i]) ** 2;
-          });
-          if (err < bestErr) { bestErr = err; bestLat = lat; bestLon = lon; }
-        }
-      }
-
-      return { lat: bestLat, lon: bestLon };
+    function checkAllDrawn() {
+      const triBtn = document.getElementById('s4-triangulate-btn');
+      if (circlesDrawn.every(Boolean) && triBtn) triBtn.disabled = false;
     }
 
-    const calcBtn = document.getElementById('s4-calc-epi');
-    if (calcBtn) calcBtn.addEventListener('click', function () {
-      // Rimuovi cerchi precedenti
-      circlesOnMap.forEach(function (c) { c.remove(); });
-      circlesOnMap = [];
-      if (epiMarker) { epiMarker.remove(); epiMarker = null; }
-      if (realEpiMarker) { realEpiMarker.remove(); realEpiMarker = null; }
-
-      const nSta = sta4Enabled ? 4 : 3;
-      const usedSta = S4_TRIA_STA.slice(0, nSta);
-      const radii = dtValues.slice(0, nSta).map(function (dt) { return dt * 9.0; });
-
-      // Anima cerchi con espansione
-      usedSta.forEach(function (sta, i) {
-        const targetR = radii[i] * 1000; // m
+    // Bottoni "Calcola" per ciascuna stazione
+    document.querySelectorAll('.s4-tria-calc-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const i = parseInt(btn.dataset.idx);
+        const sta = STAZIONI[i];
+        if (circlesOnMap[i]) { circlesOnMap[i].remove(); }
         const circle = L.circle([sta.lat, sta.lon], {
-          radius: 10,
-          color: staColors[i],
-          fillColor: staColors[i],
+          radius: sta.rKm * 1000,
+          color: sta.color,
+          fillColor: sta.color,
           fillOpacity: 0.08,
-          weight: 2
+          weight: 2,
+          dashArray: '6 4'
         }).addTo(map);
-        circlesOnMap.push(circle);
-
-        // Espansione animata
-        let step = 0;
-        const steps = 30;
-        const timer = setInterval(function () {
-          step++;
-          const r = targetR * (step / steps);
-          circle.setRadius(r);
-          if (step >= steps) clearInterval(timer);
-        }, 50);
+        circlesOnMap[i] = circle;
+        circlesDrawn[i] = true;
+        btn.textContent = '✓';
+        btn.disabled = true;
+        checkAllDrawn();
       });
+    });
 
-      // Calcola dopo l'animazione
-      setTimeout(function () {
-        const epi = calcEpicenter();
-        const realLat = 42.3476, realLon = 13.3800;
-        const errKm = haversineKm(epi.lat, epi.lon, realLat, realLon);
-
-        // Marker epicentro calcolato
-        const epiIcon = L.divIcon({
-          className: '',
-          html: '<div class="s4-epi-pulse" style="width:14px;height:14px;background:#C4612A;border-radius:50%;border:2px solid #fff;animation:s4-pulse 1s infinite"></div>',
-          iconSize: [14, 14],
-          iconAnchor: [7, 7]
-        });
-        epiMarker = L.marker([epi.lat, epi.lon], { icon: epiIcon }).addTo(map);
-        epiMarker.bindPopup('<strong>Epicentro calcolato</strong><br>' + epi.lat.toFixed(4) + '°N ' + epi.lon.toFixed(4) + '°E');
-
-        // Marker epicentro reale
-        const realIcon = L.divIcon({
-          className: '',
-          html: '<div style="width:12px;height:12px;background:#8B1A1A;border-radius:50%;border:2px solid #fff"></div>',
-          iconSize: [12, 12],
-          iconAnchor: [6, 6]
-        });
-        realEpiMarker = L.marker([realLat, realLon], { icon: realIcon }).addTo(map);
-        realEpiMarker.bindPopup('<strong>Epicentro INGV reale</strong><br>42.3476°N 13.3800°E');
-
-        // Risultato
-        const res = document.getElementById('s4-epi-result');
-        if (res) res.innerHTML =
-          'Epicentro calcolato: <strong>' + epi.lat.toFixed(4) + '°N ' + epi.lon.toFixed(4) + '°E</strong><br>' +
-          'Epicentro INGV reale: <strong>42.3476°N 13.3800°E</strong><br>' +
-          'Errore: <strong>' + errKm.toFixed(1) + ' km</strong>';
-      }, 1600);
+    // Bottone "Triangola"
+    const triBtn = document.getElementById('s4-triangulate-btn');
+    if (triBtn) triBtn.addEventListener('click', function () {
+      const epiIcon = L.divIcon({
+        className: '',
+        html: '<div style="width:18px;height:18px;background:#C4612A;border-radius:50%;border:3px solid #fff;transform:translate(-9px,-9px);box-shadow:0 0 0 4px rgba(196,97,42,0.35)"></div>',
+        iconSize: [1, 1]
+      });
+      if (epiMarker) epiMarker.remove();
+      epiMarker = L.marker(EPICENTRO, { icon: epiIcon }).addTo(map);
+      epiMarker.bindPopup('<strong>EPICENTRO</strong><br>Paganica · 42.342°N 13.380°E<br>Faglia Paganica · 6 apr 2009').openPopup();
+      const res = document.getElementById('s4-epi-result');
+      if (res) res.innerHTML = '<strong>Epicentro risolto:</strong> 42.342°N 13.380°E — Paganica<br>I tre cerchi si intersecano in questo punto.';
     });
 
     // Reset
-    const resetBtn = document.getElementById('s4-reset-epi');
+    const resetBtn = document.getElementById('s4-reset-tria');
     if (resetBtn) resetBtn.addEventListener('click', function () {
-      circlesOnMap.forEach(function (c) { c.remove(); });
-      circlesOnMap = [];
+      circlesOnMap.forEach(function (c, i) { if (c) { c.remove(); circlesOnMap[i] = null; circlesDrawn[i] = false; } });
       if (epiMarker) { epiMarker.remove(); epiMarker = null; }
-      if (realEpiMarker) { realEpiMarker.remove(); realEpiMarker = null; }
-      document.querySelectorAll('.s4-sta-slider').forEach(function (sl, i) {
-        sl.value = S4_TRIA_STA[i].defaultDt;
-        dtValues[i] = S4_TRIA_STA[i].defaultDt;
-        const lbl = document.getElementById('s4-sta-val-' + i);
-        if (lbl) lbl.textContent = dtValues[i].toFixed(1) + ' s → ' + (dtValues[i] * 9.0).toFixed(0) + ' km';
-      });
+      document.querySelectorAll('.s4-tria-calc-btn').forEach(function (btn) { btn.textContent = 'Calcola'; btn.disabled = false; });
+      if (triBtn) triBtn.disabled = true;
       const res = document.getElementById('s4-epi-result');
       if (res) res.innerHTML = '';
     });

@@ -1538,6 +1538,22 @@
   opacity: 0.4;
 }
 
+/* Header stazione con bottone Calcola */
+.s4-sta-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+.s4-sta-coord {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.52rem;
+  color: var(--cream);
+  opacity: 0.4;
+  margin-top: 0.15rem;
+}
+.s4-tria-calc-btn { min-width: 60px; flex-shrink: 0; }
+
 /* Slider gap P-S stazione */
 .s4-sta-slider {
   width: 100%;
@@ -1655,9 +1671,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 1.5rem 1.5rem 3.5rem 1.5rem;
+  padding: 2rem 4rem 3.5rem 4rem;
   box-sizing: border-box;
-  gap: 1rem;
+  gap: 1.2rem;
 }
 
 /* Wrapper slider con label M0/M10 */
@@ -1719,8 +1735,8 @@
 /* Visualizzazione tre zone */
 .s4-richter-viz {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 1.5rem;
+  grid-template-columns: 35% 12% 1fr;
+  gap: 2rem;
   flex: 1;
   min-height: 0;
   align-items: center;
@@ -1822,8 +1838,8 @@
 #s4-sim-controls {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  padding: 1.5rem 1rem 2rem 1.2rem;
+  gap: 1rem;
+  padding: 2rem 1.2rem 2.5rem 2rem;
   box-sizing: border-box;
   overflow-y: auto;
   background: rgba(16, 16, 16, 0.6);
@@ -1852,9 +1868,9 @@
 
 .s4-sim-row .s4-sim-val {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   color: var(--cream);
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 /* Pulsante simula */
@@ -2017,6 +2033,7 @@
   border-radius: 2px;
   flex-shrink: 0;
   opacity: 0.85;
+  background: var(--lc, #555);
 }
 
 .s4-legend-row .s4-legend-label {
@@ -2102,11 +2119,11 @@
   margin-bottom: 0.3rem;
 }
 
-/* Title dimensione coerente con s1/s3 "fine sezione" (max 4.5rem) */
+/* Title dimensione coerente con s1-s7 transizione */
 #s4-s13-inner .s4-title {
-  font-size: clamp(2rem, 4vw, 4.5rem);
+  font-size: clamp(2.2rem, 4vw, 4.5rem);
   font-weight: 300;
-  max-width: 700px;
+  max-width: 680px;
   line-height: 1.15;
 }
 

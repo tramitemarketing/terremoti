@@ -1523,71 +1523,51 @@
 
         <!-- Pannello controlli (35%) -->
         <div id="s4-s9-controls">
-
           <p class="s4-body-text-sm">
-            Ogni stazione sismica misura il gap P-S e ricava la propria distanza dall'epicentro.
-            Con tre stazioni i cerchi si intersecano in un punto: l'epicentro.
+            Ogni stazione registra il ritardo tra onde P e S e ne ricava la distanza dall'ipocentro.
+            Clicca <strong>Calcola</strong> su ognuna per disegnare la circonferenza, poi <strong>Triangola</strong>.
           </p>
 
-          <div id="s4-formula-box-sm" class="s4-formula-box">
-            Distanza = &#916;t × (Vp × Vs) / (Vp &#8722; Vs) &#8776; &#916;t × 9.0 km/s
-          </div>
-
-          <!-- Stazione 1 — AQU L'Aquila -->
+          <!-- Stazione 1 — AQU -->
           <div class="s4-sta-card" data-idx="0">
-            <div class="s4-sta-name">AQU · L'Aquila</div>
-            <div class="s4-sta-coord">42.3540°N · 13.4028°E</div>
-            <label class="s4-sta-label">
-              Gap P-S: <span class="s4-sta-dt-val">0.8 s</span>
-              <input type="range" class="s4-sta-slider" data-idx="0" min="0.1" max="30" step="0.1" value="0.8" aria-label="Gap P-S stazione AQU">
-            </label>
-            <div class="s4-sta-dist">Distanza: <span class="s4-dist-val">7.2</span> km</div>
+            <div class="s4-sta-header">
+              <div>
+                <div class="s4-sta-name">AQU · L'Aquila</div>
+                <div class="s4-sta-coord">42.354°N &middot; 13.403°E &middot; r = 3 km</div>
+              </div>
+              <button class="s4-tria-calc-btn s4-btn-primary" data-idx="0">Calcola</button>
+            </div>
           </div>
 
-          <!-- Stazione 2 — CESI Terni -->
+          <!-- Stazione 2 — SULM -->
           <div class="s4-sta-card" data-idx="1">
-            <div class="s4-sta-name">CESI · Terni</div>
-            <div class="s4-sta-coord">42.5890°N · 12.8020°E</div>
-            <label class="s4-sta-label">
-              Gap P-S: <span class="s4-sta-dt-val">9.4 s</span>
-              <input type="range" class="s4-sta-slider" data-idx="1" min="0.1" max="30" step="0.1" value="9.4" aria-label="Gap P-S stazione CESI">
-            </label>
-            <div class="s4-sta-dist">Distanza: <span class="s4-dist-val">84.6</span> km</div>
+            <div class="s4-sta-header">
+              <div>
+                <div class="s4-sta-name">SULM · Sulmona</div>
+                <div class="s4-sta-coord">42.050°N &middot; 13.930°E &middot; r = 35 km</div>
+              </div>
+              <button class="s4-tria-calc-btn s4-btn-primary" data-idx="1">Calcola</button>
+            </div>
           </div>
 
-          <!-- Stazione 3 — CERT Roma nord -->
+          <!-- Stazione 3 — TERO -->
           <div class="s4-sta-card" data-idx="2">
-            <div class="s4-sta-name">CERT · Roma nord</div>
-            <div class="s4-sta-coord">42.0350°N · 12.7850°E</div>
-            <label class="s4-sta-label">
-              Gap P-S: <span class="s4-sta-dt-val">11.2 s</span>
-              <input type="range" class="s4-sta-slider" data-idx="2" min="0.1" max="30" step="0.1" value="11.2" aria-label="Gap P-S stazione CERT">
-            </label>
-            <div class="s4-sta-dist">Distanza: <span class="s4-dist-val">100.8</span> km</div>
+            <div class="s4-sta-header">
+              <div>
+                <div class="s4-sta-name">TERO · Teramo</div>
+                <div class="s4-sta-coord">42.661°N &middot; 13.704°E &middot; r = 55 km</div>
+              </div>
+              <button class="s4-tria-calc-btn s4-btn-primary" data-idx="2">Calcola</button>
+            </div>
           </div>
 
-          <!-- Toggle stazione 4 opzionale -->
-          <button id="s4-sta4-toggle" class="s4-btn-secondary" aria-expanded="false">+ Aggiungi stazione 4</button>
-
-          <div class="s4-sta-card" id="s4-sta4-card" data-idx="3" style="display:none" aria-hidden="true">
-            <div class="s4-sta-name">VAGA</div>
-            <div class="s4-sta-coord">42.5620°N · 13.7290°E</div>
-            <label class="s4-sta-label">
-              Gap P-S: <span class="s4-sta-dt-val">5.1 s</span>
-              <input type="range" class="s4-sta-slider" data-idx="3" min="0.1" max="30" step="0.1" value="5.1" aria-label="Gap P-S stazione VAGA">
-            </label>
-            <div class="s4-sta-dist">Distanza: <span class="s4-dist-val">45.9</span> km</div>
-          </div>
-
-          <!-- Pulsanti -->
+          <!-- Pulsante triangola + reset -->
           <div class="s4-s9-btn-row">
-            <button id="s4-calc-epi" class="s4-btn-primary">▶ Calcola epicentro</button>
-            <button id="s4-reset-epi" class="s4-btn-secondary">↺ Reset L'Aquila</button>
+            <button id="s4-triangulate-btn" class="s4-btn-primary" disabled>&#9650; Triangola</button>
+            <button id="s4-reset-tria" class="s4-btn-secondary">↺ Reset</button>
           </div>
 
-          <!-- Risultato calcolo epicentro -->
           <div id="s4-epi-result" aria-live="polite"></div>
-
         </div><!-- /s4-s9-controls -->
 
         <!-- Mappa Leaflet (65%) -->
