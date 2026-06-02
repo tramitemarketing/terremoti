@@ -1568,7 +1568,7 @@ function s6InitComparatore() {
       detail.style.display = 'block';
       detail.innerHTML =
         '<div style="display:flex;gap:20px;flex-wrap:wrap">' +
-          '<div style="min-width:160px;flex:0 0 auto">' +
+          '<div style="min-width:170px;flex:0 0 auto">' +
             '<p style="font-family:\'JetBrains Mono\',monospace;font-size:10px;color:var(--terracotta);letter-spacing:1px;margin:0 0 4px">' + d.event.toUpperCase() + '</p>' +
             '<p style="font-size:11px;color:rgba(245,237,224,0.5);margin:0">Zona: ' + d.zona + '</p>' +
             '<p style="font-size:11px;color:rgba(245,237,224,0.5);margin:3px 0 0">Vittime: ' + d.vittime + '</p>' +
@@ -1630,8 +1630,8 @@ function s6InitTimeline() {
 
     // Contenuto
     var content = document.createElement('div');
-    content.style.cssText = side === 'above' ? 'position:absolute;bottom:' + (dotSize/2+4) + 'px;left:50%;transform:translateX(-50%);width:160px;text-align:center' :
-                                               'position:absolute;top:' + (dotSize/2+4) + 'px;left:50%;transform:translateX(-50%);width:160px;text-align:center';
+    content.style.cssText = side === 'above' ? 'position:absolute;bottom:' + (dotSize/2+4) + 'px;left:50%;transform:translateX(-50%);width:170px;text-align:center' :
+                                               'position:absolute;top:' + (dotSize/2+4) + 'px;left:50%;transform:translateX(-50%);width:170px;text-align:center';
 
     var dateEl = document.createElement('div');
     dateEl.className = 's6-htl-date';
