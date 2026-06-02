@@ -22,11 +22,15 @@ function s5_initSlide1() {
         scrollWheelZoom: false,
         zoomControl: true,
         attributionControl: false,
-        preferCanvas: true
+        preferCanvas: true,
+        maxBounds: L.latLngBounds([33.0, 4.0], [49.0, 22.0]),
+        maxBoundsViscosity: 1.0,
+        minZoom: 5
     });
 
     // Bounds: estensione approssimativa del territorio italiano
     map.fitBounds([[35.0, 6.0], [47.5, 19.0]], { paddingTopRight: [300, 20] });
+    map.setMaxBounds(L.latLngBounds([33.0, 4.0], [49.0, 22.0]));
 
     // Salva istanza sulla S5 per uso esterno
     S5.mapInstance = map;
@@ -359,13 +363,13 @@ function s5_initSlide2() {
   const ctx = canvas.getContext('2d');
 
   /* Stato ingranaggi — variabili mutabili per le transizioni */
-  let gearP = { x: 150, y: 190, r: 80,  teeth: 10, angle: 0, color: '#8B1A1A', label: 'PERICOLOSITÀ',   fixed: true  };
-  let gearV = { x: 300, y: 130, r: 70,  teeth: 9,  angle: 0, color: '#C4612A', label: 'VULNERABILITÀ',  fixed: false };
-  let gearE = { x: 310, y: 280, r: 65,  teeth: 8,  angle: 0, color: '#3A7EC4', label: 'VALORE ESPOSTO', fixed: false };
+  let gearP = { x: 150, y: 195, r: 90,  teeth: 11, angle: 0, color: '#8B1A1A', label: 'PERICOLOSITÀ',   fixed: true  };
+  let gearV = { x: 315, y: 125, r: 80,  teeth: 10, angle: 0, color: '#C4612A', label: 'VULNERABILITÀ',  fixed: false };
+  let gearE = { x: 320, y: 290, r: 75,  teeth: 9,  angle: 0, color: '#3A7EC4', label: 'VALORE ESPOSTO', fixed: false };
 
   /* Target dei raggi per le transizioni smooth */
-  let gearVTarget = 70;
-  let gearETarget = 65;
+  let gearVTarget = 80;
+  let gearETarget = 75;
 
   /* Velocità base: ~2 rpm a 60fps → circa 0.007 rad/frame */
   const BASE_SPEED = (2 * Math.PI * 2) / (60 * 60);
@@ -513,8 +517,8 @@ function s5_initSlide2() {
 
     /* Aggiornamento angoli di rotazione */
     gearP.angle += BASE_SPEED;
-    gearV.angle -= BASE_SPEED * (gearV.r / 70);
-    gearE.angle -= BASE_SPEED * (gearE.r / 65);
+    gearV.angle -= BASE_SPEED * (gearV.r / 80);
+    gearE.angle += BASE_SPEED * (gearE.r / 75);
 
     /* Disegno */
     drawGear(gearP);
@@ -559,8 +563,8 @@ function s5_initSlide2() {
   const btnReset = document.getElementById('s5-btn-reset');
   if (btnReset) {
     btnReset.addEventListener('click', function() {
-      gearVTarget = 70;
-      gearETarget = 65;
+      gearVTarget = 80;
+      gearETarget = 75;
       if (label) label.textContent = "L'Aquila 2009: tutti i fattori al massimo → rischio critico";
       if (!S5.gearAnimId) {
         S5.gearAnimId = requestAnimationFrame(animLoop);
@@ -1119,9 +1123,16 @@ function s5_initSlide5() {
     }
 
     var map = L.map('s5-zone-map', {
-        scrollWheelZoom:true, zoomControl:true, attributionControl:false, preferCanvas:true
+        scrollWheelZoom: true,
+        zoomControl: true,
+        attributionControl: false,
+        preferCanvas: true,
+        maxBounds: L.latLngBounds([33.0, 4.0], [49.0, 22.0]),
+        maxBoundsViscosity: 1.0,
+        minZoom: 5
     });
-    map.fitBounds([[35.0,6.0],[47.5,19.0]]);
+    map.fitBounds([[35.0, 6.0], [47.5, 19.0]]);
+    map.setMaxBounds(L.latLngBounds([33.0, 4.0], [49.0, 22.0]));
     map.zoomControl.setPosition('bottomright');
 
     var pgaLayer = null;

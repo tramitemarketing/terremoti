@@ -485,7 +485,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 2rem 2rem 2rem 3rem;
+  padding: 1.2rem 1.5rem 1.2rem 2.5rem;
   overflow-y: auto;
   gap: 0;
 }
@@ -513,7 +513,7 @@
   font-weight: 300;
   color: var(--cream, #F5EDE0);
   line-height: 1.2;
-  margin: 0 0 1.2rem 0;
+  margin: 0 0 0.7rem 0;
 }
 
 .s5-s2-body {
@@ -527,14 +527,14 @@
 .s5-formula-box {
   background: #0d0d0d;
   border: 1px solid #C4612A;
-  padding: 1.2rem;
-  margin: 1.5rem 0;
+  padding: 0.7rem;
+  margin: 0.8rem 0;
   text-align: center;
 }
 
 .s5-formula-text {
   font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+  font-size: clamp(0.6rem, 0.9vw, 0.75rem);
   color: #C4612A;
   letter-spacing: 0.1em;
   line-height: 1.5;
@@ -544,7 +544,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 0.8rem;
+  gap: 0.5rem;
   margin-bottom: 0;
 }
 
