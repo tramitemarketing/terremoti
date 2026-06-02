@@ -883,7 +883,7 @@ document.addEventListener('keydown', e => {
         this.textContent = '▶ Avvia';
         drawPaganicanPhase1();
       } else {
-        this.textContent = 'â³';
+        this.textContent = '⏳';
         this.disabled = true;
         runPaganicanAnim();
       }
