@@ -224,9 +224,9 @@
         <span class="s2-event-dot" style="background:${s2MagColor(ev.mag)}"></span>
         <div class="s2-event-body">
           <div class="s2-event-loc">${ev.location.substring(0, 20)}</div>
-          <div class="s2-event-depth">↓ ${ev.depth} km</div>
+          <div class="s2-event-depth">M ${ev.mag.toFixed(1)}</div>
         </div>
-        <span class="s2-event-mag">M ${ev.mag.toFixed(1)}</span>`;
+        <span class="s2-event-mag">↓ ${ev.depth} km</span>`;
       row.addEventListener('mouseenter', () => s2SelectEvent(i));
       row.addEventListener('mouseleave', s2DeselectEvent);
       list.appendChild(row);
