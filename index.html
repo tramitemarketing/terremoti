@@ -955,13 +955,16 @@
           </div>
 
           <!-- Canvas sismografo -->
-          <canvas id="s4-seismo-canvas" height="300" role="img" aria-label="Tracciato sismografo in tempo reale"></canvas>
+          <canvas id="s4-seismo-canvas" width="800" height="300" role="img" aria-label="Tracciato sismografo in tempo reale"></canvas>
 
           <!-- Label evento rilevato (mostrata da JS) -->
           <div id="s4-event-label" aria-live="polite" style="display:none">⚡ EVENTO RILEVATO</div>
 
-          <!-- Label fallback simulato (mostrata da JS se IRIS non risponde) -->
+          <!-- Label fallback simulato -->
           <div id="s4-sim-label" style="display:none">Dati simulati — servizio temporaneamente non disponibile</div>
+
+          <!-- Status IRIS — visibile via JS quando liveSimulated=true -->
+          <div id="s4-iris-status" aria-live="polite">SIMULATO · IRIS non disponibile</div>
 
           <!-- Marker verticali modalità 2009 (gestiti da JS via CSS left%) -->
           <div id="s4-markers-2009" style="display:none" aria-hidden="true">
@@ -1404,13 +1407,9 @@
     <!-- slide 7 -->
     <div class="s4-slide" id="s4-s7" data-slide="6">
       <div id="s4-s7-inner">
-        <div id="s4-s7-left">
-          <div class="s4-eyebrow">MERCALLI &middot; CANCANI &middot; SIEBERG &middot; 1917</div>
-          <h2 class="s4-title">Non l&rsquo;energia.<br>Gli effetti.</h2>
-          <div id="s4-s7-history">
-            <p>Proposta da <strong>Giuseppe Mercalli</strong> nel 1902, revisionata da Adolfo Cancani e August Sieberg nel 1917. La <strong>Scala MCS</strong> (Mercalli-Cancani-Sieberg) non misura l&rsquo;energia liberata alla sorgente &mdash; misura gli <em>effetti osservati</em>: cosa sentono le persone, come reagiscono gli edifici, cosa succede al suolo.</p>
-            <p>Per lo stesso terremoto il grado MCS &egrave; diverso in ogni zona: dipende dalla distanza, dal tipo di terreno, dalla qualit&agrave; delle costruzioni. A L&rsquo;Aquila 2009 variava da IV (Roma, avvertito) a X (Onna, distruzione quasi totale).</p>
-          </div>
+
+        <!-- Colonna 1 (18%): scala I–XII + frecce -->
+        <div id="s4-s7-scale">
           <div id="s4-mcs-scale-col" role="group" aria-label="Gradi MCS I-XII">
             <button class="s4-mcs-bar-item" data-grade="1" aria-pressed="false"><span class="s4-bar-roman">I</span></button>
             <button class="s4-mcs-bar-item" data-grade="2" aria-pressed="false"><span class="s4-bar-roman">II</span></button>
@@ -1431,7 +1430,9 @@
             <button id="s4-mcs-down" class="s4-mcs-arrow-btn" aria-label="Grado inferiore">▼</button>
           </div>
         </div>
-        <div id="s4-s7-right">
+
+        <!-- Colonna 2 (50%): numero romano + descrizione + illustrazione -->
+        <div id="s4-s7-center">
           <div id="s4-mcs-roman" aria-live="polite" aria-atomic="true">VI</div>
           <div id="s4-mcs-text" aria-live="polite" aria-atomic="true"></div>
           <div id="s4-mcs-illus" aria-live="polite" aria-atomic="true"></div>
@@ -1441,6 +1442,17 @@
             <div id="s4-mcs-compare-label" aria-live="polite">Come la periferia de L&rsquo;Aquila</div>
           </div>
         </div>
+
+        <!-- Colonna 3 (32%): eyebrow + titolo + storia -->
+        <div id="s4-s7-right">
+          <div class="s4-eyebrow">MERCALLI &middot; CANCANI &middot; SIEBERG &middot; 1917</div>
+          <h2 class="s4-title">Non l&rsquo;energia.<br>Gli effetti.</h2>
+          <div id="s4-s7-history">
+            <p>Proposta da <strong>Giuseppe Mercalli</strong> nel 1902, revisionata da Adolfo Cancani e August Sieberg nel 1917. La <strong>Scala MCS</strong> (Mercalli-Cancani-Sieberg) non misura l&rsquo;energia liberata alla sorgente &mdash; misura gli <em>effetti osservati</em>: cosa sentono le persone, come reagiscono gli edifici, cosa succede al suolo.</p>
+            <p>Per lo stesso terremoto il grado MCS &egrave; diverso in ogni zona: dipende dalla distanza, dal tipo di terreno, dalla qualit&agrave; delle costruzioni. A L&rsquo;Aquila 2009 variava da IV (Roma, avvertito) a X (Onna, distruzione quasi totale).</p>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -1521,11 +1533,10 @@
     <div class="s4-slide" id="s4-s9" data-slide="8">
       <div id="s4-s9-inner">
 
-        <div class="s4-eyebrow">TRIANGOLAZIONE SISMICA</div>
-        <h2 class="s4-title">Tre cerchi. Un punto.</h2>
-
-        <!-- Pannello controlli (35%) -->
+        <!-- Pannello controlli (30%) — titolo incluso qui -->
         <div id="s4-s9-controls">
+          <div class="s4-eyebrow">TRIANGOLAZIONE SISMICA</div>
+          <h2 class="s4-title" style="margin-bottom:0.8rem">Tre cerchi.<br>Un punto.</h2>
           <p class="s4-body-text-sm">
             Ogni stazione registra il ritardo tra onde P e S e ne ricava la distanza dall'ipocentro.
             Clicca <strong>Calcola</strong> su ognuna per disegnare la circonferenza, poi <strong>Triangola</strong>.
@@ -1722,16 +1733,16 @@
     <div class="s4-slide" id="s4-s12" data-slide="11">
       <div id="s4-s12-inner">
 
-        <div class="s4-eyebrow">6 APRILE 2009 · RILIEVO MACROSISMICO INGV</div>
-        <h2 class="s4-title">Lo stesso terremoto.<br>Dodici intensità diverse.</h2>
-
         <div class="s4-s12-layout">
 
-          <!-- Mappa Leaflet isosismica -->
+          <!-- Mappa Leaflet isosismica (70%) -->
           <div id="s4-map12" aria-label="Mappa isosismica del terremoto de L'Aquila 2009" role="application"></div>
 
-          <!-- Legenda -->
+          <!-- Colonna destra: titolo + legenda (30%) -->
           <div id="s4-s12-legend">
+            <div class="s4-eyebrow" style="margin-bottom:0.4rem">6 APRILE 2009 · RILIEVO MACROSISMICO INGV</div>
+            <h2 class="s4-title" style="font-size:clamp(1.4rem,2.2vw,2.4rem);margin-bottom:0.8rem;line-height:1.2">Lo stesso terremoto.<br>Dodici intensità diverse.</h2>
+            <p style="font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:0.06em;color:rgba(245,237,224,0.4);line-height:1.55;margin-bottom:0.8rem">Le isosisme collegano punti di uguale intensità MCS — le curve mostrano come gli effetti varino con la distanza dall'epicentro.</p>
             <div class="s4-legend-title">INTENSITÀ MCS</div>
 
             <div class="s4-legend-row" style="--lc:#4a0000">
