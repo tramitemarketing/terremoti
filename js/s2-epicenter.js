@@ -740,10 +740,10 @@
     function drawSurface(depth) {
       const km = depthToKm(depth);
 
-      /* ── Griglia FISSA 150 km — non cambia mai ── */
-      const GRID_MAX_KM = 150;
-      const STEP_MAJOR  = 50;
-      const STEP_MINOR  = 25;
+      /* ── Griglia FISSA 500 km — non cambia mai ── */
+      const GRID_MAX_KM = 500;
+      const STEP_MAJOR  = 100;
+      const STEP_MINOR  = 50;
 
       const cx = DW / 2, cy = DH / 2;
       const pxPerKm = (DW / 2 - 20) / GRID_MAX_KM;
