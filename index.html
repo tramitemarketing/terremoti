@@ -1640,82 +1640,77 @@
     <div class="s4-slide" id="s4-s11" data-slide="10">
       <div id="s4-s11-inner">
 
-        <div class="s4-eyebrow">SCALA MCS · MERCALLI-CANCANI-SIEBERG</div>
-        <h2 class="s4-title">Stessa magnitudo.<br>Effetti completamente diversi.</h2>
+        <!-- ── HEADER full-width ── -->
+        <div id="s4-s11-header">
+          <div class="s4-eyebrow">SCALA MCS · MERCALLI-CANCANI-SIEBERG</div>
+          <h2 class="s4-title">Stessa magnitudo.<br>Effetti completamente diversi.</h2>
+          <p class="s4-body-text-sm">La scala MCS misura l'intensità percepita sul territorio — non l'energia. Imposta i quattro fattori e premi SIMULA.</p>
+        </div>
 
-        <!-- Pannello controlli -->
-        <div id="s4-sim-controls">
+        <!-- ── CONTENT: 2 colonne ── -->
+        <div id="s4-s11-content">
 
-          <p class="s4-body-text-sm">La scala MCS dipende da quattro fattori. Sceglili:</p>
+          <!-- Pannello controlli sinistra -->
+          <div id="s4-sim-controls">
 
-          <!-- Slider 1: Tipo terreno -->
-          <div class="s4-sim-row">
-            <label class="s4-sim-row-label" for="s4-sim-ter">Tipo di terreno</label>
-            <div class="s4-sim-sl-labels"><span>Roccia</span><span>Paludoso</span></div>
-            <input type="range" id="s4-sim-ter" min="1" max="5" step="1" value="4" aria-label="Tipo di terreno da roccia compatta a paludoso">
-            <div class="s4-sim-val" id="s4-sim-ter-val" aria-live="polite">Alluvionale</div>
-          </div>
+            <div class="s4-sim-section-label">PARAMETRI</div>
 
-          <!-- Slider 2: Densità popolazione -->
-          <div class="s4-sim-row">
-            <label class="s4-sim-row-label" for="s4-sim-pop">Densità popolazione</label>
-            <div class="s4-sim-sl-labels"><span>Rurale</span><span>Metropoli</span></div>
-            <input type="range" id="s4-sim-pop" min="1" max="5" step="1" value="4" aria-label="Densità popolazione da rurale a metropolitana">
-            <div class="s4-sim-val" id="s4-sim-pop-val" aria-live="polite">Città (500–2000 ab/km²)</div>
-          </div>
-
-          <!-- Slider 3: Tipo edifici -->
-          <div class="s4-sim-row">
-            <label class="s4-sim-row-label" for="s4-sim-ed">Tipo di edifici</label>
-            <div class="s4-sim-sl-labels"><span>Antisismico</span><span>Storico</span></div>
-            <input type="range" id="s4-sim-ed" min="1" max="5" step="1" value="5" aria-label="Tipo di edifici da moderno antisismico a storico medievale">
-            <div class="s4-sim-val" id="s4-sim-ed-val" aria-live="polite">Storico/medievale</div>
-          </div>
-
-          <!-- Slider 4: Magnitudo evento -->
-          <div class="s4-sim-row">
-            <label class="s4-sim-row-label" for="s4-sim-mag">Magnitudo evento</label>
-            <div class="s4-sim-sl-labels"><span>M 4.0</span><span>M 9.0</span></div>
-            <input type="range" id="s4-sim-mag" min="4.0" max="9.0" step="0.1" value="6.3" aria-label="Magnitudo evento da M 4.0 a M 9.0">
-            <div class="s4-sim-val" id="s4-sim-mag-val" aria-live="polite">M 6.3</div>
-          </div>
-
-          <!-- Pulsante simulazione -->
-          <button id="s4-sim-btn" class="s4-btn-primary">▶ SIMULA SCENARIO</button>
-
-          <!-- Preset rapidi -->
-          <div class="s4-presets">
-            <div class="s4-presets-label">PRESET:</div>
-            <button class="s4-preset-btn" data-preset="0">L'Aquila 2009 — centro storico</button>
-            <button class="s4-preset-btn" data-preset="1">L'Aquila 2009 — periferia Pile</button>
-            <button class="s4-preset-btn" data-preset="2">Irpinia 1980</button>
-          </div>
-
-        </div><!-- /s4-sim-controls -->
-
-        <!-- Output risultato simulazione -->
-        <div id="s4-sim-output">
-
-          <!-- Grado MCS in numero romano -->
-          <div id="s4-sim-grade" aria-live="polite" aria-atomic="true">—</div>
-
-          <!-- Descrizione effetti -->
-          <div id="s4-sim-desc" aria-live="polite">Seleziona i parametri e premi SIMULA</div>
-
-          <!-- Barra comparativa vs L'Aquila centro storico IX-X -->
-          <div id="s4-sim-bar-wrap">
-            <div class="s4-sim-bar-ref-label">vs L'AQUILA CENTRO STORICO (IX–X)</div>
-            <div id="s4-sim-bar-bg" role="meter" aria-label="Confronto intensità MCS rispetto a L'Aquila centro storico">
-              <div id="s4-sim-bar"></div>
-              <div id="s4-sim-bar-marker" aria-hidden="true"></div>
+            <div class="s4-sim-row">
+              <label class="s4-sim-row-label" for="s4-sim-ter">Tipo di terreno</label>
+              <div class="s4-sim-sl-labels"><span>Roccia</span><span>Paludoso</span></div>
+              <input type="range" id="s4-sim-ter" min="1" max="5" step="1" value="4" aria-label="Tipo di terreno da roccia compatta a paludoso">
+              <div class="s4-sim-val" id="s4-sim-ter-val" aria-live="polite">Alluvionale</div>
             </div>
-          </div>
 
-          <!-- Percentuale e disclaimer -->
-          <div id="s4-sim-pct" aria-live="polite"></div>
-          <div class="s4-disclaimer">&#9888; Stima didattica semplificata — non sostituisce modelli professionali INGV</div>
+            <div class="s4-sim-row">
+              <label class="s4-sim-row-label" for="s4-sim-pop">Densità popolazione</label>
+              <div class="s4-sim-sl-labels"><span>Rurale</span><span>Metropoli</span></div>
+              <input type="range" id="s4-sim-pop" min="1" max="5" step="1" value="4" aria-label="Densità popolazione da rurale a metropolitana">
+              <div class="s4-sim-val" id="s4-sim-pop-val" aria-live="polite">Città (500–2000 ab/km²)</div>
+            </div>
 
-        </div><!-- /s4-sim-output -->
+            <div class="s4-sim-row">
+              <label class="s4-sim-row-label" for="s4-sim-ed">Tipo di edifici</label>
+              <div class="s4-sim-sl-labels"><span>Antisismico</span><span>Storico</span></div>
+              <input type="range" id="s4-sim-ed" min="1" max="5" step="1" value="5" aria-label="Tipo di edifici da moderno antisismico a storico medievale">
+              <div class="s4-sim-val" id="s4-sim-ed-val" aria-live="polite">Storico/medievale</div>
+            </div>
+
+            <div class="s4-sim-row">
+              <label class="s4-sim-row-label" for="s4-sim-mag">Magnitudo evento</label>
+              <div class="s4-sim-sl-labels"><span>M 4.0</span><span>M 9.0</span></div>
+              <input type="range" id="s4-sim-mag" min="4.0" max="9.0" step="0.1" value="6.3" aria-label="Magnitudo evento da M 4.0 a M 9.0">
+              <div class="s4-sim-val" id="s4-sim-mag-val" aria-live="polite">M 6.3</div>
+            </div>
+
+            <button id="s4-sim-btn" class="s4-btn-primary">&#9654; SIMULA SCENARIO</button>
+
+            <div class="s4-sim-section-label" style="margin-top:0.6rem;">SCENARI REALI</div>
+
+            <div class="s4-presets">
+              <button class="s4-preset-btn" data-preset="0">L'Aquila 2009 — centro storico</button>
+              <button class="s4-preset-btn" data-preset="1">L'Aquila 2009 — periferia Pile</button>
+              <button class="s4-preset-btn" data-preset="2">Irpinia 1980</button>
+            </div>
+
+          </div><!-- /s4-sim-controls -->
+
+          <!-- Output risultato destra -->
+          <div id="s4-sim-output">
+            <div id="s4-sim-grade" aria-live="polite" aria-atomic="true">—</div>
+            <div id="s4-sim-desc" aria-live="polite">Imposta i parametri e premi SIMULA</div>
+            <div id="s4-sim-bar-wrap">
+              <div class="s4-sim-bar-ref-label">vs L'AQUILA CENTRO STORICO (IX–X)</div>
+              <div id="s4-sim-bar-bg" role="meter" aria-label="Confronto intensità MCS rispetto a L'Aquila centro storico">
+                <div id="s4-sim-bar"></div>
+                <div id="s4-sim-bar-marker" aria-hidden="true"></div>
+              </div>
+            </div>
+            <div id="s4-sim-pct" aria-live="polite"></div>
+            <div class="s4-disclaimer">&#9888; Stima didattica semplificata — non sostituisce modelli professionali INGV</div>
+          </div><!-- /s4-sim-output -->
+
+        </div><!-- /s4-s11-content -->
 
       </div><!-- /s4-s11-inner -->
     </div><!-- /s4-s11 -->
