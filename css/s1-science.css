@@ -694,8 +694,8 @@
 #s1-s5 { background: var(--black); }
 .s1-s5-wrap {
     width: 100%;
-    max-width: 1060px;
-    padding: 1.8rem 4rem;
+    max-width: 1240px;
+    padding: 1.8rem 2.5rem;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -732,7 +732,7 @@
     letter-spacing: 0.12em;
     color: rgba(245,237,224,0.2);
 }
-#s1-s5 { align-items: flex-start; }
+#s1-s5 { align-items: center; }
 .s1-s5-wrap { padding-top: 2.5rem; }
 .s1-s5-grid {
     display: grid;
