@@ -311,9 +311,7 @@
           }
         }
         s4SeismoState.running = true;
-        if (!s4Loops['slide0']) {
-          requestAnimationFrame(seismoLoop);
-        }
+        requestAnimationFrame(seismoLoop);
       }
       return;
     }
@@ -378,6 +376,23 @@
 
     // Fetch IRIS con fallback
     function fetchIRIS() {
+      const _autoFallback = setTimeout(function() {
+        if (s4SeismoState && s4SeismoState.liveSimulated && s4SeismoState.mode === 'live') {
+          s4SeismoState.mode = '2009';
+          s4SeismoState.seismo2009Pos = 0;
+          const btnLive = document.getElementById('s4-mode-live');
+          const btn2009 = document.getElementById('s4-mode-2009');
+          if (btnLive) { btnLive.classList.remove('s4-mode-active'); btnLive.setAttribute('aria-pressed', 'false'); }
+          if (btn2009) { btn2009.classList.add('s4-mode-active'); btn2009.setAttribute('aria-pressed', 'true'); }
+          const irisStatus = document.getElementById('s4-iris-status');
+          if (irisStatus) { irisStatus.textContent = 'NON DISPONIBILE · Visualizzo 6 apr 2009'; irisStatus.classList.add('visible'); }
+          const speedCtrl = document.getElementById('s4-speed-ctrl');
+          if (speedCtrl) speedCtrl.style.display = 'flex';
+          const liveDot = document.getElementById('s4-live-dot');
+          if (liveDot) liveDot.classList.add('simulated');
+        }
+      }, 10000);
+
       const now = new Date();
       const end = now.toISOString().replace(/\.\d+Z$/, 'Z');
       const start = new Date(now - 5 * 60000).toISOString().replace(/\.\d+Z$/, 'Z');
@@ -390,6 +405,7 @@
         .then(function (r) { return r.text(); })
         .then(function (text) {
           clearTimeout(timeout);
+          clearTimeout(_autoFallback);
           const lines = text.trim().split('\n');
           const vals = [];
           lines.forEach(function (line) {
@@ -418,6 +434,7 @@
         })
         .catch(function () {
           clearTimeout(timeout);
+          clearTimeout(_autoFallback);
           // Fallback: continua con rumore sintetico
           const irisStatus = document.getElementById('s4-iris-status');
           const liveDot = document.getElementById('s4-live-dot');
@@ -1310,58 +1327,36 @@
       // Disegna riga animata
       if (lineProgress > 0) {
         const p = Math.min(lineProgress, 1);
-        // Interpolazione SX→centro→DX
-        let x1, y1, x2, y2;
-        if (p <= 0.5) {
-          const t = p * 2;
-          x1 = leftX; y1 = yLeft;
-          x2 = leftX + (centerX - leftX) * t;
-          y2 = yLeft + (yCenter - yLeft) * t;
-        } else {
-          const t = (p - 0.5) * 2;
-          x1 = centerX; y1 = yCenter;
-          x2 = centerX + (rightX - centerX) * t;
-          y2 = yCenter + (yRight - yCenter) * t;
-        }
+        const yGeom = yLeft + (yRight - yLeft) * (centerX - leftX) / (rightX - leftX);
 
-        // Linea UNICA retta da asse sx a asse dx (come si usa il nomogramma reale)
+        // Retta unica SX→DX — interpolazione lineare pura
+        const xEnd = leftX + (rightX - leftX) * p;
+        const yEnd = yLeft + (yRight - yLeft) * p;
+
         ctx.strokeStyle = terra;
         ctx.lineWidth = 2;
         ctx.beginPath();
-        if (p <= 0.5) {
-          // Prima metà animazione: sx → centro
-          const t = p * 2;
-          ctx.moveTo(leftX, yLeft);
-          ctx.lineTo(leftX + (centerX - leftX) * t, yLeft + (yCenter - yLeft) * t);
-        } else {
-          // Seconda metà: disegna la linea completa sx → dx come retta unica
-          const t = (p - 0.5) * 2;
-          const xEnd = centerX + (rightX - centerX) * t;
-          const yEnd = yCenter + (yRight - yCenter) * t;
-          ctx.moveTo(leftX, yLeft);
-          ctx.lineTo(xEnd, yEnd);
-        }
+        ctx.moveTo(leftX, yLeft);
+        ctx.lineTo(xEnd, yEnd);
         ctx.stroke();
 
-        // Punto di intersezione geometrica della retta con l'asse centrale
-        const yGeom = yLeft + (yRight - yLeft) * (centerX - leftX) / (rightX - leftX);
-
-        // Pallino colorato sull'asse magnitudo (il punto di lettura)
-        if (p >= 0.5) {
+        // Pallino quando la linea supera il centro
+        const pCenter = (centerX - leftX) / (rightX - leftX);
+        if (p >= pCenter) {
           ctx.beginPath();
           ctx.arc(centerX, yGeom, 6, 0, Math.PI * 2);
           ctx.fillStyle = terra;
           ctx.fill();
         }
 
-        // Label ML — "L'Aquila 2009" solo quando ML ≈ 6.3
+        // Label ML — visibile solo quando animazione completa
         if (p >= 1 && showLabel) {
+          const ml = computeML(gap, amp);
           const mlDisp = ml.toFixed(1);
           ctx.fillStyle = terra;
           ctx.font = 'bold 13px JetBrains Mono, monospace';
           ctx.textAlign = 'center';
           ctx.fillText('ML = ' + mlDisp, centerX, yGeom - 14);
-          // Solo se il valore calcolato è vicino a quello reale di L'Aquila
           if (ml >= 5.8 && ml <= 6.8) {
             ctx.font = '9px JetBrains Mono, monospace';
             ctx.fillStyle = ochre;
@@ -1471,12 +1466,12 @@
     function nomoPointerY(e) {
       const rect = canvas.getBoundingClientRect();
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      return clientY - rect.top;
+      return (clientY - rect.top) / rect.height * canvas.height / (window.devicePixelRatio || 1);
     }
     function nomoPointerX(e) {
       const rect = canvas.getBoundingClientRect();
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      return clientX - rect.left;
+      return (clientX - rect.left) / rect.width * canvas.width / (window.devicePixelRatio || 1);
     }
 
     canvas.addEventListener('mousedown', function (e) {
@@ -1823,7 +1818,8 @@
     const map = L.map('s4-map9', {
       center: [42.35, 13.45],
       zoom: 8,
-      scrollWheelZoom: false
+      scrollWheelZoom: true,
+      dragging: true
     });
     s4Map9Instance = map;
 
@@ -2154,7 +2150,8 @@
     const map = L.map('s4-map12', {
       center: [42.3476, 13.3800],
       zoom: 10,
-      scrollWheelZoom: false
+      scrollWheelZoom: true,
+      dragging: true
     });
     s4Map12Instance = map;
 
@@ -2163,16 +2160,22 @@
       maxZoom: 18
     }).addTo(map);
 
-    // Aggiungi poligoni isosismici (dal più grande al più piccolo = Z-order corretto)
-    const zonesReversed = S4_ISO_ZONES.slice().reverse();
-    zonesReversed.forEach(function (zone) {
-      const poly = L.polygon(zone.coords, {
+    // Aggiungi poligoni isosismici come anelli (donut) per evitare sovrapposizioni
+    // Ordina dal grado più alto (X) al più basso (V)
+    const zonesSorted = S4_ISO_ZONES.slice().sort(function(a, b) { return b.grade - a.grade; });
+    zonesSorted.forEach(function (zone, i) {
+      // Zona interna (grado superiore) usata come buco per evitare sovrapposizioni
+      const innerZone = i > 0 ? zonesSorted[i - 1] : null;
+      const latLngs = innerZone ? [zone.coords, innerZone.coords] : [zone.coords];
+      const poly = L.polygon(latLngs, {
         color: zone.color,
         fillColor: zone.color,
         fillOpacity: zone.opacity,
         weight: 2,
         opacity: 0.9
-      }).addTo(map);
+      });
+      poly.bindTooltip(zone.label + '<br><small>' + zone.zones.join(', ') + '</small>', { sticky: true });
+      poly.addTo(map);
 
       poly.bindPopup(
         '<strong>Grado MCS ' + toRoman(zone.grade) + ' — ' + zone.label + '</strong><br>' +
