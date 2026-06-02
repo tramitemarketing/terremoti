@@ -677,6 +677,12 @@
       if (mk) mk.style.display = 'none';
       const spd = document.getElementById('s4-speed-btns');
       if (spd) spd.style.display = 'none';
+      const lbl = document.getElementById('s4-mode-label');
+      if (lbl) lbl.textContent = 'Live';
+      const irisStatus = document.getElementById('s4-iris-status');
+      if (irisStatus) irisStatus.classList.remove('visible');
+      const liveDot = document.getElementById('s4-live-dot');
+      if (liveDot) liveDot.classList.remove('simulated');
     });
     if (btn2009) btn2009.addEventListener('click', function () {
       s4SeismoState.mode = '2009';
@@ -687,6 +693,8 @@
       if (mk) mk.style.display = 'block';
       const spd = document.getElementById('s4-speed-btns');
       if (spd) spd.style.display = 'flex';
+      const lbl = document.getElementById('s4-mode-label');
+      if (lbl) lbl.textContent = '6 apr 2009';
     });
 
     // Bottoni velocità
