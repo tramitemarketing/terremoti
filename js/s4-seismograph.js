@@ -299,21 +299,21 @@
   // ════════════════════════════════════════
 
   let s4SeismoState = null;
+  let s4SeismoLoopFn = null; // riferimento stabile a seismoLoop, salvato dopo prima init
 
   function initSlide1() {
     if (s4SlideInited[0]) {
-      if (s4SeismoState) {
+      if (s4SeismoState && s4SeismoLoopFn) {
         // Ridimensiona il canvas prima di riavviare
         const cvs = document.getElementById('s4-seismo-canvas');
         if (cvs && cvs.offsetWidth > 0) {
           const dpr2 = window.devicePixelRatio || 1;
-          if (cvs.width !== Math.round(cvs.offsetWidth * dpr2)) {
-            cvs.width = Math.round(cvs.offsetWidth * dpr2);
-            cvs.height = Math.round(cvs.offsetHeight * dpr2) || 300 * dpr2;
-          }
+          cvs.width  = Math.round(cvs.offsetWidth  * dpr2);
+          cvs.height = Math.round(cvs.offsetHeight * dpr2) || 300 * dpr2;
         }
         s4SeismoState.running = true;
-        requestAnimationFrame(seismoLoop);
+        // Usa il riferimento salvato dalla prima init — evita TDZ su canvas/ctx
+        requestAnimationFrame(s4SeismoLoopFn);
       }
       return;
     }
@@ -666,6 +666,8 @@
       }
     }
 
+    // Salva riferimento stabile per il restart (evita TDZ nelle chiamate successive)
+    s4SeismoLoopFn = seismoLoop;
     seismoLoop(0);
 
     // Toggle live / 2009
