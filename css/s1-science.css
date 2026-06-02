@@ -747,11 +747,11 @@
 #s1-s6 { background: var(--black); }
 .s1-s6-inner {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 3.5rem;
     width: 100%;
-    max-width: 1080px;
-    padding: 3.5rem 4rem;
+    max-width: none;
+    padding: 3rem 4rem;
     box-sizing: border-box;
     align-items: start;
 }
@@ -819,8 +819,19 @@
 }
 .s1-canvas-controls { display: flex; align-items: center; gap: 1.4rem; margin-bottom: 0.8rem; }
 #s1-paganica-canvas {
-    width: 100%; height: 320px; display: block;
+    width: 100%; height: 400px; display: block;
     border: 1px solid rgba(245, 237, 224, 0.07);
+}
+.s1-s6-desc {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-left: 2px solid rgba(196, 97, 42, 0.4);
+    background: rgba(196, 97, 42, 0.05);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(245, 237, 224, 0.55);
+    font-style: italic;
 }
 .s1-tech-card-section { margin: 2.4rem 0 3rem; }
 .s1-tech-grid {
