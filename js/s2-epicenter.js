@@ -739,10 +739,11 @@
 
     function drawSurface(depth) {
       const km = depthToKm(depth);
-      /* Scala dinamica: griglia sempre ~60% più larga del raggio, multiplo di 10 */
-      const GRID_MAX_KM = Math.max(40, Math.ceil(km * 1.6 / 10) * 10);
-      const STEP_MAJOR  = Math.max(10, Math.round(GRID_MAX_KM / 3 / 10) * 10);
-      const STEP_MINOR  = STEP_MAJOR / 2;
+
+      /* ── Griglia FISSA 80 km — non cambia mai ── */
+      const GRID_MAX_KM = 80;
+      const STEP_MAJOR  = 20;
+      const STEP_MINOR  = 10;
 
       const cx = DW / 2, cy = DH / 2;
       const pxPerKm = (DW / 2 - 20) / GRID_MAX_KM;
@@ -751,8 +752,8 @@
       dctx.fillStyle = '#050709';
       dctx.fillRect(0, 0, DW, DH);
 
-      /* — Linee secondarie — */
-      dctx.strokeStyle = 'rgba(245,237,224,0.06)';
+      /* — Linee secondarie ogni 10 km — */
+      dctx.strokeStyle = 'rgba(245,237,224,0.05)';
       dctx.lineWidth = 0.5;
       for (let k = STEP_MINOR; k <= GRID_MAX_KM; k += STEP_MINOR) {
         const d = k * pxPerKm;
@@ -762,7 +763,7 @@
         dctx.beginPath(); dctx.moveTo(0, cy + d); dctx.lineTo(DW, cy + d); dctx.stroke();
       }
 
-      /* — Linee principali + etichette km — */
+      /* — Linee principali ogni 20 km + etichette — */
       dctx.strokeStyle = 'rgba(245,237,224,0.18)';
       dctx.lineWidth = 1;
       dctx.font = '8px "JetBrains Mono", monospace';
@@ -786,37 +787,51 @@
       dctx.beginPath(); dctx.moveTo(cx, 0); dctx.lineTo(cx, DH); dctx.stroke();
       dctx.beginPath(); dctx.moveTo(0, cy); dctx.lineTo(DW, cy); dctx.stroke();
 
-      /* — Cerchio — raggio coerente con la griglia — */
-      const rPx   = Math.min(km * pxPerKm, DW / 2 - 15);
+      /* — Cerchio — NON clampato: se km > 80 copre tutta la griglia — */
+      const rPx   = km * pxPerKm;
       const color = lerpColor(depth);
+      const rGrad = Math.max(rPx, 2); /* evita errore gradiente con raggio 0 */
 
-      const fillGrad = dctx.createRadialGradient(cx, cy, 0, cx, cy, rPx);
-      fillGrad.addColorStop(0,    'rgba(139,26,26,0.70)');
-      fillGrad.addColorStop(0.35, 'rgba(196,97,42,0.40)');
-      fillGrad.addColorStop(0.75, 'rgba(196,97,42,0.12)');
-      fillGrad.addColorStop(1,    'rgba(196,97,42,0)');
+      const fillGrad = dctx.createRadialGradient(cx, cy, 0, cx, cy, rGrad);
+      fillGrad.addColorStop(0,    'rgba(139,26,26,0.75)');
+      fillGrad.addColorStop(0.35, 'rgba(196,97,42,0.50)');
+      fillGrad.addColorStop(0.75, 'rgba(196,97,42,0.20)');
+      fillGrad.addColorStop(1,    'rgba(196,97,42,0.05)');
       dctx.fillStyle = fillGrad;
-      dctx.beginPath(); dctx.arc(cx, cy, rPx, 0, Math.PI * 2); dctx.fill();
+      dctx.beginPath(); dctx.arc(cx, cy, rGrad, 0, Math.PI * 2); dctx.fill();
 
-      dctx.strokeStyle = color;
-      dctx.lineWidth = 2;
-      dctx.beginPath(); dctx.arc(cx, cy, rPx, 0, Math.PI * 2); dctx.stroke();
+      /* Bordo solo se il cerchio entra nel canvas */
+      if (rPx < DW / 2 + 5) {
+        dctx.strokeStyle = color;
+        dctx.lineWidth = 2;
+        dctx.beginPath(); dctx.arc(cx, cy, rPx, 0, Math.PI * 2); dctx.stroke();
+      }
 
-      /* — Crosshair — */
-      dctx.strokeStyle = 'rgba(245,237,224,0.25)';
-      dctx.lineWidth = 1;
+      /* — Crosshair epicentro (sempre visibile sopra il gradiente) — */
+      dctx.strokeStyle = 'rgba(245,237,224,0.55)';
+      dctx.lineWidth = 1.5;
       dctx.beginPath(); dctx.moveTo(cx - 10, cy); dctx.lineTo(cx + 10, cy); dctx.stroke();
       dctx.beginPath(); dctx.moveTo(cx, cy - 10); dctx.lineTo(cx, cy + 10); dctx.stroke();
 
-      /* — Label raggio — */
-      dctx.fillStyle = color;
+      /* — Label "r ≈ X km" SEMPRE FUORI dal cerchio — */
       dctx.font = '8px "JetBrains Mono", monospace';
-      dctx.textAlign = 'left';
       dctx.textBaseline = 'top';
-      dctx.fillText('r ≈ ' + km + ' km', cx + rPx * 0.55 + 4, cy - rPx * 0.55);
+      const labelText = 'r ≈ ' + km + ' km';
+      if (rPx <= DW / 2 - 30) {
+        /* Cerchio entra nel canvas: label fuori dal bordo in alto-destra */
+        dctx.fillStyle = color;
+        dctx.textAlign = 'left';
+        dctx.fillText(labelText, cx + rPx + 8, cy - rPx * 0.4);
+      } else {
+        /* Cerchio copre tutto: label in alto a destra del canvas */
+        dctx.fillStyle = 'rgba(245,237,224,0.70)';
+        dctx.textAlign = 'right';
+        dctx.fillText(labelText, DW - 8, 8);
+      }
 
-      /* — Label epicentro — */
+      /* — Label EPICENTRO — */
       dctx.fillStyle = 'rgba(58,126,196,0.9)';
+      dctx.textAlign = 'left';
       dctx.fillText('EPICENTRO', cx + 12, cy + 4);
     }
 

@@ -513,11 +513,17 @@
     text-transform: uppercase;
     flex-shrink: 0;
 }
-#s2-section-canvas, #s2-depth-canvas {
+#s2-section-canvas {
     display: block;
     max-width: 100%;
+    max-height: calc(100vh - 170px);
+    flex-shrink: 1;
+}
+#s2-depth-canvas {
+    display: block;
+    width: 400px;
+    max-width: 100%;
     max-height: calc(100vh - 120px);
-    height: calc(100vh - 120px);
     flex-shrink: 1;
 }
 /* Controlli centrali */
