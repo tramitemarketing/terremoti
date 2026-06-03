@@ -265,6 +265,20 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
     final index = ref.watch(
       swipeSessionProvider.select((s) => s.currentIndex),
     );
+
+    // When the index decreases (undo), the restored card's ID is no longer
+    // in _topAssetId — immediately authorize it so the active slot renders.
+    ref.listen<int>(
+      swipeSessionProvider.select((s) => s.currentIndex),
+      (prev, next) {
+        if (prev != null && next < prev && mounted) {
+          final asset =
+              ref.read(swipeSessionProvider.notifier).assetAt(next);
+          if (asset != null) _topAssetId.value = asset.id;
+        }
+      },
+    );
+
     final notifier = ref.read(swipeSessionProvider.notifier);
 
     final top    = notifier.assetAt(index);
