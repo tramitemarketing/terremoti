@@ -109,23 +109,32 @@ class _SwipingView extends ConsumerWidget {
           child: SessionHud(),
         ),
 
-        // "Fine" button — top-right, visible only while swiping.
-        if (canEnd)
+        // Bottom action area: Annulla (if available) above FINE button.
+        if (canEnd || canUndo)
           Positioned(
-            top: 0,
-            right: 0,
-            child: SafeArea(
-              child: _EndSessionButton(),
-            ),
-          ),
-
-        // Undo button — shown only when a reversible action exists.
-        if (canUndo)
-          Positioned(
-            bottom: 48,
+            bottom: 0,
             left: 0,
             right: 0,
-            child: Center(child: _UndoButton()),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppTokens.spaceMD,
+                  AppTokens.spaceSM,
+                  AppTokens.spaceMD,
+                  AppTokens.spaceMD,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (canUndo) ...[
+                      Center(child: _UndoButton()),
+                      const SizedBox(height: AppTokens.spaceSM),
+                    ],
+                    if (canEnd) _EndSessionButton(),
+                  ],
+                ),
+              ),
+            ),
           ),
       ],
     );
@@ -135,17 +144,25 @@ class _SwipingView extends ConsumerWidget {
 class _EndSessionButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      onTap: () => ref.read(swipeSessionProvider.notifier).endSession(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppTokens.spaceMD,
-          vertical: AppTokens.spaceSM,
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () => ref.read(swipeSessionProvider.notifier).endSession(),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.keepGreen,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: AppTokens.spaceMD),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppTokens.radiusMD),
+          ),
+          elevation: 0,
         ),
-        child: Text(
-          'Fine',
-          style: AppTypography.caption.copyWith(
-            color: AppColors.textSecondary,
+        child: const Text(
+          'FINE',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 15,
+            letterSpacing: 2.5,
           ),
         ),
       ),
