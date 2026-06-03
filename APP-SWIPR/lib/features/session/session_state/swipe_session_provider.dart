@@ -8,8 +8,8 @@ import '../../../core/photo/cache_strategy.dart';
 import '../../../core/performance/preload_engine.dart';
 import '../../../core/photo/paging_controller.dart';
 import '../../../core/photo/photo_repository.dart';
+import '../../../core/storage/hive_boxes.dart';
 import '../../../core/storage/hive_models.dart';
-import '../../../core/storage/hive_service.dart';
 import '../../../core/storage/isar_models.dart';
 import '../../../router.dart';
 import '../../../shared/theme/app_tokens.dart';
@@ -185,7 +185,7 @@ class SwipeSession extends _$SwipeSession {
   /// [SwipePage.initState]. Safe to call again to restart with a new filter.
   Future<void> startSession(SwipeFilter filter) async {
     if (kDebugMode) debugPrint('[Session] startSession called mode=${filter.mode}');
-    // if (kDebugMode) await HiveService.clearAllDecisions();
+    // if (kDebugMode) await HiveBoxes.decisions.clear();
     _disposeSession();
     _startedAt = DateTime.now();
 
@@ -202,8 +202,13 @@ class SwipeSession extends _$SwipeSession {
       await _pager!.init(filter);
 
       // Open a SessionRecord in Hive for crash-recovery and stats.
+      if (kDebugMode) debugPrint('[Session] saving SessionRecord');
       final record = SessionRecord()..startedAt = _startedAt!;
-      _sessionRecordId = await HiveService.saveSession(record);
+      final id = DateTime.now().millisecondsSinceEpoch;
+      record.id = id;
+      await HiveBoxes.sessions.put(id.toString(), record);
+      _sessionRecordId = id;
+      if (kDebugMode) debugPrint('[Session] SessionRecord saved id=$id');
 
       // Scan forward from page 0 until a non-empty page is found.
       // Required when early pages are fully decided.
@@ -213,8 +218,10 @@ class SwipeSession extends _$SwipeSession {
       if (kDebugMode) debugPrint('[Session] totalCount=$totalCount mode=${filter.mode}');
 
       final maxPages = (totalCount / 50).ceil() + 1;
+      if (kDebugMode) debugPrint('[Session] maxPages=$maxPages entering loop');
 
       while (firstAssets.isEmpty && startPage < maxPages) {
+        if (kDebugMode) debugPrint('[Session] calling getPage($startPage)');
         firstAssets = await _pager!.getPage(startPage);
         if (kDebugMode) debugPrint('[Session] page $startPage → ${firstAssets.length} assets');
         if (firstAssets.isEmpty) startPage++;
@@ -295,7 +302,8 @@ class SwipeSession extends _$SwipeSession {
     if (!state.isAnimating) return;
 
     // ── 1. Write to Hive first — source of truth ──────────────────────────
-    await HiveService.saveDecision(
+    await HiveBoxes.decisions.put(
+      assetId,
       AssetDecisionRecord()
         ..assetId = assetId
         ..decision = decision
@@ -380,7 +388,7 @@ class SwipeSession extends _$SwipeSession {
     if (state.currentIndex <= 0) return;
 
     // Delete decision from Hive.
-    await HiveService.deleteDecision(undoId);
+    await HiveBoxes.decisions.delete(undoId);
 
     // Reverse queue mirrors.
     final newTrash = List<String>.from(state.trashQueue);
@@ -443,7 +451,8 @@ class SwipeSession extends _$SwipeSession {
   ///
   /// Overwrites the existing 'later' Hive record with 'keep'.
   Future<void> keepFromLater(String assetId) async {
-    await HiveService.saveDecision(
+    await HiveBoxes.decisions.put(
+      assetId,
       AssetDecisionRecord()
         ..assetId = assetId
         ..decision = 'keep'
@@ -461,7 +470,8 @@ class SwipeSession extends _$SwipeSession {
   ///
   /// Overwrites the existing 'later' Hive record with 'trash'.
   Future<void> trashFromLater(String assetId) async {
-    await HiveService.saveDecision(
+    await HiveBoxes.decisions.put(
+      assetId,
       AssetDecisionRecord()
         ..assetId = assetId
         ..decision = 'trash'
@@ -629,7 +639,7 @@ class SwipeSession extends _$SwipeSession {
   Future<void> _finaliseSessionRecord() async {
     final id = _sessionRecordId;
     if (id == null) return;
-    final record = HiveService.getSession(id);
+    final record = HiveBoxes.sessions.get(id.toString());
     if (record == null) return;
     record
       ..endedAt = DateTime.now()

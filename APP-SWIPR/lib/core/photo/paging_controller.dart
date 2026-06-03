@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:photo_manager/photo_manager.dart';
 
 import '../storage/isar_models.dart';
@@ -61,6 +62,7 @@ class PagingController {
   /// Returns an empty list when [init] has not been called, or when the
   /// requested page is beyond the end of the asset list.
   Future<List<AssetEntity>> getPage(int page) {
+    if (kDebugMode) debugPrint('[Pager] getPage(page=$page) called filter=${_filter?.mode}');
     final currentFilter = _filter;
     if (currentFilter == null) return Future.value([]);
 

@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/foundation.dart' show debugPrint, defaultTargetPlatform, kDebugMode, TargetPlatform;
 import 'package:photo_manager/photo_manager.dart';
 
 import '../storage/hive_boxes.dart';
@@ -72,6 +72,7 @@ class PhotoRepository {
 
   /// Returns a page of [AssetEntity] objects, already filtered of decided IDs.
   Future<List<AssetEntity>> getPage(int page, SwipeFilter filter) async {
+    if (kDebugMode) debugPrint('[Repo] getPage(page=$page mode=${filter.mode}) masterList=${_masterList?.length}');
     return switch (filter.mode) {
       CleanupMode.entireLibrary => _masterList != null
           ? _getPageFromMasterList(page)
@@ -230,11 +231,14 @@ class PhotoRepository {
 
   /// In-memory slice — zero platform-channel cost.
   Future<List<AssetEntity>> _getPageFromMasterList(int page) async {
+    if (kDebugMode) debugPrint('[Repo] _getPageFromMasterList(page=$page) masterList.len=${_masterList?.length}');
     final list = _masterList ?? [];
     final start = page * _kPageSize;
     if (start >= list.length) return [];
     final end = (start + _kPageSize).clamp(0, list.length);
-    return list.sublist(start, end);
+    final result = list.sublist(start, end);
+    if (kDebugMode) debugPrint('[Repo] _getPageFromMasterList done → ${result.length} items');
+    return result;
   }
 
   Future<List<AssetEntity>> _getTimeRangePage(
