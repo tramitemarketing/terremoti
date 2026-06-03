@@ -407,7 +407,12 @@ class _DeckCard extends StatelessWidget {
 /// Standby photo card — always rendered behind the active card.
 /// Revealed instantly when the active card flies off, preventing any
 /// visible gap between the old and new card.
-class _BackgroundCard extends StatelessWidget {
+///
+/// Starts with [cachedBytes] if the preloader already decoded the asset.
+/// Falls back to a direct [AssetEntity.thumbnailDataWithSize] call if not,
+/// so the photo appears as soon as it's available even when the preloader
+/// hasn't caught up yet.
+class _BackgroundCard extends StatefulWidget {
   const _BackgroundCard({
     required this.asset,
     required this.cachedBytes,
@@ -419,14 +424,45 @@ class _BackgroundCard extends StatelessWidget {
   final Size screenSize;
 
   @override
+  State<_BackgroundCard> createState() => _BackgroundCardState();
+}
+
+class _BackgroundCardState extends State<_BackgroundCard> {
+  Uint8List? _bytes;
+
+  @override
+  void initState() {
+    super.initState();
+    _bytes = widget.cachedBytes;
+    if (_bytes == null) _loadBytes();
+  }
+
+  @override
+  void didUpdateWidget(_BackgroundCard old) {
+    super.didUpdateWidget(old);
+    if (old.asset.id != widget.asset.id) {
+      _bytes = widget.cachedBytes;
+      if (_bytes == null) _loadBytes();
+    }
+  }
+
+  Future<void> _loadBytes() async {
+    final bytes = await widget.asset.thumbnailDataWithSize(
+      const ThumbnailSize(540, 960),
+      quality: 80,
+    );
+    if (mounted && bytes != null) setState(() => _bytes = bytes);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppTokens.radiusCard),
       child: SwipeCard(
-        asset: asset,
-        cachedBytes: cachedBytes,
+        asset: widget.asset,
+        cachedBytes: _bytes,
         dragOffset: Offset.zero,
-        screenSize: screenSize,
+        screenSize: widget.screenSize,
         isTop: false,
       ),
     );
