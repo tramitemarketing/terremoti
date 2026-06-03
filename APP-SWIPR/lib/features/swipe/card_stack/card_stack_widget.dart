@@ -56,6 +56,10 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
   /// current fly-off so the 92%-threshold listener cannot fire twice.
   bool _committed = false;
 
+  /// True while a snap-back is running — suppresses the fly-off fade-out so
+  /// the card stays fully opaque as it returns to centre.
+  bool _isSnapBack = false;
+
   /// At most one gesture queued while a fly-off is running.
   /// Processed immediately after [_commitAndReset] completes.
   String? _queuedDecision; // 'keep' | 'trash' | 'later'
@@ -145,6 +149,7 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
   // ── Snap-back animation ───────────────────────────────────────────────────
 
   void _snapBack() {
+    _isSnapBack = true;
     _anim.reset();
     final start = _drag.value;
     final snapAnim = Tween<Offset>(begin: start, end: Offset.zero).animate(
@@ -163,6 +168,7 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
         _anim.reset();
         _accumulated = Offset.zero;
         _drag.value = Offset.zero;
+        _isSnapBack = false;
       }
     };
 
@@ -174,6 +180,7 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
   // ── Fly-off animation → commit ────────────────────────────────────────────
 
   void _triggerSwipe(String decision, Size screenSize) {
+    _isSnapBack = false;
     ref.read(swipeSessionProvider.notifier).lockForAnimation();
     _pendingDecision = decision;
     _committed = false;
@@ -333,9 +340,9 @@ class _CardStackWidgetState extends ConsumerState<CardStackWidget>
                   final bytes = top.id == _topAssetId.value
                       ? notifier.getBytesSync(top.id)
                       : null;
-                  // Fade out over the last 20% of the fly-off for a smooth
-                  // crossfade into the standby card instead of a hard cut.
-                  final opacity = _anim.value < 0.80
+                  // Fade out over the last 20% of the fly-off only — not
+                  // during snap-back (where the card must stay fully opaque).
+                  final opacity = (_isSnapBack || _anim.value < 0.80)
                       ? 1.0
                       : (1.0 - (_anim.value - 0.80) / 0.20).clamp(0.0, 1.0);
                   return Opacity(
