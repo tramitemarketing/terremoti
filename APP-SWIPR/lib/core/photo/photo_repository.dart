@@ -165,7 +165,15 @@ class PhotoRepository {
   ///
   /// Uses individual bucket paths (`hasAll: false`) to avoid the virtual
   /// "all photos" path that hangs on Samsung Android 14.
-  /// Fetches all buckets in parallel, deduplicates, then sorts by createdAt DESC.
+  ///
+  /// Fetches albums SEQUENTIALLY (not in parallel) — concurrent MediaStore
+  /// cursors can deadlock on Samsung One UI 6 / Android 14.
+  ///
+  /// Capped at [_kAndroidInitialCap] IDs so startup completes in ~2 s on
+  /// a typical device. The cap covers most sessions; if the deck is exhausted
+  /// the session proceeds to the review/result phase normally.
+  static const _kAndroidInitialCap = 1000;
+
   Future<List<String>> _buildEntireLibraryMasterList() async {
     final paths = await PhotoManager.getAssetPathList(
       type: RequestType.image,
@@ -173,39 +181,29 @@ class PhotoRepository {
     );
     if (paths.isEmpty) return [];
 
-    // Fetch all album buckets in parallel. Each bucket is a filesystem directory;
-    // a photo lives in exactly one bucket on Android, so deduplication is minimal
-    // in practice but required for safety (virtual albums can overlap).
-    final bucketPairs = await Future.wait(paths.map(_fetchPairsFromPath));
-
-    final seen = <String>{};
-    final allPairs = <(String, int)>[];
-    for (final pairs in bucketPairs) {
-      for (final pair in pairs) {
-        if (!seen.contains(pair.$1) && !_decidedIds.contains(pair.$1)) {
-          seen.add(pair.$1);
-          allPairs.add(pair);
-        }
-      }
-    }
-
-    return compute(_sortByCreatedDesc, allPairs);
-  }
-
-  /// Fetches all (assetId, createdAtMs) pairs from a single [AssetPathEntity].
-  Future<List<(String, int)>> _fetchPairsFromPath(AssetPathEntity path) async {
     final pairs = <(String, int)>[];
-    var page = 0;
-    while (true) {
-      final assets = await path.getAssetListPaged(page: page, size: _kPageSize);
-      if (assets.isEmpty) break;
-      for (final a in assets) {
-        pairs.add((a.id, a.createDateTime.millisecondsSinceEpoch));
+    final seen = <String>{};
+
+    outer:
+    for (final path in paths) {
+      var page = 0;
+      while (true) {
+        if (seen.length >= _kAndroidInitialCap) break outer;
+        final assets =
+            await path.getAssetListPaged(page: page, size: _kPageSize);
+        if (assets.isEmpty) break;
+        for (final a in assets) {
+          if (!seen.contains(a.id) && !_decidedIds.contains(a.id)) {
+            seen.add(a.id);
+            pairs.add((a.id, a.createDateTime.millisecondsSinceEpoch));
+          }
+        }
+        if (assets.length < _kPageSize) break;
+        page++;
       }
-      if (assets.length < _kPageSize) break;
-      page++;
     }
-    return pairs;
+
+    return compute(_sortByCreatedDesc, pairs);
   }
 
   Future<List<String>> _buildAlbumsList(List<String> albumIds) async {
