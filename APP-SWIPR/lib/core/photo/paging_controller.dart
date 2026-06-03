@@ -61,17 +61,13 @@ class PagingController {
   ///
   /// Returns an empty list when [init] has not been called, or when the
   /// requested page is beyond the end of the asset list.
-  Future<List<AssetEntity>> getPage(int page) {
+  Future<List<AssetEntity>> getPage(int page) async {
     if (kDebugMode) debugPrint('[Pager] getPage(page=$page) called filter=${_filter?.mode}');
     final currentFilter = _filter;
-    if (currentFilter == null) return Future.value([]);
-
-    return _inFlight.putIfAbsent(
-      page,
-      () => _repo
-          .getPage(page, currentFilter)
-          .whenComplete(() => _inFlight.remove(page)),
-    );
+    if (currentFilter == null) return [];
+    final result = await _repo.getPage(page, currentFilter);
+    if (kDebugMode) debugPrint('[Pager] getPage(page=$page) returning ${result.length}');
+    return result;
   }
 
   /// Convenience getter: total undecided asset count for the current filter.
