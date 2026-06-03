@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show compute, defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:photo_manager/photo_manager.dart';
 
 import '../storage/hive_boxes.dart';
@@ -12,81 +12,68 @@ const _kPageSize = 50;
 /// ## Session lifecycle
 ///
 /// Call [initSession] once when a swipe session starts. It caches the set of
-/// already-decided asset IDs from Isar so that [getPage] can filter without
+/// already-decided asset IDs from Hive so that [getPage] can filter without
 /// hitting the database on every asset.
 ///
-/// For [CleanupMode.entireLibrary] and [CleanupMode.albums], call
-/// [buildMasterList] right after [initSession]. This builds (in a background
-/// isolate) the ordered master ID list that [getPage] and [PagingController]
-/// paginate through. For [CleanupMode.timeRange] no master list is needed —
-/// [getPage] queries photo_manager directly on each call.
+/// For [CleanupMode.entireLibrary] on Android and [CleanupMode.albums], call
+/// [buildMasterList] right after [initSession]. This builds the ordered master
+/// list of [AssetEntity] objects that [getPage] paginates through in-memory
+/// (zero platform-channel cost per page).
+///
+/// For [CleanupMode.entireLibrary] on iOS and [CleanupMode.timeRange], no
+/// master list is built — [getPage] queries photo_manager directly each call.
 class PhotoRepository {
   // ── Session state ─────────────────────────────────────────────────────────
 
   /// IDs of assets already decided (keep or trash). Populated by [initSession].
-  /// Never rebuilt per-asset — checked as O(1) Set lookup.
   Set<String> _decidedIds = {};
 
-  /// Ordered master ID list for albums / Android-entireLibrary modes.
-  /// null for iOS entireLibrary / timeRange modes.
-  List<String>? _masterIdList;
+  /// Ordered master entity list for Android-entireLibrary and albums modes.
+  /// Null for iOS entireLibrary / timeRange — those use direct pagination.
+  List<AssetEntity>? _masterList;
 
-  /// Cached "all photos" path for iOS [CleanupMode.entireLibrary] direct pagination.
+  /// Cached "all photos" path for iOS [CleanupMode.entireLibrary] pagination.
   AssetPathEntity? _allPhotosPath;
 
   // ── Public API ────────────────────────────────────────────────────────────
 
   /// Loads all decided asset IDs from Hive into an in-memory Set.
-  ///
-  /// Must be called once at session start before [buildMasterList] or
-  /// [getPage]. Resets any previously cached master list.
   Future<void> initSession() async {
     _decidedIds = HiveBoxes.decisions.keys.cast<String>().toSet();
-    _masterIdList = null;
+    _masterList = null;
     _allPhotosPath = null;
   }
 
-  /// Builds and caches the ordered master ID list for the given [filter].
+  /// Builds and caches the ordered master entity list for the given [filter].
   ///
-  /// - [CleanupMode.entireLibrary] on Android: builds master list from
-  ///   individual album bucket paths to avoid the Samsung/Android-14 hang on
-  ///   the virtual `hasAll: true` path. Runs in [compute].
-  /// - [CleanupMode.entireLibrary] on iOS: no-op — [getPage] paginates the
-  ///   `hasAll` path directly (faster, no upfront cost).
-  /// - [CleanupMode.albums]: deduplicated union of selected albums, sorted by
-  ///   createdAt DESC, runs in [compute].
-  /// - [CleanupMode.timeRange]: no-op — [getPage] queries photo_manager
-  ///   directly.
+  /// - Android [CleanupMode.entireLibrary]: sequential per-album iteration
+  ///   (avoids the `hasAll: true` hang and concurrent MediaStore deadlocks on
+  ///   Samsung One UI 6 / Android 14). Capped at [_kAndroidInitialCap].
+  /// - iOS [CleanupMode.entireLibrary]: no-op — [getPage] paginates directly.
+  /// - [CleanupMode.albums]: deduplicated union of selected albums.
+  /// - [CleanupMode.timeRange]: no-op — [getPage] queries photo_manager.
   ///
-  /// Already-decided assets are excluded from the list before sorting.
+  /// Entities are stored directly — [getPage] slices the in-memory list with
+  /// zero platform-channel cost.
   Future<void> buildMasterList(SwipeFilter filter) async {
     switch (filter.mode) {
       case CleanupMode.entireLibrary:
         if (defaultTargetPlatform == TargetPlatform.android) {
-          // Android: the virtual 'hasAll: true' path hangs on Samsung One UI 6+
-          // (and possibly other Android 14 devices) when calling getAssetListPaged.
-          // Individual bucket paths work correctly — use them instead.
-          _masterIdList = await _buildEntireLibraryMasterList();
+          _masterList = await _buildEntireLibraryMasterList();
         } else {
-          // iOS: direct pagination via _allPhotosPath is fast, no upfront cost.
-          _masterIdList = null;
+          _masterList = null; // iOS: direct pagination is faster
         }
       case CleanupMode.albums:
-        _masterIdList = await _buildAlbumsList(filter.albumIds);
+        _masterList = await _buildAlbumsMasterList(filter.albumIds);
       case CleanupMode.timeRange:
-        _masterIdList = null;
+        _masterList = null;
     }
   }
 
   /// Returns a page of [AssetEntity] objects, already filtered of decided IDs.
-  ///
-  /// For [CleanupMode.entireLibrary] / [CleanupMode.albums]: paginates the
-  /// cached master ID list (call [buildMasterList] first).
-  /// For [CleanupMode.timeRange]: queries photo_manager directly via
-  /// [FilterOptionGroup].
   Future<List<AssetEntity>> getPage(int page, SwipeFilter filter) async {
     return switch (filter.mode) {
-      CleanupMode.entireLibrary => _masterIdList != null
+      CleanupMode.entireLibrary => _masterList != null
           ? _getPageFromMasterList(page)
           : _getEntireLibraryPage(page),
       CleanupMode.albums => _getPageFromMasterList(page),
@@ -95,21 +82,16 @@ class PhotoRepository {
   }
 
   /// Returns the total undecided asset count for the current filter.
-  ///
-  /// Uses the cached master list length when available; falls back to
-  /// photo_manager queries for display before [buildMasterList] is called.
   Future<int> getTotalCount(SwipeFilter filter) async {
     switch (filter.mode) {
       case CleanupMode.entireLibrary:
-        // Use master list length when available (Android path).
-        if (_masterIdList != null) return _masterIdList!.length;
-        // iOS fallback: fast assetCountAsync on the hasAll path.
+        if (_masterList != null) return _masterList!.length;
         final allPath = await _cachedAllPhotosPath();
         if (allPath == null) return 0;
         return allPath.assetCountAsync;
 
       case CleanupMode.albums:
-        if (_masterIdList != null) return _masterIdList!.length;
+        if (_masterList != null) return _masterList!.length;
         final paths = await PhotoManager.getAssetPathList(
           type: RequestType.image,
         );
@@ -161,28 +143,25 @@ class PhotoRepository {
 
   // ── Master list builders ──────────────────────────────────────────────────
 
-  /// Builds the master list for [CleanupMode.entireLibrary] on Android.
-  ///
-  /// Uses individual bucket paths (`hasAll: false`) to avoid the virtual
-  /// "all photos" path that hangs on Samsung Android 14.
-  ///
-  /// Fetches albums SEQUENTIALLY (not in parallel) — concurrent MediaStore
-  /// cursors can deadlock on Samsung One UI 6 / Android 14.
-  ///
-  /// Capped at [_kAndroidInitialCap] IDs so startup completes in ~2 s on
-  /// a typical device. The cap covers most sessions; if the deck is exhausted
-  /// the session proceeds to the review/result phase normally.
+  /// Max assets collected during Android startup. Covers most sessions while
+  /// keeping build time under ~2 s on typical devices.
   static const _kAndroidInitialCap = 1000;
 
-  Future<List<String>> _buildEntireLibraryMasterList() async {
+  /// Builds the Android master list from individual album bucket paths.
+  ///
+  /// Uses `hasAll: false` to avoid the Samsung One UI 6 `hasAll` hang.
+  /// Iterates albums SEQUENTIALLY — concurrent MediaStore cursors deadlock
+  /// on Samsung Android 14. Stores [AssetEntity] objects directly so that
+  /// [_getPageFromMasterList] needs zero platform-channel calls.
+  Future<List<AssetEntity>> _buildEntireLibraryMasterList() async {
     final paths = await PhotoManager.getAssetPathList(
       type: RequestType.image,
-      hasAll: false, // Individual bucket paths — avoids hasAll hang
+      hasAll: false,
     );
     if (paths.isEmpty) return [];
 
-    final pairs = <(String, int)>[];
     final seen = <String>{};
+    final pairs = <(AssetEntity, int)>[];
 
     outer:
     for (final path in paths) {
@@ -195,7 +174,7 @@ class PhotoRepository {
         for (final a in assets) {
           if (!seen.contains(a.id) && !_decidedIds.contains(a.id)) {
             seen.add(a.id);
-            pairs.add((a.id, a.createDateTime.millisecondsSinceEpoch));
+            pairs.add((a, a.createDateTime.millisecondsSinceEpoch));
           }
         }
         if (assets.length < _kPageSize) break;
@@ -203,19 +182,20 @@ class PhotoRepository {
       }
     }
 
-    return compute(_sortByCreatedDesc, pairs);
+    // Sort by createdAt DESC on main isolate — 1000 items is negligible.
+    pairs.sort((a, b) => b.$2.compareTo(a.$2));
+    return pairs.map((p) => p.$1).toList();
   }
 
-  Future<List<String>> _buildAlbumsList(List<String> albumIds) async {
+  Future<List<AssetEntity>> _buildAlbumsMasterList(
+      List<String> albumIds) async {
     final paths = await PhotoManager.getAssetPathList(
       type: RequestType.image,
     );
-    final albumPaths =
-        paths.where((p) => albumIds.contains(p.id)).toList();
+    final albumPaths = paths.where((p) => albumIds.contains(p.id)).toList();
 
-    // Collect (id, createDateTime ms) pairs — lightweight, no image bytes.
-    final pairs = <(String, int)>[];
     final seen = <String>{};
+    final pairs = <(AssetEntity, int)>[];
 
     for (final path in albumPaths) {
       var page = 0;
@@ -224,10 +204,9 @@ class PhotoRepository {
             await path.getAssetListPaged(page: page, size: _kPageSize);
         if (assets.isEmpty) break;
         for (final asset in assets) {
-          if (!seen.contains(asset.id) &&
-              !_decidedIds.contains(asset.id)) {
+          if (!seen.contains(asset.id) && !_decidedIds.contains(asset.id)) {
             seen.add(asset.id);
-            pairs.add((asset.id, asset.createDateTime.millisecondsSinceEpoch));
+            pairs.add((asset, asset.createDateTime.millisecondsSinceEpoch));
           }
         }
         if (assets.length < _kPageSize) break;
@@ -235,16 +214,13 @@ class PhotoRepository {
       }
     }
 
-    // Sort by createdAt DESC in a background isolate.
-    return compute(_sortByCreatedDesc, pairs);
+    pairs.sort((a, b) => b.$2.compareTo(a.$2));
+    return pairs.map((p) => p.$1).toList();
   }
 
   // ── Page fetchers ─────────────────────────────────────────────────────────
 
   /// Direct pagination for iOS [CleanupMode.entireLibrary].
-  ///
-  /// Resolves and caches [_allPhotosPath] on first call, then paginates it
-  /// directly — no upfront master-list build required.
   Future<List<AssetEntity>> _getEntireLibraryPage(int page) async {
     final path = await _cachedAllPhotosPath();
     if (path == null) return [];
@@ -252,13 +228,13 @@ class PhotoRepository {
     return assets.where((a) => !_decidedIds.contains(a.id)).toList();
   }
 
+  /// In-memory slice — zero platform-channel cost.
   Future<List<AssetEntity>> _getPageFromMasterList(int page) async {
-    final list = _masterIdList ?? [];
+    final list = _masterList ?? [];
     final start = page * _kPageSize;
     if (start >= list.length) return [];
     final end = (start + _kPageSize).clamp(0, list.length);
-    final ids = list.sublist(start, end);
-    return _fetchByIds(ids);
+    return list.sublist(start, end);
   }
 
   Future<List<AssetEntity>> _getTimeRangePage(
@@ -273,13 +249,11 @@ class PhotoRepository {
     if (paths.isEmpty) return [];
     final assets =
         await paths.first.getAssetListPaged(page: page, size: _kPageSize);
-    // Filter decided IDs post-fetch (master list not used for timeRange).
     return assets.where((a) => !_decidedIds.contains(a.id)).toList();
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
-  /// Returns [_allPhotosPath], fetching and caching it on first call.
   Future<AssetPathEntity?> _cachedAllPhotosPath() async {
     _allPhotosPath ??= await _getAllPhotosPath();
     return _allPhotosPath;
@@ -292,17 +266,6 @@ class PhotoRepository {
     );
     if (paths.isEmpty) return null;
     return paths.firstWhere((p) => p.isAll, orElse: () => paths.first);
-  }
-
-  Future<List<AssetEntity>> _fetchByIds(List<String> ids) async {
-    // Sequential — concurrent AssetEntity.fromId calls deadlock MediaStore
-    // on Samsung One UI 6 / Android 14.
-    final results = <AssetEntity>[];
-    for (final id in ids) {
-      final asset = await AssetEntity.fromId(id);
-      if (asset != null) results.add(asset);
-    }
-    return results;
   }
 
   FilterOptionGroup _timeRangeFilter(SwipeFilter filter) {
@@ -320,7 +283,6 @@ class PhotoRepository {
   }
 
   List<AlbumInfo> _sortedAlbums(List<AlbumInfo> albums) {
-    // System album names across iOS (en/it) and Android.
     const system = {
       'Recents', 'All Photos', 'Recenti',
       'Favorites', 'Preferiti',
@@ -339,13 +301,4 @@ class PhotoRepository {
 
     return albums;
   }
-}
-
-// ── Top-level functions for compute() ────────────────────────────────────────
-// Must be top-level (not instance methods) to be passed to compute().
-
-/// Sorts (assetId, createDateTimeMs) pairs by timestamp DESC and returns IDs.
-List<String> _sortByCreatedDesc(List<(String, int)> pairs) {
-  pairs.sort((a, b) => b.$2.compareTo(a.$2));
-  return pairs.map((p) => p.$1).toList();
 }
