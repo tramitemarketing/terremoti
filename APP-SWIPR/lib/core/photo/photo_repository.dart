@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart' show compute, defaultTargetPlatform, TargetPlatform;
 import 'package:photo_manager/photo_manager.dart';
 
-import '../storage/hive_service.dart';
+import '../storage/hive_boxes.dart';
 import '../storage/isar_models.dart';
 
 /// Page size used for all photo_manager paged requests.
@@ -41,7 +41,7 @@ class PhotoRepository {
   /// Must be called once at session start before [buildMasterList] or
   /// [getPage]. Resets any previously cached master list.
   Future<void> initSession() async {
-    _decidedIds = HiveService.getAllDecidedIds();
+    _decidedIds = HiveBoxes.decisions.keys.cast<String>().toSet();
     _masterIdList = null;
     _allPhotosPath = null;
   }
@@ -295,8 +295,14 @@ class PhotoRepository {
   }
 
   Future<List<AssetEntity>> _fetchByIds(List<String> ids) async {
-    final results = await Future.wait(ids.map(AssetEntity.fromId));
-    return results.whereType<AssetEntity>().toList();
+    // Sequential — concurrent AssetEntity.fromId calls deadlock MediaStore
+    // on Samsung One UI 6 / Android 14.
+    final results = <AssetEntity>[];
+    for (final id in ids) {
+      final asset = await AssetEntity.fromId(id);
+      if (asset != null) results.add(asset);
+    }
+    return results;
   }
 
   FilterOptionGroup _timeRangeFilter(SwipeFilter filter) {
