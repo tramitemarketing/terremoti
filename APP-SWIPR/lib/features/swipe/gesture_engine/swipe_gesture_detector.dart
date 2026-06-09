@@ -35,7 +35,7 @@ class SwipeGestureDetector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+      behavior: HitTestBehavior.translucent,
       onPanUpdate: (details) {
         // Transition ready → swiping on first gesture contact.
         final phase = ref.read(swipeSessionProvider).phase;

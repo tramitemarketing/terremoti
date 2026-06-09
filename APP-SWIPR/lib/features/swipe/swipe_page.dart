@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +7,7 @@ import '../../core/storage/isar_models.dart';
 import '../../shared/theme/app_colors.dart';
 import '../../shared/theme/app_tokens.dart';
 import '../../shared/theme/app_typography.dart';
+import '../../shared/widgets/swipr_logo.dart';
 import '../session/session_state/swipe_session_provider.dart';
 import 'card_stack/card_stack_widget.dart';
 import 'hud/session_hud.dart';
@@ -45,17 +44,25 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
   @override
   Widget build(BuildContext context) {
-    final phase = ref.watch(swipeSessionProvider.select((s) => s.phase));
+    // Collapse ready/swiping/animating/paused into a single canonical value
+    // so transitions between those phases never trigger a rebuild of SwipePage
+    // (and therefore never cause a Scaffold layout pass during a fly-off).
+    final phase = ref.watch(swipeSessionProvider.select((s) {
+      final p = s.phase;
+      if (p == SwipeSessionPhase.ready ||
+          p == SwipeSessionPhase.swiping ||
+          p == SwipeSessionPhase.animating ||
+          p == SwipeSessionPhase.paused) {
+        return SwipeSessionPhase.swiping;
+      }
+      return p;
+    }));
 
     return Scaffold(
       backgroundColor: AppColors.background,
       body: switch (phase) {
         SwipeSessionPhase.loading => const _LoadingView(),
-        SwipeSessionPhase.ready ||
-        SwipeSessionPhase.swiping ||
-        SwipeSessionPhase.animating ||
-        SwipeSessionPhase.paused =>
-          const _SwipingView(),
+        SwipeSessionPhase.swiping => const _SwipingView(),
         SwipeSessionPhase.reviewDecideLater => _DecideLaterReviewStub(
           assets: ref.watch(
             swipeSessionProvider.select((s) => s.decideLaterQueue),
@@ -81,62 +88,61 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
 // ── Active swipe view ─────────────────────────────────────────────────────────
 
-class _SwipingView extends ConsumerWidget {
+/// Pure layout widget — no ref.watch, never rebuilds due to provider changes.
+/// HUD and Fine manage their own rebuild cycles independently.
+class _SwipingView extends StatelessWidget {
   const _SwipingView();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final (canUndo, canEnd) = ref.watch(
-      swipeSessionProvider.select((s) => (
-        s.undoAssetId != null && !s.isAnimating,
-        !s.isAnimating &&
-            (s.phase == SwipeSessionPhase.swiping ||
-             s.phase == SwipeSessionPhase.ready),
-      )),
-    );
-
-    return Stack(
+  Widget build(BuildContext context) {
+    return const Stack(
       fit: StackFit.expand,
       children: [
-        // Card stack fills the available area.
-        const CardStackWidget(),
-
-        // HUD overlaid at the top.
-        const Positioned(
-          top: 0,
+        CardStackWidget(),
+        // HUD — ConsumerStatefulWidget, rebuilds only on stats changes.
+        Positioned(top: 0, left: 0, right: 0, child: SessionHud()),
+        // Fine — isolated behind RepaintBoundary so its rebuilds never
+        // propagate up to the card stack layer.
+        Positioned(
+          bottom: 0,
           left: 0,
           right: 0,
-          child: SessionHud(),
+          child: RepaintBoundary(child: _FineButtonLayer()),
         ),
-
-        // Bottom action area: Annulla (if available) above FINE button.
-        if (canEnd || canUndo)
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppTokens.spaceMD,
-                  AppTokens.spaceSM,
-                  AppTokens.spaceMD,
-                  AppTokens.spaceMD,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (canUndo) ...[
-                      Center(child: _UndoButton()),
-                      const SizedBox(height: AppTokens.spaceSM),
-                    ],
-                    if (canEnd) _EndSessionButton(),
-                  ],
-                ),
-              ),
-            ),
-          ),
+        // Undo circle lives inside SwipeCard and moves with the card.
       ],
+    );
+  }
+}
+
+/// Fine button layer isolated from the card stack so swipe gestures and
+/// animation frames never trigger a rebuild here.
+class _FineButtonLayer extends ConsumerWidget {
+  const _FineButtonLayer();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final visible = ref.watch(
+      swipeSessionProvider.select((s) =>
+          s.phase != SwipeSessionPhase.loading &&
+          s.phase != SwipeSessionPhase.result &&
+          s.phase != SwipeSessionPhase.reviewDecideLater &&
+          s.phase != SwipeSessionPhase.reviewTrash &&
+          s.phase != SwipeSessionPhase.confirmDelete &&
+          s.phase != SwipeSessionPhase.processingDelete &&
+          s.phase != SwipeSessionPhase.smartReview),
+    );
+    if (!visible) return const SizedBox.shrink();
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppTokens.spaceMD,
+          AppTokens.spaceSM,
+          AppTokens.spaceMD,
+          AppTokens.spaceMD,
+        ),
+        child: _EndSessionButton(),
+      ),
     );
   }
 }
@@ -170,26 +176,6 @@ class _EndSessionButton extends ConsumerWidget {
   }
 }
 
-class _UndoButton extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      onTap: () => ref.read(swipeSessionProvider.notifier).undoLastSwipe(),
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppTokens.spaceLG,
-          vertical: AppTokens.spaceSM,
-        ),
-        decoration: BoxDecoration(
-          color: AppColors.backgroundSurface,
-          borderRadius: BorderRadius.circular(AppTokens.radiusMD),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Text('Annulla', style: AppTypography.caption),
-      ),
-    );
-  }
-}
 
 // ── Decide-later review stub ──────────────────────────────────────────────────
 
@@ -435,18 +421,33 @@ class _LoadingViewState extends State<_LoadingView>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppTokens.spaceMD),
-      child: AnimatedBuilder(
-        animation: _opacity,
-        builder: (_, __) => Opacity(
-          opacity: _opacity.value,
-          child: Container(
-            width: size.width - AppTokens.spaceMD * 2,
-            height: size.height * 0.72,
-            decoration: BoxDecoration(
-              color: AppColors.backgroundCard,
-              borderRadius: BorderRadius.circular(AppTokens.radiusCard),
+    // FIX 1: match CardStackWidget's exact card dimensions so the skeleton
+    // sits in the identical position the real card will occupy.
+    final cardWidth  = size.width - 48.0;
+    final cardHeight = size.height * 0.75;
+
+    return AnimatedBuilder(
+      animation: _opacity,
+      builder: (_, __) => Opacity(
+        opacity: _opacity.value,
+        child: Center(
+          child: SizedBox(
+            width: cardWidth,
+            height: cardHeight,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: AppColors.backgroundCard,
+                      borderRadius:
+                          BorderRadius.circular(AppTokens.radiusCard),
+                    ),
+                  ),
+                ),
+                const SwiprLogo(size: 72),
+              ],
             ),
           ),
         ),

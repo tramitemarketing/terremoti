@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../core/storage/hive_boxes.dart';
 import '../../core/storage/hive_models.dart';
-import '../../core/storage/hive_service.dart';
 import '../../core/storage/isar_models.dart';
 import 'achievement_definitions.dart';
 
@@ -19,7 +19,7 @@ class CumulativeStatsStore extends _$CumulativeStatsStore {
   CumulativeStats build() {
     // Synchronous — HiveService.loadCumulativeStats() reads Box.get(0) which
     // is sync. Returns zero-init CumulativeStats on first launch.
-    return HiveService.loadCumulativeStats();
+    return HiveBoxes.cumulativeStats.get(0) ?? CumulativeStats();
   }
 
   /// Updates cumulative stats at the end of a session.
@@ -27,7 +27,7 @@ class CumulativeStatsStore extends _$CumulativeStatsStore {
   /// Resets weekly/monthly counters when the calendar week or month has
   /// rolled over since the last recorded session.
   Future<void> updateAfterSession(SessionStats session) async {
-    final current = HiveService.loadCumulativeStats();
+    final current = HiveBoxes.cumulativeStats.get(0) ?? CumulativeStats();
     final now = DateTime.now();
 
     final updatedWeekly = _isSameIsoWeek(current.lastSessionAt, now)
@@ -51,7 +51,7 @@ class CumulativeStatsStore extends _$CumulativeStatsStore {
       ..sessionsThisWeek = updatedWeekly
       ..sessionsThisMonth = updatedMonthly;
 
-    await HiveService.saveCumulativeStats(updated);
+    await HiveBoxes.cumulativeStats.put(0, updated);
     state = updated;
   }
 
@@ -157,7 +157,7 @@ class AchievementNotifier extends _$AchievementNotifier {
 
   /// Adds [id] to [newlyUnlocked] only if not already in the achievements box.
   void _tryUnlock(String id, List<String> newlyUnlocked) {
-    if (!HiveService.hasAchievement(id)) {
+    if (!HiveBoxes.achievements.containsKey(id)) {
       newlyUnlocked.add(id);
     }
   }
@@ -177,7 +177,8 @@ class AchievementNotifier extends _$AchievementNotifier {
   Future<void> _persistUnlocks(List<String> ids) async {
     final now = DateTime.now();
     for (final id in ids) {
-      await HiveService.saveAchievement(
+      await HiveBoxes.achievements.put(
+        id,
         AchievementRecord()
           ..achievementId = id
           ..unlockedAt = now

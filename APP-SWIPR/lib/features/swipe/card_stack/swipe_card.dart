@@ -3,10 +3,12 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../../../shared/theme/app_colors.dart';
 import '../../../shared/theme/app_tokens.dart';
+import '../../session/session_state/swipe_session_provider.dart';
 
 /// Single card in the swipe stack.
 ///
@@ -191,11 +193,64 @@ class _SwipeCardState extends State<SwipeCard> {
     if (!widget.isTop) return card;
 
     // Top card: apply translation + rotation driven by drag.
+    // The undo circle is a sibling of `card` inside the Stack so it
+    // inherits the same Transform and moves with the card on every drag frame.
     return Transform.translate(
       offset: widget.dragOffset,
       child: Transform.rotate(
         angle: _angle,
-        child: card,
+        child: Stack(
+          clipBehavior: Clip.none,
+          fit: StackFit.expand,
+          children: [
+            card,
+            // Undo circle — top-left corner, half outside the card boundary.
+            if (widget.cachedBytes != null)
+              const Positioned(
+                top: -22,
+                left: 16,
+                child: _CardUndoButton(),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Undo circle attached to the top card ─────────────────────────────────────
+
+class _CardUndoButton extends ConsumerWidget {
+  const _CardUndoButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final canUndo = ref.watch(
+      swipeSessionProvider.select((s) => s.undoAssetId != null),
+    );
+    if (!canUndo) return const SizedBox.shrink();
+    return GestureDetector(
+      onTap: () => ref.read(swipeSessionProvider.notifier).undoLastSwipe(),
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppColors.backgroundSurface,
+          border: Border.all(color: AppColors.border),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x33000000),
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: const Icon(
+          Icons.undo_rounded,
+          size: 20,
+          color: AppColors.textSecondary,
+        ),
       ),
     );
   }
